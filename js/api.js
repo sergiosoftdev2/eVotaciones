@@ -439,7 +439,6 @@ export function comprobarSesion(){
     }
 }
 
-
 export function anadirSesion(idUsuario, idCenso, rol){
 
     sessionStorage.setItem('idUsuario', idUsuario);
@@ -594,5 +593,56 @@ export async function insertarEleccion(tipo, estado, fechainicio, fechafin){
     }).catch(error => {
         console.log(error);
     });
+
+}
+
+export async function borrarEleccion(idEleccion){
+    let formData = new FormData();
+    formData.append('idEleccion', idEleccion);
+
+    try {
+        const response = await fetch("../api/DELETE/borrarEleccion.php", {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error('Error en la petición');
+        }
+
+        const datos = await response.json();
+        return datos;
+    } catch (error) {
+        console.log(error);
+    }
+
+}
+
+export async function actualizarEleccion(idEleccion, tipo, estado, fechaInicio, fechaFin){
+    
+    let formData = new FormData();
+    formData.append('idEleccion', idEleccion);
+    formData.append('tipo', tipo);
+    formData.append('estado', estado);
+    formData.append('fechaInicio', fechaInicio);
+    formData.append('fechaFin', fechaFin);
+
+    try {
+        const response = await fetch("../api/UPDATE/actualizarEleccion.php", {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error('Error en la petición');
+        }
+
+        const datos = await response.json();
+        console.log(datos)
+        return datos;
+    
+    } catch (error) {
+        console.log(error);
+    }
 
 }

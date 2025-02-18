@@ -3,8 +3,7 @@ import {
     borrarPartidoPolitico, insertarPartidoPolitico, buscarCandidatos,
     actualizarCandidato, borrarCandidato, insertarCandidato, buscarUsuarios,  
     buscarCiudadano, buscarLocalidad, buscarPartido, buscarElecciones,
-    insertarEleccion
-
+    insertarEleccion, borrarEleccion, actualizarEleccion
 } from "./api.js";
 
 document.addEventListener("DOMContentLoaded", function() {
@@ -390,6 +389,7 @@ async function elecciones(mainTitle){
             insertarEleccion(tipo, estado, fechaInicio, fechafin);
 
             setTimeout(() => {
+                modal.classList.add("noVisible");
                 crearInterfazElecciones();
             }, 250);
 
@@ -458,10 +458,22 @@ async function elecciones(mainTitle){
                     modal.classList.remove('noVisible');
 
                     // BORRAR ELECCION
-                    borrarEleccionBtn.addEventListener("click", () => {})
+                    borrarEleccionBtn.addEventListener("click", () => {
+                        borrarEleccion(eleccion.idEleccion);
+                        setTimeout(() => {
+                            modal.classList.add("noVisible");
+                            crearInterfazElecciones();
+                        }, 250);
+                    })
 
                     // ACTUALIZAR ELECCION
-                    actualizarEleccionBtn.addEventListener("click", () => {})
+                    actualizarEleccionBtn.addEventListener("click", () => {
+                        actualizarEleccion(eleccion.idEleccion, tipoModal.value, estadoModal.value, fechaInicioModal.value, fechaFinModal.value);
+                        setTimeout(() => {
+                            modal.classList.add("noVisible");
+                            crearInterfazElecciones();
+                        }, 250);
+                    })
 
                 });
     
