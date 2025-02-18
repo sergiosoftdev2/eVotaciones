@@ -1,0 +1,23 @@
+.admin{
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}
+
+.adminPanels{
+    background-color: black;
+    color: white;
+    border: 1px solid black;
+    width: 200px;
+    padding: 30px;
+    border-radius: 10px;
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.adminPanels:hover{
+    background-color: white;
+    color: black;
+    border: 1px solid black;
+}

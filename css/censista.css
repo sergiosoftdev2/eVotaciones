@@ -1,0 +1,250 @@
+@keyframes fadeInLeft {
+    0% {
+        opacity: 0;
+        transform: translateX(-20%);
+    } 100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+*{
+    /* width */
+    ::-webkit-scrollbar {
+        width: 2px;
+    }
+    
+    /* Track */
+    ::-webkit-scrollbar-track {
+        background: white;
+    }
+    
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+        background: black;
+    }
+    
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+}
+
+.mainTitle{
+    padding-top: 40px;
+}
+
+.buscar{
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    margin-bottom: 20px;
+    width: 90%;
+}
+
+.buscar select{
+    width: 20%;
+    height: 50%;
+    margin-right: 0;
+    padding: 10px;
+    box-sizing: border-box;
+    margin-left: auto;
+    background-color: white;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+}
+
+.busquedaCiudadanos{
+    position: relative;
+    height: 500px;
+    box-sizing: border-box;
+    background-color: white;
+    border: 1px solid var(--border-color);
+    width: 90%;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.ciudadano{
+    display: grid;
+    align-items: center;
+    cursor: pointer;
+    box-sizing: border-box;
+    border: 1px solid var(--border-color);
+    width: 100%;
+    padding: 20px;
+    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+    text-align: left;
+
+    transition: .2s;
+    animation: fadeInLeft 0.5s;
+}
+
+.ciudadano:hover{
+    background-color: var(--border-color);
+}
+
+.ciudadano h2{
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.email{
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.localidad{
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.contentInsert{
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+}
+
+.actionButtons{
+    display: flex;
+    justify-content: left;
+    gap: 20px;
+    margin-top: 20px;
+    width: 90%
+}
+
+#preFix{
+    animation: 0s fadeInLeft ;
+}
+
+#preFix:hover{
+    background-color: white;
+}
+
+#modal{
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.336);
+    top: 0;
+    left: 0;
+    width: 100dvw;
+    height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(20px);
+    z-index: 20;
+
+    transition: .2s;
+}
+
+.noVisible{
+    opacity: 0;
+    visibility: hidden;
+    z-index: -20;
+
+    transition: .2s;
+}
+
+.ciudadanoModal{
+    width: 80%;
+    background-color: white;
+    border-radius: 10px;
+    -webkit-box-shadow: 6px 0px 37px -4px rgba(66, 68, 90, 1);
+    -moz-box-shadow: 6px 0px 37px -4px rgba(66, 68, 90, 1);
+    box-shadow: 6px 0px 37px -4px rgba(66, 68, 90, 1);
+    margin-bottom: -50px;
+    transition: 0.5s;
+    padding: 50px;
+    padding-top: 30px;
+    box-sizing: border-box;
+}
+
+.ciudadanoModal h2{
+    font-size: 2rem;
+    margin: 0;
+    margin-top: 20px;
+}
+
+.ciudadanoModal input, select{
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    margin-top: 10px;
+    background-color: white;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+}
+
+.ciudadanoModal button{
+    width: auto;
+    font-weight: bold;
+    padding: 10px;
+    cursor: pointer;
+    box-sizing: border-box;
+    margin-top: 20px;
+    background-color: white;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+}
+
+.anadirCiudadano{
+    border: 1px solid var(--border-color); 
+    font-size: 1.3rem;
+}
+
+#anadirCiudadano, .anadirCiudadano{
+    background-color: rgb(68, 255, 68);
+    padding: 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#borrarCiudadano{
+    background-color: rgb(255, 68, 68);
+    padding: 20px;
+    width: 50%;
+    box-sizing: border-box;
+}
+
+#actualizarCiudadano{
+    background-color: rgb(103, 169, 255);
+    padding: 20px;
+    width: 50%;
+    box-sizing: border-box;
+}
+
+#anadirCiudadano:hover, .anadirCiudadano:hover{
+    background-color: rgb(68, 255, 68, 0.8);
+}
+
+#borrarCiudadano:hover{
+    background-color: rgb(255, 68, 68, 0.8);
+}
+
+#actualizarCiudadano:hover{
+    background-color: rgb(103, 169, 255, 0.8);
+}
+
+.closeButton{
+    position: absolute;
+    width: 50px;
+    padding: 10px;
+    box-sizing: border-box;
+    height: 50px;
+    border-radius: 10px;
+    top: 20px;
+    right: 20px;
+}
+
+.closeButton img{
+    width: 100%;
+    height: 100%;
+}
+
+.buttonModalSide{
+    display: flex;
+    width: 100%;
+    gap: 20px;
+}
