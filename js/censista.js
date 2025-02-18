@@ -192,7 +192,7 @@ async function modalCiudadano(idCenso){
             nombreLocalidad.textContent = element.nombre;
             nombreLocalidad.value = element.idLocalidad;
             nombreLocalidad.classList.add("localidad");
-            elementoPadre.appendChild(nombreLocalidad);
+            localidades.appendChild(nombreLocalidad);
         });
     })
     let miCiudadano = await buscarCiudadano(idCenso);

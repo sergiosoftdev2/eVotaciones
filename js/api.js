@@ -17,6 +17,29 @@ export async function buscarPartidos() {
     }
 }
 
+export async function buscarPartido(idPartido) {
+    let formData = new FormData();
+    formData.append('idPartido', idPartido);
+
+    try {
+        const response = await fetch("../api/SELECT/buscarPartido.php", {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error('Error en la petición');
+        }
+
+        const datos = await response.json();
+        return datos[0].nombre;
+
+    } catch (error) {
+        console.log(error);
+        return "";
+    }
+}
+
 export async function borrarPartidoPolitico(idPartido) {
     let formData = new FormData();
     formData.append('partido', idPartido);
@@ -134,8 +157,6 @@ export async function actualizarCandidato(idCandidato, idUsuario, idPartido, idL
     formData.append('idCandidato', idCandidato);
     formData.append('idUsuario', idUsuario);
     formData.append('idLocalidad', idLocalidad);
-
-    console.log(nombre, siglas)
 
     try {
         const response = await fetch("../api/UPDATE/actualizarCandidato.php", {
@@ -529,5 +550,49 @@ export async function buscarDNICandidato(idUsuario){
     } catch (error) {
         console.log(error);
     }
+
+}
+
+export async function buscarElecciones() {
+
+    try {
+        const response = await fetch("../api/SELECT/buscarElecciones.php", {
+            method: 'POST',
+        });
+
+        if (!response.ok) {
+            throw new Error('Error en la petición');
+        }
+
+        const datos = await response.json();
+        return datos; // Retorna los datos aquí, dentro de la función asíncrona
+
+    } catch (error) {
+        console.error("Error en buscarPartidos:", error); // Usa console.error para errores
+        return null; // O un valor que indique un error, como un array vacío []
+    }
+
+}
+
+export async function insertarEleccion(tipo, estado, fechainicio, fechafin){
+    let formData = new FormData();
+    formData.append('tipo', tipo);
+    formData.append('estado', estado);
+    formData.append('fechainicio', fechainicio);
+    formData.append('fechafin', fechafin);
+
+    fetch("../api/INSERT/insertarEleccion.php", {
+        method: 'POST',
+        body: formData
+    }).then(response => {
+        if (!response.ok) {
+            throw new Error('Error en la petición');
+        }
+        return response.json();
+    }).then(datos => {
+        return datos;
+    }).catch(error => {
+        console.log(error);
+    });
 
 }

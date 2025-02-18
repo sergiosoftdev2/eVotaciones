@@ -3,9 +3,6 @@ document.addEventListener("DOMContentLoaded", () => {
     let menu = document.querySelector("#menu");
     let rol = sessionStorage.getItem("rol");
 
-    console.log(menu)
-    console.log(rol)
-
     if(rol == "administrador"){
         let adminPanel = document.createElement("a");
         adminPanel.innerText = "Panel de Administrador";

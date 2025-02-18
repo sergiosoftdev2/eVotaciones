@@ -12,14 +12,14 @@
         $idLocalidad = $_POST['idLocalidad'];
 
         // Consulta de actualización
-        $stmt = $conexion->prepare("UPDATE partido 
+        $stmt = $conexion->prepare("UPDATE candidato 
             SET idPartido = ?, idUsuario = ?, idLocalidad = ?
             WHERE idCandidato = ?");
         
         $stmt->bindParam(1, $idPartido);
         $stmt->bindParam(2, $idUsuario);
         $stmt->bindParam(3, $idLocalidad);
-        $stmt->bindParam(3, $idCandidato);
+        $stmt->bindParam(4, $idCandidato);
 
         $stmt->execute();
 

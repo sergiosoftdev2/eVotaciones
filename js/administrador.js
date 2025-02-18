@@ -2,7 +2,9 @@ import {
     obtenerLocalidades, buscarPartidos, actualizarPartidoPolitico, 
     borrarPartidoPolitico, insertarPartidoPolitico, buscarCandidatos,
     actualizarCandidato, borrarCandidato, insertarCandidato, buscarUsuarios,  
-    buscarCiudadano
+    buscarCiudadano, buscarLocalidad, buscarPartido, buscarElecciones,
+    insertarEleccion
+
 } from "./api.js";
 
 document.addEventListener("DOMContentLoaded", function() {
@@ -56,7 +58,7 @@ async function candidatos(mainTitle) {
     `;
 
     let contentInsert = document.getElementById('contentInsert');
-    let insertarCandidato = document.getElementById('insertarCandidato');
+    let insertarCandidatoBtn = document.getElementById('insertarCandidato');
     let cerrarModal = document.getElementById('cerrarModal');
     let modal = document.getElementById('modal');
     let back = document.getElementById('back');
@@ -79,7 +81,7 @@ async function candidatos(mainTitle) {
         contentInsert.innerHTML = `<p>No hay candidatos :(</p>`;
     }
 
-    insertarCandidato.addEventListener("click", () => {
+    insertarCandidatoBtn.addEventListener("click", () => {
         modal.classList.remove("noVisible");
         // Restablecer valores del modal
         idUsuarioInput.value = '';
@@ -105,15 +107,15 @@ async function candidatos(mainTitle) {
                 return;
             }
 
-            let nuevoCandidato = await insertarCandidato(idUsuario, idPartido, idLocalidad);
-            if (nuevoCandidato.success) { // Asumiendo que tu respuesta JSON tiene una propiedad 'success'
+            let nuevoCandidato = await insertarCandidato(idUsuario, idPartido, idLocalidad).then(data => {
+                return data;
+            });
+
+            setTimeout(() => {
                 modal.classList.add("noVisible");
-                contentInsert.innerHTML = ""; // Limpia la lista y vuelve a cargar los candidatos
-                let candidatosActualizados = await buscarCandidatos();
-                candidatosActualizados.forEach(candidato => crearInterfazCandidatos(candidato));
-            } else {
-                alert("Error al insertar candidato. Verifica los datos.");
-            }
+                candidatos(mainTitle)
+            }, 250);
+
         });
     });
 
@@ -125,7 +127,16 @@ async function candidatos(mainTitle) {
         adminMenuShow(mainTitle);
     });
 
-    function crearInterfazCandidatos(candidato) {
+    async function crearInterfazCandidatos(candidato) {
+
+        let nombrePartido = await buscarPartido(candidato.idPartido).then(data => {
+            return data;
+        });
+
+        let nombreLocalidad = await buscarLocalidad(candidato.idLocalidad).then(data => {
+            return data;
+        });
+
         let elementoPadre = document.createElement('div');
         elementoPadre.dataset.id = candidato.idCandidato;
         elementoPadre.classList.add('ciudadano');
@@ -137,10 +148,10 @@ async function candidatos(mainTitle) {
         idUsuario.textContent = candidato.idUsuario;
 
         let partido = document.createElement('p');
-        partido.textContent = candidato.nombrePartido; // Asumiendo que tienes el nombre del partido en los datos
+        partido.textContent = nombrePartido; // Asumiendo que tienes el nombre del partido en los datos
 
         let localidad = document.createElement('p');
-        localidad.textContent = candidato.nombreLocalidad; // Asumiendo que tienes el nombre de la localidad
+        localidad.textContent = nombreLocalidad; // Asumiendo que tienes el nombre de la localidad
 
         elementoPadre.appendChild(idCandidato);
         elementoPadre.appendChild(idUsuario);
@@ -149,10 +160,19 @@ async function candidatos(mainTitle) {
         contentInsert.appendChild(elementoPadre);
 
         elementoPadre.addEventListener("click", () => {
-            modal.classList.remove('noVisible');
-            idUsuarioInput.value = candidato.idUsuario;
-            partidoSelect.value = candidato.idPartido;
-            localidadesSelect.value = candidato.idLocalidad;
+
+            partidoSelect.innerHTML = "";
+            localidadesSelect.innerHTML = "";
+            idUsuarioInput.innerHTML = "";
+
+            cargarPartidos(partidoSelect);
+            cargarLocalidades(localidadesSelect);
+            cargarUsuarios(idUsuarioInput).then(() => {
+                modal.classList.remove('noVisible');
+                idUsuarioInput.value = candidato.idUsuario;
+                partidoSelect.value = candidato.idPartido;
+                localidadesSelect.value = candidato.idLocalidad;
+            });
 
             anadirCandidatoBtn.style.display = "none";
             borrarCandidatoBtn.style.display = "block";
@@ -179,6 +199,22 @@ async function candidatos(mainTitle) {
                     candidatosActualizados.forEach(candidato => crearInterfazCandidatos(candidato));
                 }
             });
+
+            anadirCandidatoBtn.addEventListener("click", async () => {
+
+                let idUsuario = idUsuarioInput.value;
+                let idPartido = partidoSelect.value;
+                let idLocalidad = localidadesSelect.value;
+
+                if (!idUsuario || !idPartido || !idLocalidad) {
+                    alert('Por favor, completa todos los campos.');
+                    return;
+                }
+
+                let nuevoCandidato = await insertarCandidato(idUsuario, idPartido, idLocalidad);
+
+            })
+
         });
     }
 
@@ -202,16 +238,6 @@ async function candidatos(mainTitle) {
         });
     }
 
-    async function cargarUsuarios() {
-        let usuarios = await buscarUsuarios();
-        usuarios.forEach(usuario => {
-            let option = document.createElement('option');
-            option.value = usuario.idUsuario;
-            option.text = usuario.nombre;
-            usuariosSelect.appendChild(option);
-        });
-    }
-
     async function cargarUsuarios(usuariosSelect) {
         let usuarios = await buscarUsuarios();
         for (const usuario of usuarios) {
@@ -228,7 +254,6 @@ async function candidatos(mainTitle) {
     }    
     
 }
-
 
 async function escrutinios(mainTitle){
     mainTitle.innerHTML = `
@@ -258,16 +283,19 @@ async function escrutinios(mainTitle){
 }
 
 async function elecciones(mainTitle){
+
+    let modalContainer = document.getElementById('modalContainer');
+
     mainTitle.innerHTML = `
-    
         <button class="back" id="back">Atrás</button>
 
         <div class="busquedaCiudadanos" id="busquedaCiudadanos">
                 <div class="ciudadano" id="preFix">
-                    <h2>idCandidato</h2>
-                    <h2>idUsuario</h2>
-                    <h2>Partido</h2>
-                    <h2>Localidad</h2>
+                    <h2>idEleccion</h2>
+                    <h2>Tipo</h2>
+                    <h2>Estado</h2>
+                    <h2>Fecha Inicio</h2>
+                    <h2>Fecha Fin</h2>
                 </div>
                 <div class="contentInsert" id="contentInsert"></div>
             </div>
@@ -275,13 +303,178 @@ async function elecciones(mainTitle){
                 <button id="insertarCiudadano" class="anadirCiudadano">Insertar</button>
             </div>
         </div>
-    
     `
 
+    modalContainer.innerHTML = `
+        <div id="modal" class="noVisible">
+            <button id="cerrarModal" class="closeButton"><img src="../img/cross.svg" alt=""></button>
+            <div class="ciudadanoModal" id="modalContent">
+                <div style="display: flex; gap: 30px;">
+                    <div style="width: 50%;">
+                        <h2>Tipo</h2>
+                        <select id="tipo">
+                            <option value="autonomica">Autonómica</option>
+                            <option value="general">General</option>
+                        </select>
+                    </div>
+                    <div style="width: 50%;">
+                        <h2>Estado</h2>
+                        <select id="estado">
+                            <option value="abierta">Abierta</option>
+                            <option value="cerrada">Cerrada</option>
+                            <option value="finalizada">Finalizada</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 30px;">
+                    <div style="width: 50%;">
+                        <h2>Fecha Inicio</h2>
+                        <input type="date" id="fechainicio" autocomplete="off">
+                    </div>
+                    <div style="width: 50%;">
+                        <h2>Fecha Fin</h2>
+                        <input type="date" id="fechafin" autocomplete="off">
+                    </div>
+                </div>
+                <div class="buttonModalSide">
+                    <button id="anadirCiudadano">Añadir Partido</button>
+                    <button id="borrarCiudadano">Borrar</button>
+                    <button id="actualizarCiudadano">Modificar</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    let insertarEleccionBtn = document.getElementById('insertarCiudadano');
     let back = document.getElementById('back');
+    let contentInsert = document.getElementById('contentInsert');
+    let modal = document.getElementById('modal');
+    let cerrarModal = document.getElementById('cerrarModal');
+    let anadirEleccionBtn = document.getElementById('anadirCiudadano');
+    let borrarEleccionBtn = document.getElementById('borrarCiudadano');
+    let actualizarEleccionBtn = document.getElementById('actualizarCiudadano');
+    let fechaInicioModal = document.getElementById('fechainicio');
+    let fechaFinModal = document.getElementById('fechafin');
+    let tipoModal = document.getElementById('tipo');
+    let estadoModal = document.getElementById('estado');
+
+    crearInterfazElecciones()
+
+
+    insertarEleccionBtn.addEventListener("click", () => {
+
+        fechaInicioModal.value = "";
+        fechaFinModal.value = "";
+        tipoModal.value = "";
+        estadoModal.value = "";
+
+        modal.classList.remove("noVisible");
+        borrarEleccionBtn.style.display = "none";
+        actualizarEleccionBtn.style.display = "none";
+        anadirEleccionBtn.style.display = "block";
+
+        anadirEleccionBtn.addEventListener("click", async () => {
+
+            let tipo = document.getElementById('tipo').value;
+            let estado = document.getElementById('estado').value;
+            let fechaInicio = document.getElementById('fechainicio').value;
+            let fechafin = document.getElementById('fechafin').value;
+
+            console.log(tipo, estado, fechaInicio, fechafin)
+
+            if(!tipo || !estado || !fechaInicio || !fechafin){
+                alert('Por favor, completa todos los campos.');
+                return;
+            }
+
+            insertarEleccion(tipo, estado, fechaInicio, fechafin);
+
+            setTimeout(() => {
+                crearInterfazElecciones();
+            }, 250);
+
+        })
+
+    })
+    
+    // PARA VOLVER AL MENU DE ADMINISTRADOR
     back.addEventListener("click", () => {
         adminMenuShow(mainTitle);
     });
+
+    // PARA CERRAR EL MODAL
+    cerrarModal.addEventListener("click", () => {
+        modal.classList.add('noVisible');
+    });
+
+    async function crearInterfazElecciones(){
+        
+        contentInsert.innerHTML = ""
+
+        let elecciones = await buscarElecciones().then(data => {
+            return data;
+        });
+
+        if(elecciones.length > 0){
+
+            elecciones.forEach(eleccion => {
+
+                let elementoPadre = document.createElement('div');
+                elementoPadre.dataset.id = eleccion.idEleccion;
+                elementoPadre.classList.add('ciudadano');
+                
+                let idEleccion = document.createElement('p');
+                idEleccion.textContent = eleccion.idEleccion;
+    
+                let tipo = document.createElement('p');
+                tipo.textContent = eleccion.tipo;
+    
+                let estado = document.createElement('p');
+                estado.textContent = eleccion.estado;
+    
+                let fechaInicio = document.createElement('p');
+                fechaInicio.textContent = eleccion.fechaInicio;
+    
+                let fechaFin = document.createElement('p');
+                fechaFin.textContent = eleccion.fechaFin;
+    
+                elementoPadre.appendChild(idEleccion);
+                elementoPadre.appendChild(tipo);
+                elementoPadre.appendChild(estado);
+                elementoPadre.appendChild(fechaInicio);
+                elementoPadre.appendChild(fechaFin);
+
+                elementoPadre.addEventListener("click", () => {
+
+                    tipoModal.value = eleccion.tipo;
+                    estadoModal.value = eleccion.estado;
+                    fechaInicioModal.value = eleccion.fechaInicio;
+                    fechaFinModal.value = eleccion.fechaFin;
+
+                    borrarEleccionBtn.style.display = "block";
+                    actualizarEleccionBtn.style.display = "block";
+                    anadirEleccionBtn.style.display = "none";
+
+                    modal.classList.remove('noVisible');
+
+                    // BORRAR ELECCION
+                    borrarEleccionBtn.addEventListener("click", () => {})
+
+                    // ACTUALIZAR ELECCION
+                    actualizarEleccionBtn.addEventListener("click", () => {})
+
+                });
+    
+                contentInsert.appendChild(elementoPadre);
+    
+            })
+
+        }else{
+            contentInsert.innerHTML = `<p>No hay elecciones :(</p>`;
+        }
+
+    }
+
 }
 
 async function partidos(mainTitle){
