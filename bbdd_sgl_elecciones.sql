@@ -1,4 +1,31 @@
-CREATE DATABASE bbdd_sgl_elecciones;
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Servidor: 127.0.0.1
+-- Tiempo de generación: 18-02-2025 a las 16:50:26
+-- Versión del servidor: 10.4.32-MariaDB
+-- Versión de PHP: 8.2.12
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Base de datos: `bbdd_sgl_elecciones`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `candidato`
+--
 
 CREATE TABLE `candidato` (
   `idCandidato` int(11) NOT NULL,
@@ -35,7 +62,43 @@ INSERT INTO `censo` (`idCenso`, `dni`, `nombre`, `apellido`, `email`, `fechaNaci
 (74, '67790999Ñ', 'Fermin', 'Trujillo', 'fermin@gmail.com', '1966-08-30', 48),
 (76, '56607899P', 'Pedro', 'Sanchez', 'felipe@gmail.com', '1992-02-12', 21),
 (77, '11111111A', 'Administrador', 'Administrador', 'admin@admin.com', '1999-12-17', 15),
-(78, '89976543R', 'Manolo', 'Escobar', 'manoloescobar@gmail.com', '1988-06-25', 16);
+(78, '89976543R', 'Manolo', 'Escobar', 'manoloescobar@gmail.com', '1988-06-25', 16),
+(79, '47856255P', 'Alejandro', 'Carmona', 'alejhandro@papa.com', '1999-12-17', 46),
+(95, '11111154C', 'María', 'García', 'maria.garcia@example.com', '1990-05-15', 5),
+(96, '22222222B', 'Juan', 'Pérez', 'juan.perez@example.com', '1988-12-01', 1),
+(97, '33333333C', 'Ana', 'López', 'ana.lopez@example.com', '1977-06-17', 12),
+(98, '44444444D', 'Carlos', 'Sánchez', 'carlos.sanchez@example.com', '1973-02-25', 18),
+(99, '55555555E', 'Sofía', 'Rodríguez', 'sofia.rodriguez@example.com', '1966-08-30', 48),
+(100, '66666666F', 'Miguel', 'Díaz', 'miguel.diaz@example.com', '1992-02-12', 21),
+(101, '77777777G', 'Elena', 'Fernández', 'elena.fernandez@example.com', '1999-12-17', 15),
+(102, '88888888H', 'Pedro', 'Gómez', 'pedro.gomez@example.com', '1988-06-25', 16),
+(103, '99999999I', 'Isabel', 'Martínez', 'isabel.martinez@example.com', '1999-12-17', 46),
+(104, '10101010J', 'David', 'Ruiz', 'david.ruiz@example.com', '1985-03-20', 10),
+(105, '12121212K', 'Lucía', 'García', 'lucia.garcia@example.com', '1995-07-15', 5),
+(106, '13131313L', 'Javier', 'Pérez', 'javier.perez@example.com', '1980-11-02', 15),
+(107, '14141414M', 'Carmen', 'López', 'carmen.lopez@example.com', '1970-04-08', 8),
+(108, '15151515N', 'Raúl', 'Sánchez', 'raul.sanchez@example.com', '1998-09-19', 33),
+(109, '16161616O', 'Marta', 'Rodríguez', 'marta.rodriguez@example.com', '1962-01-26', 2),
+(110, '85371902T', 'Laura', 'García', 'laura.garcia@example.com', '1995-03-10', 7),
+(111, '39746128S', 'Pablo', 'Martínez', 'pablo.martinez@example.com', '1982-07-22', 11),
+(112, '51829347Q', 'Carla', 'Fernández', 'carla.fernandez@example.com', '1979-11-05', 25),
+(113, '96403581P', 'Mario', 'González', 'mario.gonzalez@example.com', '1991-04-18', 18),
+(114, '27518469O', 'Alicia', 'Sánchez', 'alicia.sanchez@example.com', '1987-09-01', 9),
+(115, '63925708N', 'Javier', 'Rodríguez', 'javier.rodriguez@example.com', '1974-06-12', 3),
+(116, '14036829M', 'Elena', 'Díaz', 'elena.diaz@example.com', '1998-12-28', 15),
+(117, '78159240L', 'Sergio', 'Pérez', 'sergio.perez@example.com', '1983-08-15', 22),
+(118, '41260358K', 'Isabel', 'Gómez', 'isabel.gomez@example.com', '1976-02-09', 1),
+(119, '85371902J', 'David', 'López', 'david.lopez@example.com', '1993-05-25', 12),
+(120, '39746128I', 'Raquel', 'Suárez', 'raquel.suarez@example.com', '1980-10-30', 20),
+(121, '51829347H', 'Álvaro', 'Ruiz', 'alvaro.ruiz@example.com', '1996-07-03', 8),
+(122, '96403581G', 'Marta', 'García', 'marta.garcia@example.com', '1971-03-17', 5),
+(123, '27518469F', 'Adrián', 'Martínez', 'adrian.martinez@example.com', '1989-11-21', 19),
+(124, '63925708E', 'Paula', 'Fernández', 'paula.fernandez@example.com', '1978-08-07', 14),
+(125, '14036829D', 'Daniel', 'González', 'daniel.gonzalez@example.com', '1992-04-14', 2),
+(126, '78159240C', 'Sofía', 'Sánchez', 'sofia.sanchez@example.com', '1997-12-01', 17),
+(127, '41260358B', 'Alejandro', 'Rodríguez', 'alejandro.rodriguez@example.com', '1984-09-08', 21),
+(128, '85371902A', 'Carmen', 'Díaz', 'carmen.diaz@example.com', '1975-05-19', 10),
+(129, '39746128Z', 'Jorge', 'Pérez', 'jorge.perez@example.com', '1990-06-26', 6);
 
 -- --------------------------------------------------------
 
@@ -171,16 +234,17 @@ CREATE TABLE `partido` (
 --
 
 INSERT INTO `partido` (`idPartido`, `nombre`, `siglas`) VALUES
-(1, 'Partido Socialista Obrero Español', 'PSOE'),
 (2, 'Partido Popular', 'PP'),
-(3, 'VOX', 'VOX'),
 (4, 'Unidas Podemos', 'UP'),
-(5, 'Ciudadanos', 'Cs'),
-(6, 'Esquerra Republicana de Catalunya', 'ERC'),
+(5, 'Ciudadanos Malos', 'Cs'),
+(6, 'Esquerra Republicana de Catalunya a', 'ERC'),
 (7, 'Junts', 'JxCat'),
 (8, 'Partido Nacionalista Vasco', 'PNV'),
-(9, 'Bildu', 'EH Bildu'),
-(10, 'Coalición Canaria', 'CC');
+(10, 'Coalición Canaria', 'CC'),
+(12, 'Se acabo la fiesta', 'SALF'),
+(13, 'BILDU', 'Bildu Bild'),
+(14, 'Partido Socialista Obrero Español', 'PSOE'),
+(15, 'YO LO VALGO', 'YEAH');
 
 -- --------------------------------------------------------
 
@@ -324,7 +388,7 @@ ALTER TABLE `candidato`
 -- AUTO_INCREMENT de la tabla `censo`
 --
 ALTER TABLE `censo`
-  MODIFY `idCenso` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=79;
+  MODIFY `idCenso` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=130;
 
 --
 -- AUTO_INCREMENT de la tabla `comunidadautonoma`
@@ -348,7 +412,7 @@ ALTER TABLE `localidad`
 -- AUTO_INCREMENT de la tabla `partido`
 --
 ALTER TABLE `partido`
-  MODIFY `idPartido` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `idPartido` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT de la tabla `resultado`
