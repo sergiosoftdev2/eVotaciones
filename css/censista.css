@@ -68,7 +68,6 @@
 
 .ciudadano{
     display: grid;
-    outline: 1px solid black; /* Borde entre los elementos */
     align-items: center;
     cursor: pointer;
     box-sizing: border-box;

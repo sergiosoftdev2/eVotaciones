@@ -21,3 +21,25 @@
     color: black;
     border: 1px solid black;
 }
+
+#back{
+    position: absolute;
+    top: 100px;
+    left: 10px;
+    width: 100px;
+    font-weight: bold;
+    height: 50px;
+    border-radius: 10px;
+    background-color: white;
+    border: 1px solid black;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+#back:hover{
+
+    background-color: black;
+    color: white;
+    border: 1px solid black;
+
+}
