@@ -1,3 +1,12 @@
+import {
+
+    obtenerComunidades, obtenerLocalidades, buscarCiudadano,
+    borrarCiudadano, actualizarCiudadano, insertarCiudadano,
+    buscarLocalidad, buscarCiudadanosPorComunidad,
+    buscarCiudadanosPorLocalidad, obtenerLocalidadesComunidad
+
+} from "./api.js"
+
 document.addEventListener('DOMContentLoaded', () => {
 
     let comunidades = document.getElementById('comunidades');
@@ -177,7 +186,15 @@ async function modalCiudadano(idCenso){
     let borrarCiudadanoButton = document.getElementById('borrarCiudadano');
     let actualizarCiudadanoButton = document.getElementById('actualizarCiudadano');
 
-    await obtenerLocalidades(listaLocalidades)
+    let misLocalidades = obtenerLocalidades().then(datos => {
+        datos.forEach(element => {
+            let nombreLocalidad = document.createElement('option');
+            nombreLocalidad.textContent = element.nombre;
+            nombreLocalidad.value = element.idLocalidad;
+            nombreLocalidad.classList.add("localidad");
+            elementoPadre.appendChild(nombreLocalidad);
+        });
+    })
     let miCiudadano = await buscarCiudadano(idCenso);
 
     modal.classList.remove("noVisible")
@@ -258,239 +275,6 @@ async function modalCiudadano(idCenso){
             insertarCiudadano(dni.value, nombre.value, apellido.value, email.value, fecha.value, localidad.value);
             
         });
-    }
-
-}
-
-export async function buscarLocalidad(idLocalidad) {
-    let formData = new FormData();
-    formData.append('idLocalidad', idLocalidad);
-
-    try {
-        const response = await fetch("../api/SELECT/buscarLocalidad.php", {
-            method: 'POST',
-            body: formData
-        });
-
-        if (!response.ok) {
-            throw new Error('Error en la petición');
-        }
-
-        const datos = await response.json();
-        return datos[0].nombre;
-
-    } catch (error) {
-        console.log(error);
-        return "";
-    }
-}
-
-export async function obtenerLocalidades(elementoPadre){
-
-    fetch("../api/SELECT/buscarLocalidades.php", {
-        method: 'POST',
-    }).then(response => {
-        if (!response.ok) {
-            throw new Error('Error en la petición');
-        }
-        return response.json();
-    }).then(datos => {
-        datos.forEach(element => {
-            let nombreLocalidad = document.createElement('option');
-            nombreLocalidad.textContent = element.nombre;
-            nombreLocalidad.value = element.idLocalidad;
-            nombreLocalidad.classList.add("localidad");
-            elementoPadre.appendChild(nombreLocalidad);
-        });
-    }).catch(error => {
-        console.log(error);
-    })
-
-
-}
-
-export async function insertarCiudadano(dni, nombre, apellido, email, fechaNacimiento, idLocalidad){
-    let formData = new FormData();
-    formData.append('dni', dni);
-    formData.append('nombre', nombre);
-    formData.append('apellido', apellido);
-    formData.append('email', email);
-    formData.append('fecha', fechaNacimiento);
-    formData.append('localidad', idLocalidad);
-
-    fetch("../api/INSERT/insertarCiudadano.php", {
-        method: 'POST',
-        body: formData
-    }).then(response => {
-        if (!response.ok) {
-            throw new Error('Error en la petición');
-        }
-        return response.json();
-    }).then(datos => {
-        if(datos.success){
-            window.location.reload()
-        }
-    }).catch(error => {
-        console.log(error);
-    });
-
-}
-
-export async function actualizarCiudadano(idCenso, dni, nombre, apellido, email, fechaNacimiento, idLocalidad){
-    
-    let formData = new FormData();
-    formData.append('idCenso', idCenso);
-    formData.append('dni', dni);
-    formData.append('nombre', nombre);
-    formData.append('apellido', apellido);
-    formData.append('email', email);
-    formData.append('fechaNacimiento', fechaNacimiento);
-    formData.append('idLocalidad', idLocalidad);
-    try {
-        const response = await fetch("../api/UPDATE/actualizarCiudadano.php", {
-            method: 'POST',
-            body: formData
-        });
-
-        if (!response.ok) {
-            throw new Error('Error en la petición');
-        }
-
-        const datos = await response.json();
-        console.log(datos)
-        return datos;
-        window.location.reload()
-    
-    } catch (error) {
-        console.log(error);
-    }
-
-}
-
-export async function borrarCiudadano(idCenso){
-    let formData = new FormData();
-    formData.append('idCenso', idCenso);
-
-    try {
-        const response = await fetch("../api/DELETE/borrarCiudadano.php", {
-            method: 'POST',
-            body: formData
-        });
-
-        if (!response.ok) {
-            throw new Error('Error en la petición');
-        }
-
-        const datos = await response.json();
-        return datos;
-    } catch (error) {
-        console.log(error);
-    }
-
-}
-
-export async function buscarCiudadano(idCenso) {
-    let formData = new FormData();
-    formData.append('idCenso', idCenso);
-
-    try {
-        const response = await fetch("../api/SELECT/buscarCiudadano.php", {
-            method: 'POST',
-            body: formData
-        });
-
-        if (!response.ok) {
-            throw new Error('Error en la petición');
-        }
-
-        const datos = await response.json();
-        return datos;
-    } catch (error) {
-        console.log(error);
-        return null;
-    }
-}
-
-export async function obtenerComunidades() {
-    try {
-        const response = await fetch("../api/SELECT/buscarComunidades.php", {
-            method: 'POST',
-        });
-
-        if (!response.ok) {
-            throw new Error('Error en la petición');
-        }
-
-        const datos = await response.json();
-        return datos;
-    } catch (error) {
-        console.log(error);
-        return [];
-    }
-}
-
-export async function obtenerLocalidadesComunidad(idComunidad){
-
-    let formData = new FormData();
-    formData.append('comunidad', idComunidad);
-
-    try {
-        const response = await fetch("../api/SELECT/buscarLocalidadComunidad.php", {
-            method: 'POST',
-            body: formData
-        });
-
-        if (!response.ok) {
-            throw new Error('Error en la petición');
-        }
-
-        const datos = await response.json();
-        return datos;
-
-    } catch (error) {
-        console.log(error);
-        return "";
-    }
-}
-
-export async function buscarCiudadanosPorLocalidad(idLocalidad){
-    let formData = new FormData();
-    formData.append('localidad', idLocalidad);
-    try {
-        const response = await fetch("../api/SELECT/buscarCiudadanosLocalidad.php", {
-            method: 'POST',
-            body: formData
-        });
-        if (!response.ok) {
-            throw new Error('Error en la petición');
-        }
-        const datos = await response.json();
-        return datos;
-
-
-    }catch (error) {
-        console.log(error);
-        return [];
-    }
-}
-
-export async function buscarCiudadanosPorComunidad(idComunidad){
-    let formData = new FormData();
-    formData.append('comunidad', idComunidad);
-    try {
-        const response = await fetch("../api/SELECT/buscarCiudadanosComunidad.php", {
-            method: 'POST',
-            body: formData
-        });
-        if (!response.ok) {
-            throw new Error('Error en la petición');
-        }
-        const datos = await response.json();
-        return datos;
-
-    }catch (error) {
-        console.log(error);
-        return [];
     }
 
 }

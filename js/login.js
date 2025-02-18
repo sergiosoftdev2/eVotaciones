@@ -1,4 +1,4 @@
-import { comprobarPersona } from "./registro.js";
+import { comprobarPersona ,anadirSesion, cerrarSesion } from "./api.js";
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -19,7 +19,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function iniciarSesion(event){
     
-
     event.preventDefault()
 
     let dni = document.getElementById('dni').value;
@@ -65,26 +64,4 @@ async function iniciarSesion(event){
     }
 
 
-}
-
-export function comprobarSesion(){
-    if(sessionStorage.getItem('idUsuario')){
-        return true
-    }else{
-        return false
-    }
-}
-
-
-export function anadirSesion(idUsuario, idCenso, rol){
-
-    sessionStorage.setItem('idUsuario', idUsuario);
-    sessionStorage.setItem('idCenso', idCenso);
-    sessionStorage.setItem('rol', rol);
-}
-
-export function cerrarSesion(){
-    sessionStorage.removeItem('idUsuario');
-    sessionStorage.removeItem('idCenso');
-    sessionStorage.removeItem('rol');
 }

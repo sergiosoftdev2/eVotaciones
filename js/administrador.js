@@ -1,3 +1,10 @@
+import { 
+    obtenerLocalidades, buscarPartidos, actualizarPartidoPolitico, 
+    borrarPartidoPolitico, insertarPartidoPolitico, buscarCandidatos,
+    actualizarCandidato, borrarCandidato, insertarCandidato, buscarUsuarios,  
+    buscarCiudadano
+} from "./api.js";
+
 document.addEventListener("DOMContentLoaded", function() {
 
     let mainTitle = document.getElementById('mainTitle');
@@ -6,34 +13,222 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 
-async function candidatos(mainTitle){
+async function candidatos(mainTitle) {
+    let modalContainer = document.getElementById('modalContainer');
 
     mainTitle.innerHTML = `
-    
         <button class="back" id="back">Atrás</button>
-
         <div class="busquedaCiudadanos" id="busquedaCiudadanos">
-                <div class="ciudadano" id="preFix">
-                    <h2>idCandidato</h2>
-                    <h2>idUsuario</h2>
-                    <h2>Partido</h2>
-                    <h2>Localidad</h2>
-                </div>
-                <div class="contentInsert" id="contentInsert"></div>
+            <div class="ciudadano" id="preFix">
+                <h2>idCandidato</h2>
+                <h2>idUsuario</h2>
+                <h2>Partido</h2>
+                <h2>Localidad</h2>
             </div>
-            <div class="actionButtons">
-                <button id="insertarCiudadano" class="anadirCiudadano">Insertar</button>
+            <div class="contentInsert" id="contentInsert"></div>
+        </div>
+        <div class="actionButtons">
+            <button id="insertarCandidato" class="anadirCiudadano">Insertar</button> </div>
+    `;
+
+    modalContainer.innerHTML = `
+        <div id="modal" class="noVisible">
+            <button id="cerrarModal" class="closeButton"><img src="../img/cross.svg" alt=""></button>
+            <div class="ciudadanoModal" id="modalContent">
+                <div style="display: flex; gap: 30px;">
+                    <div style="width: 50%;">
+                        <h2>idUsuario</h2>
+                        <select id="idUsuario"></select>
+                    </div>
+                    <div style="width: 50%;">
+                        <h2>Partido Político</h2>
+                        <select id="partidoSelect"></select> </div>
+                </div>
+                <h2>Localidad</h2>
+                <select id="localidadesSelect"></select>
+                <div class="buttonModalSide">
+                    <button id="anadirCiudadano">Añadir Candidato</button>
+                    <button id="borrarCiudadano">Borrar</button>
+                    <button id="actualizarCiudadano">Modificar</button>
+                </div>
             </div>
         </div>
-    
-    `
+    `;
 
+    let contentInsert = document.getElementById('contentInsert');
+    let insertarCandidato = document.getElementById('insertarCandidato');
+    let cerrarModal = document.getElementById('cerrarModal');
+    let modal = document.getElementById('modal');
     let back = document.getElementById('back');
+
+    // Obtén los elementos del modal *DESPUÉS* de insertarlo en el DOM
+    let idUsuarioInput = document.getElementById('idUsuario');
+    let partidoSelect = document.getElementById('partidoSelect');
+    let localidadesSelect = document.getElementById('localidadesSelect');
+    let anadirCandidatoBtn = document.getElementById('anadirCiudadano');
+    let borrarCandidatoBtn = document.getElementById('borrarCiudadano');
+    let actualizarCandidatoBtn = document.getElementById('actualizarCiudadano');
+
+
+    let candidatosData = await buscarCandidatos();
+    if (candidatosData.length > 0) {
+        candidatosData.forEach(candidato => {
+            crearInterfazCandidatos(candidato);
+        });
+    } else {
+        contentInsert.innerHTML = `<p>No hay candidatos :(</p>`;
+    }
+
+    insertarCandidato.addEventListener("click", () => {
+        modal.classList.remove("noVisible");
+        // Restablecer valores del modal
+        idUsuarioInput.value = '';
+        partidoSelect.value = '';
+        localidadesSelect.value = '';
+
+        // Carga los partidos en el select
+        cargarPartidos(partidoSelect);
+        cargarLocalidades(localidadesSelect);
+        cargarUsuarios(idUsuarioInput);
+
+        anadirCandidatoBtn.style.display = "block";
+        borrarCandidatoBtn.style.display = "none";
+        actualizarCandidatoBtn.style.display = "none";
+
+        anadirCandidatoBtn.addEventListener("click", async () => {
+            let idUsuario = idUsuarioInput.value;
+            let idPartido = partidoSelect.value;
+            let idLocalidad = localidadesSelect.value;
+
+            if (!idUsuario || !idPartido || !idLocalidad) {
+                alert('Por favor, completa todos los campos.');
+                return;
+            }
+
+            let nuevoCandidato = await insertarCandidato(idUsuario, idPartido, idLocalidad);
+            if (nuevoCandidato.success) { // Asumiendo que tu respuesta JSON tiene una propiedad 'success'
+                modal.classList.add("noVisible");
+                contentInsert.innerHTML = ""; // Limpia la lista y vuelve a cargar los candidatos
+                let candidatosActualizados = await buscarCandidatos();
+                candidatosActualizados.forEach(candidato => crearInterfazCandidatos(candidato));
+            } else {
+                alert("Error al insertar candidato. Verifica los datos.");
+            }
+        });
+    });
+
+    cerrarModal.addEventListener("click", () => {
+        modal.classList.add('noVisible');
+    });
+
     back.addEventListener("click", () => {
         adminMenuShow(mainTitle);
     });
 
+    function crearInterfazCandidatos(candidato) {
+        let elementoPadre = document.createElement('div');
+        elementoPadre.dataset.id = candidato.idCandidato;
+        elementoPadre.classList.add('ciudadano');
+
+        let idCandidato = document.createElement('p');
+        idCandidato.textContent = candidato.idCandidato;
+
+        let idUsuario = document.createElement('p');
+        idUsuario.textContent = candidato.idUsuario;
+
+        let partido = document.createElement('p');
+        partido.textContent = candidato.nombrePartido; // Asumiendo que tienes el nombre del partido en los datos
+
+        let localidad = document.createElement('p');
+        localidad.textContent = candidato.nombreLocalidad; // Asumiendo que tienes el nombre de la localidad
+
+        elementoPadre.appendChild(idCandidato);
+        elementoPadre.appendChild(idUsuario);
+        elementoPadre.appendChild(partido);
+        elementoPadre.appendChild(localidad);
+        contentInsert.appendChild(elementoPadre);
+
+        elementoPadre.addEventListener("click", () => {
+            modal.classList.remove('noVisible');
+            idUsuarioInput.value = candidato.idUsuario;
+            partidoSelect.value = candidato.idPartido;
+            localidadesSelect.value = candidato.idLocalidad;
+
+            anadirCandidatoBtn.style.display = "none";
+            borrarCandidatoBtn.style.display = "block";
+            actualizarCandidatoBtn.style.display = "block";
+
+            borrarCandidatoBtn.addEventListener("click", async () => {
+                let borrado = await borrarCandidato(candidato.idCandidato);
+                if (borrado.success) {
+                    alert("Candidato borrado correctamente");
+                    modal.classList.add("noVisible");
+                    contentInsert.innerHTML = "";
+                    let candidatosActualizados = await buscarCandidatos();
+                    candidatosActualizados.forEach(candidato => crearInterfazCandidatos(candidato));
+                }
+            });
+
+            actualizarCandidatoBtn.addEventListener("click", async () => {
+                let actualizado = await actualizarCandidato(candidato.idCandidato, idUsuarioInput.value, partidoSelect.value, localidadesSelect.value);
+                if (actualizado.success) {
+                    alert("Candidato actualizado correctamente");
+                    modal.classList.add("noVisible");
+                    contentInsert.innerHTML = "";
+                    let candidatosActualizados = await buscarCandidatos();
+                    candidatosActualizados.forEach(candidato => crearInterfazCandidatos(candidato));
+                }
+            });
+        });
+    }
+
+    async function cargarPartidos(selectElement) {
+        let partidos = await buscarPartidos();
+        partidos.forEach(partido => {
+            let option = document.createElement('option');
+            option.value = partido.idPartido;
+            option.text = partido.nombre;
+            selectElement.appendChild(option);
+        });
+    }
+
+    async function cargarLocalidades(selectElement) {
+        let localidades = await obtenerLocalidades();
+        localidades.forEach(localidad => {
+            let option = document.createElement('option');
+            option.value = localidad.idLocalidad;
+            option.text = localidad.nombre;
+            selectElement.appendChild(option);
+        });
+    }
+
+    async function cargarUsuarios() {
+        let usuarios = await buscarUsuarios();
+        usuarios.forEach(usuario => {
+            let option = document.createElement('option');
+            option.value = usuario.idUsuario;
+            option.text = usuario.nombre;
+            usuariosSelect.appendChild(option);
+        });
+    }
+
+    async function cargarUsuarios(usuariosSelect) {
+        let usuarios = await buscarUsuarios();
+        for (const usuario of usuarios) {
+            let miCiudadano = await buscarCiudadano(usuario.idCenso);
+            if (miCiudadano && miCiudadano.length > 0) {
+                let option = document.createElement('option');
+                option.value = usuario.idUsuario;
+                option.text = miCiudadano[0].dni;
+                usuariosSelect.appendChild(option);
+            } else {
+                console.error('No se encontraron datos para el usuario:', usuario);
+            }
+        }
+    }    
+    
 }
+
 
 async function escrutinios(mainTitle){
     mainTitle.innerHTML = `
@@ -291,95 +486,6 @@ function adminMenuShow(mainTitle){
 
     gestionElecciones.addEventListener("click", function() {
         elecciones(mainTitle);
-    });
-
-}
-
-export async function buscarPartidos() {
-    try {
-        const response = await fetch("../api/SELECT/buscarPartidos.php", {
-            method: 'POST',
-        });
-
-        if (!response.ok) {
-            throw new Error('Error en la petición');
-        }
-
-        const datos = await response.json();
-        return datos; // Retorna los datos aquí, dentro de la función asíncrona
-
-    } catch (error) {
-        console.error("Error en buscarPartidos:", error); // Usa console.error para errores
-        return null; // O un valor que indique un error, como un array vacío []
-    }
-}
-
-export async function borrarPartidoPolitico(idPartido) {
-    let formData = new FormData();
-    formData.append('partido', idPartido);
-
-    try {
-        const response = await fetch("../api/DELETE/borrarPartido.php", {
-            method: 'POST',
-            body: formData
-        });
-
-        if (!response.ok) {
-            throw new Error('Error en la petición');
-        }
-
-        const datos = await response.json();
-        return datos;
-    } catch (error) {
-        console.log(error);
-    }
-}
-
-export async function actualizarPartidoPolitico(idPartido, nombre, siglas){
-    let formData = new FormData();
-    formData.append('idPartido', idPartido);
-    formData.append('nombre', nombre);
-    formData.append('siglas', siglas);
-
-    console.log(nombre, siglas)
-
-    try {
-        const response = await fetch("../api/UPDATE/actualizarPartido.php", {
-            method: 'POST',
-            body: formData
-        });
-
-        if (!response.ok) {
-            throw new Error('Error en la petición');
-        }
-
-        const datos = await response.json();
-        console.log(datos)
-        return datos;
-    
-    } catch (error) {
-        console.log(error);
-    }
-
-}
-
-export async function insertarPartidoPolitico(nombre, siglas){
-    let formData = new FormData();
-    formData.append('nombre', nombre);
-    formData.append('siglas', siglas);
-
-    fetch("../api/INSERT/insertarPartido.php", {
-        method: 'POST',
-        body: formData
-    }).then(response => {
-        if (!response.ok) {
-            throw new Error('Error en la petición');
-        }
-        return response.json();
-    }).then(datos => {
-        return datos;
-    }).catch(error => {
-        console.log(error);
     });
 
 }
