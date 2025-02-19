@@ -10,16 +10,18 @@
         $idUsuario = $_POST['idUsuario'];
         $idPartido = $_POST['idPartido'];
         $idLocalidad = $_POST['idLocalidad'];
+        $numeroCandidato = $_POST['numeroCandidato'];
 
         // Consulta de actualización
         $stmt = $conexion->prepare("UPDATE candidato 
-            SET idPartido = ?, idUsuario = ?, idLocalidad = ?
+            SET idPartido = ?, idUsuario = ?, idLocalidad = ?, numeroCandidato = ?
             WHERE idCandidato = ?");
         
         $stmt->bindParam(1, $idPartido);
         $stmt->bindParam(2, $idUsuario);
         $stmt->bindParam(3, $idLocalidad);
-        $stmt->bindParam(4, $idCandidato);
+        $stmt->bindParam(4, $numeroCandidato);
+        $stmt->bindParam(5, $idCandidato);
 
         $stmt->execute();
 

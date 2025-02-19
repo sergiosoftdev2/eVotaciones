@@ -151,12 +151,13 @@ export async function borrarCandidato(idCandidato) {
     }
 }
 
-export async function actualizarCandidato(idCandidato, idUsuario, idPartido, idLocalidad){
+export async function actualizarCandidato(idCandidato, idUsuario, idPartido, idLocalidad, numeroCandidato){
     let formData = new FormData();
     formData.append('idPartido', idPartido);
     formData.append('idCandidato', idCandidato);
     formData.append('idUsuario', idUsuario);
     formData.append('idLocalidad', idLocalidad);
+    formData.append('numeroCandidato', numeroCandidato);
 
     try {
         const response = await fetch("../api/UPDATE/actualizarCandidato.php", {
@@ -178,11 +179,12 @@ export async function actualizarCandidato(idCandidato, idUsuario, idPartido, idL
 
 }
 
-export async function insertarCandidato(idUsuario, idPartido, idLocalidad){
+export async function insertarCandidato(idUsuario, idPartido, idLocalidad, numeroCandidato){
     let formData = new FormData();
     formData.append('idUsuario', idUsuario);
     formData.append('idPartido', idPartido);
     formData.append('idLocalidad', idLocalidad);
+    formData.append('numeroCandidato', numeroCandidato);
 
     fetch("../api/INSERT/insertarCandidato.php", {
         method: 'POST',

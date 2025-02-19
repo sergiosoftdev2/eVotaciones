@@ -25,6 +25,7 @@ async function candidatos(mainTitle) {
                 <h2>idUsuario</h2>
                 <h2>Partido</h2>
                 <h2>Localidad</h2>
+                <h2>Numero de Candidato</h2>
             </div>
             <div class="contentInsert" id="contentInsert"></div>
         </div>
@@ -47,6 +48,12 @@ async function candidatos(mainTitle) {
                 </div>
                 <h2>Localidad</h2>
                 <select id="localidadesSelect"></select>
+                <h2>Numero de Candidato</h2>
+                <select id="numeroCandidatoSelect">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                </select>
                 <div class="buttonModalSide">
                     <button id="anadirCiudadano">Añadir Candidato</button>
                     <button id="borrarCiudadano">Borrar</button>
@@ -62,8 +69,9 @@ async function candidatos(mainTitle) {
     let modal = document.getElementById('modal');
     let back = document.getElementById('back');
 
-    // Obtén los elementos del modal *DESPUÉS* de insertarlo en el DOM
+    // OBTENIENDO LOS PARAMETROS DEL MODAL
     let idUsuarioInput = document.getElementById('idUsuario');
+    let numeroCandidatoSelect = document.getElementById('numeroCandidatoSelect');
     let partidoSelect = document.getElementById('partidoSelect');
     let localidadesSelect = document.getElementById('localidadesSelect');
     let anadirCandidatoBtn = document.getElementById('anadirCiudadano');
@@ -96,17 +104,21 @@ async function candidatos(mainTitle) {
         borrarCandidatoBtn.style.display = "none";
         actualizarCandidatoBtn.style.display = "none";
 
+        anadirCandidatoBtn.replaceWith(anadirCandidatoBtn.cloneNode(true));
+        anadirCandidatoBtn = document.getElementById("anadirCiudadano"); // Reasignar el nuevo botón sin eventos previos
+
         anadirCandidatoBtn.addEventListener("click", async () => {
             let idUsuario = idUsuarioInput.value;
             let idPartido = partidoSelect.value;
             let idLocalidad = localidadesSelect.value;
+            let numeroCandidato = numeroCandidatoSelect.value;
 
             if (!idUsuario || !idPartido || !idLocalidad) {
                 alert('Por favor, completa todos los campos.');
                 return;
             }
 
-            let nuevoCandidato = await insertarCandidato(idUsuario, idPartido, idLocalidad).then(data => {
+            let nuevoCandidato = await insertarCandidato(idUsuario, idPartido, idLocalidad, numeroCandidato).then(data => {
                 return data;
             });
 
@@ -143,6 +155,9 @@ async function candidatos(mainTitle) {
         let idCandidato = document.createElement('p');
         idCandidato.textContent = candidato.idCandidato;
 
+        let numeroCandidato = document.createElement('p');
+        numeroCandidato.textContent = candidato.numeroCandidato;
+
         let idUsuario = document.createElement('p');
         idUsuario.textContent = candidato.idUsuario;
 
@@ -156,6 +171,7 @@ async function candidatos(mainTitle) {
         elementoPadre.appendChild(idUsuario);
         elementoPadre.appendChild(partido);
         elementoPadre.appendChild(localidad);
+        elementoPadre.appendChild(numeroCandidato);
         contentInsert.appendChild(elementoPadre);
 
         elementoPadre.addEventListener("click", () => {
@@ -189,7 +205,7 @@ async function candidatos(mainTitle) {
             });
 
             actualizarCandidatoBtn.addEventListener("click", async () => {
-                let actualizado = await actualizarCandidato(candidato.idCandidato, idUsuarioInput.value, partidoSelect.value, localidadesSelect.value);
+                let actualizado = await actualizarCandidato(candidato.idCandidato, idUsuarioInput.value, partidoSelect.value, localidadesSelect.value, numeroCandidatoSelect.value);
                 if (actualizado.success) {
                     alert("Candidato actualizado correctamente");
                     modal.classList.add("noVisible");

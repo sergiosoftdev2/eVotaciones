@@ -9,12 +9,14 @@
         $idUsuario = $_POST['idUsuario'];
         $idPartido = $_POST['idPartido'];
         $idLocalidad = $_POST['idLocalidad'];
+        $numeroCandidato = $_POST['numeroCandidato'];
     
         // Consulta a la base de datos
-        $stmt = $conexion->prepare("INSERT INTO candidato (idUsuario, idPartido, idLocalidad) VALUES (?, ?, ?)");
+        $stmt = $conexion->prepare("INSERT INTO candidato (idUsuario, idPartido, idLocalidad, numeroCandidato) VALUES (?, ?, ?, ?)");
         $stmt->bindParam(1, $idUsuario);
         $stmt->bindParam(2, $idPartido);
         $stmt->bindParam(3, $idLocalidad);
+        $stmt->bindParam(4, $numeroCandidato);
         $stmt->execute();
     
         if ($stmt->rowCount() > 0) {
