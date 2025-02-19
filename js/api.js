@@ -475,7 +475,7 @@ export async function comprobarPersona(dni) {
 
         const datos = await response.json();
         respuesta = {
-            idCenso: datos[0].idCenso || 0,
+            idCenso: datos || 0,
             ok: true
         };
 
@@ -647,4 +647,23 @@ export async function actualizarEleccion(idEleccion, tipo, estado, fechaInicio, 
         console.log(error);
     }
 
+}
+
+export async function buscarUsuariosNoCandidatos(){
+    try {
+        const response = await fetch("../api/SELECT/buscarUsuariosNoCandidatos.php", {
+            method: 'POST',
+        });
+
+        if (!response.ok) {
+            throw new Error('Error en la petición');
+        }
+
+        const datos = await response.json();
+        return datos; // Retorna los datos aquí, dentro de la función asíncrona
+
+    } catch (error) {
+        console.error("Error en buscarPartidos:", error); // Usa console.error para errores
+        return null; // O un valor que indique un error, como un array vacío []
+    }
 }

@@ -3,13 +3,19 @@ import {
     borrarPartidoPolitico, insertarPartidoPolitico, buscarCandidatos,
     actualizarCandidato, borrarCandidato, insertarCandidato, buscarUsuarios,  
     buscarCiudadano, buscarLocalidad, buscarPartido, buscarElecciones,
-    insertarEleccion, borrarEleccion, actualizarEleccion
+    insertarEleccion, borrarEleccion, actualizarEleccion,
+    buscarUsuariosNoCandidatos
 } from "./api.js";
 
 document.addEventListener("DOMContentLoaded", function() {
 
     let mainTitle = document.getElementById('mainTitle');
-    adminMenuShow(mainTitle);
+    if(sessionStorage.getItem("rol") == "administrador"){
+        adminMenuShow(mainTitle);
+    }else{
+        mainTitle.innerHTML = `<h1>ACCESO DENEGADO :(</h1>`;
+    }
+    
 
 });
 
@@ -254,7 +260,7 @@ async function candidatos(mainTitle) {
     }
 
     async function cargarUsuarios(usuariosSelect) {
-        let usuarios = await buscarUsuarios();
+        let usuarios = await buscarUsuariosNoCandidatos();
         for (const usuario of usuarios) {
             let miCiudadano = await buscarCiudadano(usuario.idCenso);
             if (miCiudadano && miCiudadano.length > 0) {

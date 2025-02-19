@@ -9,8 +9,9 @@
     try {
         $conexion = conectarDB();
     
-        $idCenso = isset($_POST['idCenso']) ? (int) $_POST['idCenso'] : 0;
-        $password = isset($_POST['contrasena']) ? $_POST['contrasena'] : '';
+        $idCenso = $_POST['idCenso'] ?? null;
+        $password = $_POST['contrasena'] ?? null;
+
     
         if (!$idCenso || !$password) {
             echo json_encode(['error' => 'Datos incompletos']);

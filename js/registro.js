@@ -19,19 +19,21 @@ async function registrarse(event){
     const formData = new FormData();
 
     let idCenso = await comprobarPersona(dni.value);
+    idCenso = idCenso.idCenso;
     
     // COMPROBACION DE SI EL USUARIO ESTA REGISTRADO
-    let busquedaUsuario = await buscarUsuario(idCenso.idCenso);
+    let busquedaUsuario = await buscarUsuario(idCenso[0].idCenso);
     if(busquedaUsuario.length > 0){
         alert('Este usuario ya está registrado');
+        return;
+    }else if(esMayorDeEdad(idCenso[0].fechaNacimiento == false)){
+        alert('Debes ser mayor de edad para registrarte');
         return;
     }
     
     formData.append('dni', idCenso.idCenso);
     formData.append('contrasena', contrasena.value);
 
-    
-    
     
     if(idCenso.ok == false){
         alert('No estás en el censo');
@@ -55,7 +57,27 @@ async function registrarse(event){
             console.log(error);
         });
     }
+    
+    
 
     
 
+}
+
+function esMayorDeEdad(fechaNacimiento) {
+    let fechaNac = new Date(fechaNacimiento);
+    let fechaActual = new Date();
+    let edad = fechaActual.getFullYear() - fechaNac.getFullYear(); // CALCULANDO LA EDAD
+
+    // COMPROBAMOS SI HA CUMPLIDO YA LOS AÑOS
+    let mesActual = fechaActual.getMonth();
+    let diaActual = fechaActual.getDate();
+    let mesNacimiento = fechaNac.getMonth();
+    let diaNacimiento = fechaNac.getDate();
+
+    if (mesActual < mesNacimiento || (mesActual === mesNacimiento && diaActual < diaNacimiento)) {
+        edad--; // Y LE RESTAMOS UN AÑO POR SI AUN NO LOS HA CUMPLIDO
+    }
+
+    return edad >= 18;
 }

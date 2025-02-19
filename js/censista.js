@@ -209,6 +209,8 @@ async function modalCiudadano(idCenso){
         let fecha = document.getElementById('fecha');
         let localidad = document.getElementById('localidades');
 
+        dni.setAttribute("disabled", true);
+        dni.style.backgroundColor = "#AAA";
         nombre.value = miCiudadano[0].nombre;
         apellido.value = miCiudadano[0].apellido;
         dni.value = miCiudadano[0].dni;
@@ -252,27 +254,37 @@ async function modalCiudadano(idCenso){
         
     }else{
 
+        let nombre = document.getElementById('nombre');
+        let apellido = document.getElementById('apellido');
+        let dni = document.getElementById('dni');
+        let email = document.getElementById('email');
+        let fecha = document.getElementById('fecha');
+        let localidad = document.getElementById('localidades');
+
+        dni.removeAttribute("disabled");
+        dni.style.backgroundColor = "#FFF";
+
+        nombre.value = ""
+        apellido.value = "";
+        dni.value = "";
+        email.value = "";
+        fecha.value = "";
+        localidad.value = ""
+
         anadirCiudadano.style.display = "block";
         borrarCiudadanoButton.style.display = "none";
         actualizarCiudadanoButton.style.display = "none";
 
         anadirCiudadano.addEventListener('click', () => {
-        
-            
-
-            let nombre = document.getElementById('nombre');
-            let apellido = document.getElementById('apellido');
-            let dni = document.getElementById('dni');
-            let email = document.getElementById('email');
-            let fecha = document.getElementById('fecha');
-            let localidad = document.getElementById('localidades');
 
             if(nombre.value == "" || apellido.value == "" || dni.value == "" || email.value == "" || fecha.value == "" || localidad.value == ""){
                 alert("Todos los campos son obligatorios");
                 return;
             }
             
-            insertarCiudadano(dni.value, nombre.value, apellido.value, email.value, fecha.value, localidad.value);
+            insertarCiudadano(dni.value, nombre.value, apellido.value, email.value, fecha.value, localidad.value).then(data => {
+                console.log(data);
+            });
             
         });
     }

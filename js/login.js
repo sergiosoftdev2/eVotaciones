@@ -24,8 +24,12 @@ async function iniciarSesion(event){
     let dni = document.getElementById('dni').value;
     let contrasena = document.getElementById('contrasena');
 
+    console.log(dni, contrasena.value)
+
     const formData = new FormData();
     let idCenso = await comprobarPersona(dni);
+
+    idCenso = idCenso.idCenso[0];
 
     formData.append('idCenso', idCenso.idCenso);
     formData.append('contrasena', contrasena.value);
@@ -45,7 +49,11 @@ async function iniciarSesion(event){
             return response.json();
         })
         .then(datos => {
+
+            console.log(datos)
+
             if(datos.success){
+                
                 datos = datos.datos[0]
                 cerrarSesion()
                 anadirSesion(datos.idUsuario, idCenso.idCenso, datos.rol);
