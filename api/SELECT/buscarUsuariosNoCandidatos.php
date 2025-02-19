@@ -8,11 +8,9 @@ try {
     $stmt = $conexion->prepare("
         SELECT u.*
         FROM usuario u
-        WHERE NOT EXISTS (
-            SELECT 1
-            FROM candidato c
-            WHERE c.idUsuario = u.idUsuario
-        )
+        WHERE u.idUsuario NOT IN (
+            SELECT idUsuario FROM candidato
+        );
     ");
     $stmt->execute();
 

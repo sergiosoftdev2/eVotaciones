@@ -10,12 +10,7 @@ import {
 document.addEventListener("DOMContentLoaded", function() {
 
     let mainTitle = document.getElementById('mainTitle');
-    if(sessionStorage.getItem("rol") == "administrador"){
-        adminMenuShow(mainTitle);
-    }else{
-        mainTitle.innerHTML = `<h1>ACCESO DENEGADO :(</h1>`;
-    }
-    
+    adminMenuShow(mainTitle);
 
 });
 
@@ -105,6 +100,7 @@ async function candidatos(mainTitle) {
         cargarPartidos(partidoSelect);
         cargarLocalidades(localidadesSelect);
         cargarUsuarios(idUsuarioInput);
+
 
         anadirCandidatoBtn.style.display = "block";
         borrarCandidatoBtn.style.display = "none";
@@ -260,7 +256,7 @@ async function candidatos(mainTitle) {
     }
 
     async function cargarUsuarios(usuariosSelect) {
-        let usuarios = await buscarUsuariosNoCandidatos();
+        let usuarios = await buscarUsuarios();
         for (const usuario of usuarios) {
             let miCiudadano = await buscarCiudadano(usuario.idCenso);
             if (miCiudadano && miCiudadano.length > 0) {
