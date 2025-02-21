@@ -4,8 +4,13 @@
 
     try {
         $conexion = conectarDB();
+        
+        // Recibir el dni desde la solicitud POST
+        $idEleccion = $_POST['idEleccion'];
+
         // Consulta a la base de datos
-        $stmt = $conexion->prepare("SELECT * FROM eleccion WHERE estado = 'abierta'");
+        $stmt = $conexion->prepare("SELECT * FROM voto WHERE idEleccion = ?"); 
+        $stmt->bindParam(1, $idEleccion);
         $stmt->execute();
         
         // Comprobamos si hay resultados
@@ -15,9 +20,8 @@
             echo json_encode($datos);
         } else {
             // Si no se encuentran datos, devolvemos un array vacío
-            echo json_encode(false);
+            echo json_encode(['message' => 'No data found']);
         }
-        
     } catch (PDOException $e) {
         // Si ocurre un error, lo capturamos y devolvemos el mensaje como JSON
         echo json_encode(['error' => $e->getMessage()]);

@@ -1,10 +1,12 @@
-import { buscarEleccionesAbiertas, buscarEleccionesFinalizadas, buscarPartidos, buscarUsuarioVotado, insertarUsuarioHaVotado, insertarVotoGenerales } from "./api.js"
+import { 
+    
+    buscarEleccionesAbiertas, buscarEleccionesFinalizadas, buscarPartidos, buscarUsuarioVotado, 
+    votosPorPartidoEleccion, insertarUsuarioHaVotado, insertarVotoGenerales, votosPorLocalidadEleccion, 
+    buscarPartido
+} 
+    from "./api.js"
 
 document.addEventListener("DOMContentLoaded", () => {
-
-    let eleccionesDisponibles = document.getElementById('eleccionesDisponibles');
-    let eleccionesFinalizadas = document.getElementById('eleccionesFinalizadas');
-    let menu = document.querySelector("#header");
     
 
 
@@ -30,8 +32,19 @@ async function pantallaInicial(){
 
     
     `;
+
+    let eleccionesDisponibles = document.getElementById('eleccionesDisponibles');
+    let eleccionesFinalizadas = document.getElementById('eleccionesFinalizadas');
+    let menu = document.querySelector("#header");
     
     await buscarEleccionesAbiertas().then((elecciones) => {
+
+        if(elecciones == false){ 
+            eleccionesDisponibles.innerHTML = `
+                <p>No hay elecciones disponibles</p>
+            `
+            return
+        }
 
         // CREANDO LAS CARD DE LAS ELECCIONES DISPONIBLES
         elecciones.forEach(async eleccion => {
@@ -172,12 +185,12 @@ function votarEleccionActiva(idEleccion){
             option.addEventListener("click", () => {
                 if(confirm("¿Estas seguro de que quieres votar a " + partido.nombre + "?")){
                     alert("Voto realizado con exito");
-
-                    const fechaHora1 = new Date().toLocaleString();
-
+                    
+                    // INSERTAMOS EL VOTO EN LA TABLA VOTOS
                     insertarVotoGenerales(idEleccion, partido.idPartido).then(data => {
                     })
 
+                    // E INSERTAMOS COMO QUE EL USUARIO HA VOTADO EN LAS ELECCIONES
                     insertarUsuarioHaVotado(idEleccion, sessionStorage.getItem('idUsuario')).then(data => {
                         window.location.href = "/eVotaciones/vistas/votantes.html";
                     });
@@ -210,8 +223,58 @@ function mostrarResultadoEleccion(idEleccion){
 
     volverAtras()
 
+    votosPorLocalidadEleccion(idEleccion).then(votos => {
+        console.log(votos)
+    })
+
+    let partidosPadre = document.createElement('div');
+    partidosPadre.classList.add('partidosEleccionPadre');
+
+    votosPorPartidoEleccion(idEleccion).then(votos => {
+
+        console.log(votos)
+
+        votos.forEach(votosPartido => {
+
+            buscarPartido(votosPartido.idPartido).then(partido => {
+
+                let nombre = partido[0].nombre;
+                let siglas = partido[0].siglas;
+                let logo = partido[0].logo;
+                let votosPartidoPolitico = votosPartido.total_votos;
+            
+                let parentDiv = document.createElement('div');
+                parentDiv.classList.add('partidoEleccion');
+
+                let nombrePartido = document.createElement('h3');
+                nombrePartido.textContent = nombre;
+
+                let siglasPartido = document.createElement('p');
+                siglasPartido.textContent = siglas;
+
+                let votosMostrar = document.createElement('p');
+                votosMostrar.textContent = votosPartidoPolitico + " votos";
+
+                let imagenPartido = document.createElement('img');
+                imagenPartido.src = logo;
+
+                parentDiv.appendChild(imagenPartido);
+                parentDiv.appendChild(nombrePartido);
+                parentDiv.appendChild(siglasPartido);
+                parentDiv.appendChild(votosMostrar);
+
+                let notCentered = document.getElementById('notCentered');
+                partidosPadre.appendChild(parentDiv);
+            
+            })
+        })
+
+        contenido.appendChild(partidosPadre);
+
+    })
+
     // CHART JS
-    graficoDonut(contenido);
+    // graficoDonut(contenido);
 
 
 }
@@ -220,25 +283,45 @@ function graficoDonut(contenido){
 
     let canvasParent = document.createElement('div');
     canvasParent.classList.add('canvasParent');
-    
 
     const canvas = document.createElement('canvas');
-    canvas.id = 'myDonutChart';
+    canvas.id = 'myChart';
     canvasParent.appendChild(canvas);
     contenido.appendChild(canvasParent);
 
-    const ctx = document.getElementById('myDonutChart').getContext('2d');
+    const ctx = document.getElementById('myChart').getContext('2d');
+
     new Chart(ctx, {
-        type: 'doughnut',
+        type: 'bar',
         data: {
-            labels: ['PSOE', 'PP', 'CS', 'VOX', 'Unidas Podemos'],
-            datasets: [{
-                data: [12, 19, 3, 5, 2],
-                backgroundColor: ['#c81d11', '#1d498b', '#f34d00', '#57ba33', '#732a66']
-            }]
+            labels: ['Localidad 1', 'Localidad 2', 'Localidad 3', 'Localidad 4'], // Localidades
+            datasets: [
+                {
+                    label: 'Partido A', // Nombre del partido A
+                    data: [10, 15, 30, 4000], // Votos del partido A
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)', // Color de las barras
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Partido B', // Nombre del partido B
+                    data: [20, 25, 35, 40], // Votos del partido B
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)', // Color de las barras
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }
+            ]
         },
         options: {
             responsive: true,
+            scales: {
+                x: {
+                    beginAtZero: true
+                },
+                y: {
+                    beginAtZero: true
+                }
+            },
             plugins: {
                 legend: {
                     position: 'top',

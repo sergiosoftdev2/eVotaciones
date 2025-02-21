@@ -72,6 +72,8 @@
 }
 
 #eleccionesFinalizadas{
+    display: flex;
+    gap: 20px;
     margin-bottom: 20px;
 }
 
@@ -80,7 +82,7 @@
 }
 
 .canvasParent{
-    width: 25%;
+    width: 75%;
     margin: 0 auto;
 }
 
@@ -194,4 +196,25 @@
 
 .partido img{
     width: 100%;
+}
+
+.partidoEleccion{
+    display: flex;
+    border: 1px solid var(--border-color);
+    flex-direction: column;
+    width: 200px;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.partidoEleccion img{
+    width: 100%;
+}
+
+.partidosEleccionPadre{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
 }
