@@ -171,6 +171,9 @@
 }
 
 .partido .imgContainer{
+
+    border: 1px solid var(--border-color);
+
     height: 100px;
     overflow: hidden;
     display: flex;

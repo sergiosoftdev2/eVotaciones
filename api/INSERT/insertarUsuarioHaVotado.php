@@ -7,15 +7,13 @@
         $conexion = conectarDB();
 
         $idEleccion = $_POST['idEleccion'];
-        $idPartido = $_POST['idPartido'];
-        $idLocalidad = $_POST['idLocalidad'];
+        $idUsuario = $_POST['idUsuario'];
         
     
         // Consulta a la base de datos
-        $stmt = $conexion->prepare("INSERT INTO voto (idEleccion, idPartido, idLocalidad) VALUES (?, ?, ?)");
+        $stmt = $conexion->prepare("INSERT INTO votousuarioeleccion (idEleccion, idUsuario) VALUES (?, ?)");
         $stmt->bindParam(1, $idEleccion);
-        $stmt->bindParam(2, $idPartido);
-        $stmt->bindParam(3, $idLocalidad);
+        $stmt->bindParam(2, $idUsuario);
         $stmt->execute();
     
         if ($stmt->rowCount() > 0) {

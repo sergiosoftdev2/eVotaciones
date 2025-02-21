@@ -743,3 +743,52 @@ export async function buscarUsuarioVotado(idUsuario, idEleccion){
     }
 
 }
+
+export async function insertarUsuarioHaVotado(idEleccion, idUsuario){
+
+    let formData = new FormData();
+    formData.append('idEleccion', idEleccion);
+    formData.append('idUsuario', idUsuario);
+
+    try {
+        const response = await fetch("../api/INSERT/insertarUsuarioHaVotado.php", {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error('Error en la petición');
+        }
+
+        const datos = await response.json();
+        return datos;
+    } catch (error) {
+        console.log(error);
+    }
+
+}
+
+export async function insertarVotoGenerales(idEleccion, idPartido, idLocalidad){
+
+    let formData = new FormData();
+    formData.append('idEleccion', idEleccion);
+    formData.append('idPartido', idPartido);
+    formData.append('idLocalidad', idLocalidad);
+
+    try {
+        const response = await fetch("../api/INSERT/insertarVotoGenerales.php", {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error('Error en la petición');
+        }
+
+        const datos = await response.json();
+        return datos;
+    } catch (error) {
+        console.log(error);
+    }
+
+}

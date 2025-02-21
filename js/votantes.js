@@ -1,4 +1,4 @@
-import { buscarEleccionesAbiertas, buscarEleccionesFinalizadas, buscarPartidos, buscarUsuarioVotado } from "./api.js"
+import { buscarEleccionesAbiertas, buscarEleccionesFinalizadas, buscarPartidos, buscarUsuarioVotado, insertarUsuarioHaVotado, insertarVotoGenerales } from "./api.js"
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -36,11 +36,11 @@ async function pantallaInicial(){
         // CREANDO LAS CARD DE LAS ELECCIONES DISPONIBLES
         elecciones.forEach(async eleccion => {
 
-            let haVotado = await buscarUsuarioVotado(sessionStorage.getItem('idUsuario'), eleccion.idEleccion).then(data => {
+            let haVotado = await buscarUsuarioVotado(sessionStorage.getItem("idUsuario"), eleccion.idEleccion).then(data => {
                 return data;
             })
 
-            if(haVotado == false){
+            if(haVotado.state == false){
                 let parentDiv = document.createElement('div');
                 parentDiv.classList.add('eleccion');
 
@@ -170,7 +170,19 @@ function votarEleccionActiva(idEleccion){
             option.appendChild(nombre);
 
             option.addEventListener("click", () => {
-                
+                if(confirm("¿Estas seguro de que quieres votar a " + partido.nombre + "?")){
+                    alert("Voto realizado con exito");
+
+                    const fechaHora1 = new Date().toLocaleString();
+
+                    insertarVotoGenerales(idEleccion, partido.idPartido).then(data => {
+                    })
+
+                    insertarUsuarioHaVotado(idEleccion, sessionStorage.getItem('idUsuario')).then(data => {
+                        window.location.href = "/eVotaciones/vistas/votantes.html";
+                    });
+
+                }
             })
 
             let select = document.getElementById('partidosAVotar');
