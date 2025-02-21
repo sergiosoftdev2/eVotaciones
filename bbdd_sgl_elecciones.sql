@@ -137,7 +137,7 @@ CREATE TABLE `eleccion` (
 --
 
 INSERT INTO `eleccion` (`idEleccion`, `tipo`, `estado`, `fechaInicio`, `fechaFin`) VALUES
-(7, 'general', 'abierta', '2025-02-21', '2025-02-22'),
+(7, 'general', 'finalizada', '2025-02-21', '2025-02-22'),
 (8, 'autonomica', 'finalizada', '2025-02-21', '2025-02-22');
 
 -- --------------------------------------------------------
@@ -313,6 +313,17 @@ CREATE TABLE `voto` (
   `idCandidato` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `voto`
+--
+
+INSERT INTO `voto` (`idVoto`, `idEleccion`, `idPartido`, `idLocalidad`, `fechaHora`, `idCandidato`) VALUES
+(6, 7, 16, 0, '2025-02-21 16:49:46', NULL),
+(7, 7, 12, 0, '2025-02-21 17:44:37', NULL),
+(8, 7, 12, 0, '2025-02-21 17:49:12', NULL),
+(9, 7, 14, 0, '2025-02-21 17:51:03', NULL),
+(10, 7, 4, 0, '2025-02-21 17:51:32', NULL);
+
 -- --------------------------------------------------------
 
 --
@@ -323,6 +334,17 @@ CREATE TABLE `votousuarioeleccion` (
   `idUsuario` int(11) NOT NULL,
   `idEleccion` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `votousuarioeleccion`
+--
+
+INSERT INTO `votousuarioeleccion` (`idUsuario`, `idEleccion`) VALUES
+(44, 7),
+(51, 7),
+(52, 7),
+(53, 7),
+(54, 7);
 
 --
 -- Índices para tablas volcadas
@@ -462,60 +484,7 @@ ALTER TABLE `usuario`
 -- AUTO_INCREMENT de la tabla `voto`
 --
 ALTER TABLE `voto`
-  MODIFY `idVoto` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- Restricciones para tablas volcadas
---
-
---
--- Filtros para la tabla `candidato`
---
-ALTER TABLE `candidato`
-  ADD CONSTRAINT `candidato_ibfk_1` FOREIGN KEY (`idUsuario`) REFERENCES `usuario` (`idUsuario`) ON DELETE CASCADE,
-  ADD CONSTRAINT `candidato_ibfk_2` FOREIGN KEY (`idPartido`) REFERENCES `partido` (`idPartido`) ON DELETE CASCADE,
-  ADD CONSTRAINT `candidato_ibfk_3` FOREIGN KEY (`idLocalidad`) REFERENCES `localidad` (`idLocalidad`) ON DELETE CASCADE;
-
---
--- Filtros para la tabla `censo`
---
-ALTER TABLE `censo`
-  ADD CONSTRAINT `censo_ibfk_1` FOREIGN KEY (`idLocalidad`) REFERENCES `localidad` (`idLocalidad`) ON DELETE CASCADE;
-
---
--- Filtros para la tabla `localidad`
---
-ALTER TABLE `localidad`
-  ADD CONSTRAINT `localidad_ibfk_1` FOREIGN KEY (`idComunidad`) REFERENCES `comunidadautonoma` (`idComunidad`) ON DELETE CASCADE;
-
---
--- Filtros para la tabla `resultado`
---
-ALTER TABLE `resultado`
-  ADD CONSTRAINT `resultado_ibfk_1` FOREIGN KEY (`idEleccion`) REFERENCES `eleccion` (`idEleccion`) ON DELETE CASCADE,
-  ADD CONSTRAINT `resultado_ibfk_2` FOREIGN KEY (`idPartido`) REFERENCES `partido` (`idPartido`) ON DELETE CASCADE;
-
---
--- Filtros para la tabla `usuario`
---
-ALTER TABLE `usuario`
-  ADD CONSTRAINT `usuario_ibfk_1` FOREIGN KEY (`idCenso`) REFERENCES `censo` (`idCenso`) ON DELETE CASCADE;
-
---
--- Filtros para la tabla `voto`
---
-ALTER TABLE `voto`
-  ADD CONSTRAINT `fk_idCandidato` FOREIGN KEY (`idCandidato`) REFERENCES `candidato` (`idCandidato`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `voto_ibfk_1` FOREIGN KEY (`idPartido`) REFERENCES `partido` (`idPartido`) ON DELETE CASCADE,
-  ADD CONSTRAINT `voto_ibfk_2` FOREIGN KEY (`idLocalidad`) REFERENCES `localidad` (`idLocalidad`) ON DELETE CASCADE,
-  ADD CONSTRAINT `voto_ibfk_3` FOREIGN KEY (`idEleccion`) REFERENCES `eleccion` (`idEleccion`) ON DELETE CASCADE;
-
---
--- Filtros para la tabla `votousuarioeleccion`
---
-ALTER TABLE `votousuarioeleccion`
-  ADD CONSTRAINT `votousuarioeleccion_ibfk_1` FOREIGN KEY (`idUsuario`) REFERENCES `usuario` (`idUsuario`),
-  ADD CONSTRAINT `votousuarioeleccion_ibfk_2` FOREIGN KEY (`idEleccion`) REFERENCES `eleccion` (`idEleccion`);
+  MODIFY `idVoto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
