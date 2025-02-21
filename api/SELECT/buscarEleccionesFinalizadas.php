@@ -5,7 +5,7 @@
     try {
         $conexion = conectarDB();
         // Consulta a la base de datos
-        $stmt = $conexion->prepare("SELECT * FROM eleccion WHERE estado = 'abierta'");
+        $stmt = $conexion->prepare("SELECT * FROM eleccion WHERE estado = 'finalizada'");
         $stmt->execute();
         
         // Comprobamos si hay resultados

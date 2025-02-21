@@ -94,6 +94,7 @@ async function candidatos(mainTitle) {
         // Restablecer valores del modal
         idUsuarioInput.value = '';
         partidoSelect.value = '';
+        idUsuarioInput.innerHTML = ""
         localidadesSelect.value = '';
 
         // Carga los partidos en el select
@@ -186,7 +187,9 @@ async function candidatos(mainTitle) {
             cargarLocalidades(localidadesSelect);
             cargarUsuarios(idUsuarioInput).then(() => {
                 modal.classList.remove('noVisible');
-                idUsuarioInput.value = candidato.idUsuario;
+                idUsuarioInput.innerHTML = `<select disabled value="${candidato.idUsuario}"><option>${candidato.idUsuario}</option></select>`;
+                console.log(idUsuarioInput)
+                console.log(candidato.idUsuario);
                 partidoSelect.value = candidato.idPartido;
                 localidadesSelect.value = candidato.idLocalidad;
             });
@@ -255,20 +258,24 @@ async function candidatos(mainTitle) {
         });
     }
 
-    async function cargarUsuarios(usuariosSelect) {
-        let usuarios = await buscarUsuarios();
+    async function cargarUsuarios() {
+        let selectElement = document.getElementById("idUsuario"); // Get the existing select
+
+        // Clear existing options (important!)
+        selectElement.innerHTML = "";
+
+        let usuarios = await buscarUsuariosNoCandidatos();
         for (const usuario of usuarios) {
             let miCiudadano = await buscarCiudadano(usuario.idCenso);
             if (miCiudadano && miCiudadano.length > 0) {
                 let option = document.createElement('option');
                 option.value = usuario.idUsuario;
-                option.text = miCiudadano[0].dni;
-                usuariosSelect.appendChild(option);
-            } else {
-                console.error('No se encontraron datos para el usuario:', usuario);
+                option.text = miCiudadano[0].dni + " - " + miCiudadano[0].nombre + " " + miCiudadano[0].apellido;
+                selectElement.appendChild(option);
             }
         }
-    }    
+    }
+      
     
 }
 
@@ -426,12 +433,12 @@ async function elecciones(mainTitle){
     });
 
     async function crearInterfazElecciones(){
-        
-        contentInsert.innerHTML = ""
 
         let elecciones = await buscarElecciones().then(data => {
             return data;
         });
+
+        contentInsert.innerHTML = ""
 
         if(elecciones.length > 0){
 
