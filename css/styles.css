@@ -141,3 +141,10 @@ header .menu a:hover{
     align-items: center;
     justify-content: center;
 }
+
+.notCentered{
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    padding-inline: 20px;
+}

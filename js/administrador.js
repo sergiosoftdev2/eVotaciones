@@ -91,6 +91,7 @@ async function candidatos(mainTitle) {
     }
 
     insertarCandidatoBtn.addEventListener("click", () => {
+
         modal.classList.remove("noVisible");
         // Restablecer valores del modal
         idUsuarioInput.value = '';
@@ -180,20 +181,15 @@ async function candidatos(mainTitle) {
 
         elementoPadre.addEventListener("click", () => {
 
+            modal.classList.remove("noVisible");
+
             partidoSelect.innerHTML = "";
             localidadesSelect.innerHTML = "";
             idUsuarioInput.innerHTML = "";
 
             cargarPartidos(partidoSelect);
             cargarLocalidades(localidadesSelect);
-            cargarUsuarios(idUsuarioInput).then(() => {
-                modal.classList.remove('noVisible');
-                idUsuarioInput.innerHTML = `<select disabled value="${candidato.idUsuario}"><option>${candidato.idUsuario}</option></select>`;
-                console.log(idUsuarioInput)
-                console.log(candidato.idUsuario);
-                partidoSelect.value = candidato.idPartido;
-                localidadesSelect.value = candidato.idLocalidad;
-            });
+            idUsuarioInput.innerHTML = `<option>${candidato.idUsuario}</option>`;
 
             anadirCandidatoBtn.style.display = "none";
             borrarCandidatoBtn.style.display = "block";
@@ -265,16 +261,20 @@ async function candidatos(mainTitle) {
         // Clear existing options (important!)
         selectElement.innerHTML = "";
 
-        let usuarios = await buscarUsuariosNoCandidatos();
-        for (const usuario of usuarios) {
-            let miCiudadano = await buscarCiudadano(usuario.idCenso);
-            if (miCiudadano && miCiudadano.length > 0) {
+        let usuarios = await buscarUsuariosNoCandidatos().then(async data => {
+            data.forEach(async usuario => {
+                let miCiudadano = await buscarCiudadano(usuario.idCenso).then(ciudadano => {  
+                    return ciudadano;
+                });
+
                 let option = document.createElement('option');
                 option.value = usuario.idUsuario;
-                option.text = miCiudadano[0].dni + " - " + miCiudadano[0].nombre + " " + miCiudadano[0].apellido;
+                option.text = `${miCiudadano.nombre} ${miCiudadano.apellido} - ${miCiudadano.dni}`;
+
                 selectElement.appendChild(option);
-            }
-        }
+
+            })
+        });
     }
       
     
@@ -689,7 +689,7 @@ async function partidos(mainTitle){
             
             let siglas = siglasPartido.value;
             let nombre = nombrePartido.value;
-            let logoPartido = logoPartido.value;
+            let logo = logoPartido.value;
             
             if(siglas.trim() === '' || nombre.trim() === '') {
                 alert('Por favor, completa todos los campos.');
@@ -754,6 +754,7 @@ async function partidos(mainTitle){
 
             siglas.value = element.siglas;
             nombre.value = element.nombre;
+            logo.value = element.logo;
 
             borrarPartido.addEventListener("click", () => {
                 borrarPartidoPolitico(element.idPartido)

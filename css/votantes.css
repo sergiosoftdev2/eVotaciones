@@ -1,0 +1,73 @@
+@keyframes scaleAnimation{
+    0%{
+        filter: blur(10px);
+    }
+    25%{
+        filter: blur(15px);
+    }
+    50%{
+        filter: blur(5px);
+    }
+    75%{
+        filter: blur(25px);
+    }
+    100%{
+        filter: blur(10px);
+    }
+}
+
+.votantesTitle{
+    margin-top: 100px;
+    font-size: 3rem;
+    margin-bottom: 2rem;
+}
+
+.eleccion{
+
+    position: relative;
+    width: 20%;
+    padding: 20px;
+    background-color: white;
+    box-sizing: border-box;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+
+    transition: .2s;
+
+}
+
+.eleccion::before{
+
+    content: "";
+
+    scale: 0.5;
+    
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: -1;
+    border-radius: 5px;
+
+    filter: blur(10px);
+
+    background: rgb(255,0,0);
+    background: linear-gradient(45deg, rgba(255,0,0,1) 0%, rgba(255,231,0,1) 33%, rgba(255,231,0,1) 66%, rgba(255,0,0,1) 100%);
+
+    transition: 0.5s;
+
+}
+
+.eleccion:hover::before {
+    animation: scaleAnimation 5s infinite;
+    scale: 1;
+}
+
+.eleccion img{
+    width:100%;
+}
+
+#eleccionesFinalizadas{
+    margin-bottom: 20px;
+}

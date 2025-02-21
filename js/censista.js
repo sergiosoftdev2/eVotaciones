@@ -211,12 +211,12 @@ async function modalCiudadano(idCenso){
 
         dni.setAttribute("disabled", true);
         dni.style.backgroundColor = "#AAA";
-        nombre.value = miCiudadano[0].nombre;
-        apellido.value = miCiudadano[0].apellido;
-        dni.value = miCiudadano[0].dni;
-        email.value = miCiudadano[0].email;
-        fecha.value = miCiudadano[0].fechaNacimiento;
-        localidad.value = miCiudadano[0].idLocalidad;
+        nombre.value = miCiudadano.nombre;
+        apellido.value = miCiudadano.apellido;
+        dni.value = miCiudadano.dni;
+        email.value = miCiudadano.email;
+        fecha.value = miCiudadano.fechaNacimiento;
+        localidad.value = miCiudadano.idLocalidad;
 
         anadirCiudadano.style.display = "none";
         borrarCiudadanoButton.style.display = "block";

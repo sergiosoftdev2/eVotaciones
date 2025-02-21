@@ -344,9 +344,18 @@ export async function buscarCiudadano(idCenso) {
         }
 
         const datos = await response.json();
-        return datos;
+
+        // Verifica si hay datos y si es un array con un solo elemento
+        if (Array.isArray(datos) && datos.length > 0) {
+            return datos[0]; // Devuelve el primer elemento (los datos del ciudadano)
+        } else if (datos.message === 'No data found') {
+            return null; // Devuelve null si no se encuentra el ciudadano
+        } else {
+            console.error("Respuesta inesperada del servidor:", datos);
+            return null; // Devuelve null si la respuesta es inesperada
+        }
     } catch (error) {
-        console.log(error);
+        console.error("Error en buscarCiudadano:", error);
         return null;
     }
 }
