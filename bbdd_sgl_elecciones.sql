@@ -1,9 +1,49 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Servidor: 127.0.0.1
+-- Tiempo de generación: 21-02-2025 a las 16:46:43
+-- Versión del servidor: 10.4.32-MariaDB
+-- Versión de PHP: 8.2.12
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Base de datos: `bbdd_sgl_elecciones`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `candidato`
+--
+
 CREATE TABLE `candidato` (
   `idCandidato` int(11) NOT NULL,
   `idUsuario` int(11) NOT NULL,
   `idPartido` int(11) NOT NULL,
-  `idLocalidad` int(11) NOT NULL
+  `idLocalidad` int(11) NOT NULL,
+  `numeroCandidato` enum('1','2','3') DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `candidato`
+--
+
+INSERT INTO `candidato` (`idCandidato`, `idUsuario`, `idPartido`, `idLocalidad`, `numeroCandidato`) VALUES
+(2, 52, 4, 16, '1'),
+(11, 53, 6, 17, '2'),
+(12, 61, 5, 1, '2'),
+(14, 50, 17, 13, '2');
 
 -- --------------------------------------------------------
 
@@ -30,7 +70,7 @@ INSERT INTO `censo` (`idCenso`, `dni`, `nombre`, `apellido`, `email`, `fechaNaci
 (5, '32165498E', 'Yolanda', 'Ruiz', 'alejandro.ruiz@example.com', '1988-12-01', 1),
 (69, '78805988Y', 'Manolo', 'Lama', 'manolo@gmail.com', '1977-06-17', 12),
 (73, '67798544P', 'Juan', 'Cuesta', 'juancuesta@gmail.com', '1973-02-25', 18),
-(74, '67790999Ñ', 'Fermin', 'Trujillo', 'fermin@gmail.com', '1966-08-30', 48),
+(74, '67790999Ñ', 'Fermin', 'Trujillq', 'fermin@gmail.com', '1966-08-30', 48),
 (76, '56607899P', 'Pedro', 'Sanchez', 'felipe@gmail.com', '1992-02-12', 21),
 (77, '11111111A', 'Administrador', 'Administrador', 'admin@admin.com', '1999-12-17', 15),
 (78, '89976543R', 'Manolo', 'Escobar', 'manoloescobar@gmail.com', '1988-06-25', 16),
@@ -69,7 +109,9 @@ INSERT INTO `censo` (`idCenso`, `dni`, `nombre`, `apellido`, `email`, `fechaNaci
 (126, '78159240C', 'Sofía', 'Sánchez', 'sofia.sanchez@example.com', '1997-12-01', 17),
 (127, '41260358B', 'Alejandro', 'Rodríguez', 'alejandro.rodriguez@example.com', '1984-09-08', 21),
 (128, '85371902A', 'Carmen', 'Díaz', 'carmen.diaz@example.com', '1975-05-19', 10),
-(129, '39746128Z', 'Jorge', 'Pérez', 'jorge.perez@example.com', '1990-06-26', 6);
+(129, '39746128Z', 'Jorge', 'Pérez', 'jorge.perez@example.com', '1990-06-26', 6),
+(130, '20000200P', 'Menor', 'De Edad', 'menor@gmail.com', '2014-06-19', 18),
+(131, '67804321I', 'Manolo', 'Pies de Plata', 'manolopies@gmail.com', '1992-02-02', 23);
 
 -- --------------------------------------------------------
 
@@ -118,6 +160,14 @@ CREATE TABLE `eleccion` (
   `fechaInicio` date NOT NULL,
   `fechaFin` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `eleccion`
+--
+
+INSERT INTO `eleccion` (`idEleccion`, `tipo`, `estado`, `fechaInicio`, `fechaFin`) VALUES
+(7, 'general', 'abierta', '2025-02-21', '2025-02-22'),
+(8, 'autonomica', 'finalizada', '2025-02-21', '2025-02-22');
 
 -- --------------------------------------------------------
 
@@ -197,25 +247,28 @@ INSERT INTO `localidad` (`idLocalidad`, `nombre`, `idComunidad`) VALUES
 CREATE TABLE `partido` (
   `idPartido` int(11) NOT NULL,
   `nombre` varchar(100) NOT NULL,
-  `siglas` varchar(10) NOT NULL
+  `siglas` varchar(10) NOT NULL,
+  `logo` varchar(200) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `partido`
 --
 
-INSERT INTO `partido` (`idPartido`, `nombre`, `siglas`) VALUES
-(2, 'Partido Popular', 'PP'),
-(4, 'Unidas Podemos', 'UP'),
-(5, 'Ciudadanos Malos', 'Cs'),
-(6, 'Esquerra Republicana de Catalunya a', 'ERC'),
-(7, 'Junts', 'JxCat'),
-(8, 'Partido Nacionalista Vasco', 'PNV'),
-(10, 'Coalición Canaria', 'CC'),
-(12, 'Se acabo la fiesta', 'SALF'),
-(13, 'BILDU', 'Bildu Bild'),
-(14, 'Partido Socialista Obrero Español', 'PSOE'),
-(15, 'YO LO VALGO', 'YEAH');
+INSERT INTO `partido` (`idPartido`, `nombre`, `siglas`, `logo`) VALUES
+(2, 'Partido Popular', 'PP', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTF5g6NSHLbtq3ZIZTWT4f-pRICd0zaVAoDEg&s'),
+(4, 'Unidas Podemos', 'UP', 'https://s10.s3c.es/imag/_v0/770x420/9/4/a/700x420_Unidos-Podemos.png'),
+(5, 'Ciudadanos Malos', 'Cs', 'https://graffica.info/wp-content/uploads/2017/01/Hablamos-con-The-Bold-Strategic-Design-Studio-sobre-el-nuevo-logo-de-Ciudadanos.jpg'),
+(6, 'Esquerra Republicana de Catalunya a', 'ERC', 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/ERC_logotipo_compacto.svg/2048px-ERC_logotipo_compacto.svg.png'),
+(7, 'Junts', 'JxCat', 'https://upload.wikimedia.org/wikipedia/commons/3/32/Logo_partit_Junts_per_Catalunya.png'),
+(8, 'Partido Nacionalista Vasco', 'PNV', 'https://upload.wikimedia.org/wikipedia/commons/e/ec/Logo_EAJ-PNV_%282012%29.png'),
+(10, 'Coalición Canaria', 'CC', 'https://upload.wikimedia.org/wikipedia/commons/1/1c/Coalici%C3%B3n_Canaria.svg'),
+(12, 'Se acabo la fiesta', 'SALF', 'https://upload.wikimedia.org/wikipedia/en/f/f4/Se_Acab%C3%B3_La_Fiesta.png'),
+(13, 'BILDU', 'Bildu Bild', 'https://upload.wikimedia.org/wikipedia/commons/0/06/Logo_Eh_Bildu_2023.png'),
+(14, 'Partido Socialista Obrero Español', 'PSOE', 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Logotipo_del_PSOE.svg/800px-Logotipo_del_PSOE.svg.png'),
+(16, 'Abascal Prime', 'ABAS', 'https://www.elnacional.cat/uploads/s1/39/92/03/67/santiago-abascal-giorgia-meloni-twitter-abascal.png'),
+(17, 'Plvs Ultra | Felipe II', 'PLVS', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8VlS2qV8YEB11IofhOWRGHJR6yHpEuS2C5Q&s'),
+(18, 'Make Europe Great Again', 'MEGA', 'https://media-cldnry.s-nbcnews.com/image/upload/t_fit-1500w,f_auto,q_auto:best/rockcms/2024-04/240407-donald-trump-vl-932a-309069.jpg');
 
 -- --------------------------------------------------------
 
@@ -241,21 +294,38 @@ CREATE TABLE `usuario` (
   `idUsuario` int(11) NOT NULL,
   `idCenso` int(11) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `rol` enum('administrador','censista','votante','candidato') NOT NULL,
-  `haVotado` tinyint(1) DEFAULT 0
+  `rol` enum('administrador','censista','votante','candidato') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `usuario`
 --
 
-INSERT INTO `usuario` (`idUsuario`, `idCenso`, `password`, `rol`, `haVotado`) VALUES
-(44, 1, '$2y$10$o2inoN7xVuQTmAVD9y5Lc.VfD.cfPVMEcqRvuvy8KPQ8tUCoijiUK', 'censista', 0),
-(50, 5, '$2y$10$OEeHTZ7Ar1UqkhtpjSpNr.NFTSCHIuk9NaY3bCazJgSRChwinJhAS', 'votante', 0),
-(51, 69, '$2y$10$32/eLGu5GxpWhDpAvBIa8eCd6SCjZ9WDZo5vqvG.u3mWwq4ezVk3W', 'votante', 0),
-(52, 73, '$2y$10$8mWsTeOX0teVNtLpdHruyehYKXlZf9viOEZAmxCw1p0ilMFmzLJ/G', 'votante', 0),
-(53, 74, '$2y$10$a5JtgfgnxWDNt6iaZl3W5egV0CuNOEeAiWhmFUyydYg3/4EijOXI2', 'votante', 0),
-(54, 77, '$2y$10$wXAlsKQVyP9R6UHiCImGDuz9aFkZYplODeBsUc0mc8Ley9P1DJs8C', 'administrador', 0);
+INSERT INTO `usuario` (`idUsuario`, `idCenso`, `password`, `rol`) VALUES
+(44, 1, '$2y$10$o2inoN7xVuQTmAVD9y5Lc.VfD.cfPVMEcqRvuvy8KPQ8tUCoijiUK', 'censista'),
+(50, 5, '$2y$10$OEeHTZ7Ar1UqkhtpjSpNr.NFTSCHIuk9NaY3bCazJgSRChwinJhAS', 'votante'),
+(51, 69, '$2y$10$32/eLGu5GxpWhDpAvBIa8eCd6SCjZ9WDZo5vqvG.u3mWwq4ezVk3W', 'votante'),
+(52, 73, '$2y$10$8mWsTeOX0teVNtLpdHruyehYKXlZf9viOEZAmxCw1p0ilMFmzLJ/G', 'votante'),
+(53, 74, '$2y$10$a5JtgfgnxWDNt6iaZl3W5egV0CuNOEeAiWhmFUyydYg3/4EijOXI2', 'votante'),
+(54, 77, '$2y$10$wXAlsKQVyP9R6UHiCImGDuz9aFkZYplODeBsUc0mc8Ley9P1DJs8C', 'administrador'),
+(60, 76, '$2y$10$o2inoN7xVuQTmAVD9y5Lc.VfD.cfPVMEcqRvuvy8KPQ8tUCoijiUK', 'votante'),
+(61, 78, '$2y$10$o2inoN7xVuQTmAVD9y5Lc.VfD.cfPVMEcqRvuvy8KPQ8tUCoijiUK', 'votante'),
+(62, 79, '$2y$10$o2inoN7xVuQTmAVD9y5Lc.VfD.cfPVMEcqRvuvy8KPQ8tUCoijiUK', 'votante'),
+(63, 95, '$2y$10$o2inoN7xVuQTmAVD9y5Lc.VfD.cfPVMEcqRvuvy8KPQ8tUCoijiUK', 'votante'),
+(64, 96, '$2y$10$o2inoN7xVuQTmAVD9y5Lc.VfD.cfPVMEcqRvuvy8KPQ8tUCoijiUK', 'votante'),
+(65, 97, '$2y$10$o2inoN7xVuQTmAVD9y5Lc.VfD.cfPVMEcqRvuvy8KPQ8tUCoijiUK', 'votante'),
+(66, 98, '$2y$10$o2inoN7xVuQTmAVD9y5Lc.VfD.cfPVMEcqRvuvy8KPQ8tUCoijiUK', 'votante'),
+(67, 99, '$2y$10$o2inoN7xVuQTmAVD9y5Lc.VfD.cfPVMEcqRvuvy8KPQ8tUCoijiUK', 'votante'),
+(68, 100, '$2y$10$o2inoN7xVuQTmAVD9y5Lc.VfD.cfPVMEcqRvuvy8KPQ8tUCoijiUK', 'votante'),
+(69, 101, '$2y$10$o2inoN7xVuQTmAVD9y5Lc.VfD.cfPVMEcqRvuvy8KPQ8tUCoijiUK', 'votante'),
+(70, 102, '$2y$10$o2inoN7xVuQTmAVD9y5Lc.VfD.cfPVMEcqRvuvy8KPQ8tUCoijiUK', 'votante'),
+(71, 103, '$2y$10$o2inoN7xVuQTmAVD9y5Lc.VfD.cfPVMEcqRvuvy8KPQ8tUCoijiUK', 'votante'),
+(72, 104, '$2y$10$o2inoN7xVuQTmAVD9y5Lc.VfD.cfPVMEcqRvuvy8KPQ8tUCoijiUK', 'votante'),
+(73, 105, '$2y$10$o2inoN7xVuQTmAVD9y5Lc.VfD.cfPVMEcqRvuvy8KPQ8tUCoijiUK', 'votante'),
+(74, 106, '$2y$10$o2inoN7xVuQTmAVD9y5Lc.VfD.cfPVMEcqRvuvy8KPQ8tUCoijiUK', 'votante'),
+(75, 107, '$2y$10$o2inoN7xVuQTmAVD9y5Lc.VfD.cfPVMEcqRvuvy8KPQ8tUCoijiUK', 'votante'),
+(76, 108, '$2y$10$o2inoN7xVuQTmAVD9y5Lc.VfD.cfPVMEcqRvuvy8KPQ8tUCoijiUK', 'votante'),
+(98, 109, '$2y$10$o2inoN7xVuQTmAVD9y5Lc.VfD.cfPVMEcqRvuvy8KPQ8tUCoijiUK', 'votante');
 
 -- --------------------------------------------------------
 
@@ -268,7 +338,19 @@ CREATE TABLE `voto` (
   `idEleccion` int(11) NOT NULL,
   `idPartido` int(11) NOT NULL,
   `idLocalidad` int(11) NOT NULL,
-  `fechaHora` timestamp NOT NULL DEFAULT current_timestamp()
+  `fechaHora` timestamp NOT NULL DEFAULT current_timestamp(),
+  `idCandidato` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `votousuarioeleccion`
+--
+
+CREATE TABLE `votousuarioeleccion` (
+  `idUsuario` int(11) NOT NULL,
+  `idEleccion` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -343,6 +425,14 @@ ALTER TABLE `voto`
   ADD PRIMARY KEY (`idVoto`),
   ADD KEY `idPartido` (`idPartido`),
   ADD KEY `idLocalidad` (`idLocalidad`),
+  ADD KEY `idEleccion` (`idEleccion`),
+  ADD KEY `fk_idCandidato` (`idCandidato`);
+
+--
+-- Indices de la tabla `votousuarioeleccion`
+--
+ALTER TABLE `votousuarioeleccion`
+  ADD PRIMARY KEY (`idUsuario`,`idEleccion`),
   ADD KEY `idEleccion` (`idEleccion`);
 
 --
@@ -353,13 +443,13 @@ ALTER TABLE `voto`
 -- AUTO_INCREMENT de la tabla `candidato`
 --
 ALTER TABLE `candidato`
-  MODIFY `idCandidato` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `idCandidato` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT de la tabla `censo`
 --
 ALTER TABLE `censo`
-  MODIFY `idCenso` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=130;
+  MODIFY `idCenso` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=156;
 
 --
 -- AUTO_INCREMENT de la tabla `comunidadautonoma`
@@ -371,19 +461,19 @@ ALTER TABLE `comunidadautonoma`
 -- AUTO_INCREMENT de la tabla `eleccion`
 --
 ALTER TABLE `eleccion`
-  MODIFY `idEleccion` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `idEleccion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `localidad`
 --
 ALTER TABLE `localidad`
-  MODIFY `idLocalidad` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
+  MODIFY `idLocalidad` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
 
 --
 -- AUTO_INCREMENT de la tabla `partido`
 --
 ALTER TABLE `partido`
-  MODIFY `idPartido` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `idPartido` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT de la tabla `resultado`
@@ -395,7 +485,7 @@ ALTER TABLE `resultado`
 -- AUTO_INCREMENT de la tabla `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `idUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
+  MODIFY `idUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=99;
 
 --
 -- AUTO_INCREMENT de la tabla `voto`
@@ -444,9 +534,17 @@ ALTER TABLE `usuario`
 -- Filtros para la tabla `voto`
 --
 ALTER TABLE `voto`
+  ADD CONSTRAINT `fk_idCandidato` FOREIGN KEY (`idCandidato`) REFERENCES `candidato` (`idCandidato`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `voto_ibfk_1` FOREIGN KEY (`idPartido`) REFERENCES `partido` (`idPartido`) ON DELETE CASCADE,
   ADD CONSTRAINT `voto_ibfk_2` FOREIGN KEY (`idLocalidad`) REFERENCES `localidad` (`idLocalidad`) ON DELETE CASCADE,
   ADD CONSTRAINT `voto_ibfk_3` FOREIGN KEY (`idEleccion`) REFERENCES `eleccion` (`idEleccion`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `votousuarioeleccion`
+--
+ALTER TABLE `votousuarioeleccion`
+  ADD CONSTRAINT `votousuarioeleccion_ibfk_1` FOREIGN KEY (`idUsuario`) REFERENCES `usuario` (`idUsuario`),
+  ADD CONSTRAINT `votousuarioeleccion_ibfk_2` FOREIGN KEY (`idEleccion`) REFERENCES `eleccion` (`idEleccion`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
