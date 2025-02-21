@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const contentInsert = document.getElementById('contentInsert');
 
     if(sessionStorage.getItem('rol') != 'censista'){
-        window.location.href = "../index.html"
+        window.location.href = "/eVotaciones/vistas/login.html";
     }else if (sessionStorage.getItem('rol') == 'censista') {
         
         let modal = document.getElementById('modal');

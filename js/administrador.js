@@ -11,7 +11,14 @@ import {
 document.addEventListener("DOMContentLoaded", function() {
 
     let mainTitle = document.getElementById('mainTitle');
-    adminMenuShow(mainTitle);
+    
+    if(sessionStorage.getItem("rol") == "administrador"){
+        adminMenuShow(mainTitle);
+    }else{
+        window.location.href = "/eVotaciones/vistas/login.html";
+    }
+
+    
 
 });
 

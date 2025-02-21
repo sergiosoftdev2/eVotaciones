@@ -1,7 +1,22 @@
+import { cerrarSesion } from "./api.js";
+
 document.addEventListener("DOMContentLoaded", () => {
 
     let menu = document.querySelector("#menu");
     let rol = sessionStorage.getItem("rol");
+    let login = document.getElementById("login");
+    let register = document.getElementById("registro");
+
+
+    if(sessionStorage.getItem("idUsuario")){
+        login.style.display = "none";
+        register.style.display = "none";
+        let logout = document.createElement("a");
+        logout.innerText = "Cerrar Sesion";
+        logout.href = "/eVotaciones/vistas/login.html";
+        menu.appendChild(logout);
+        cerrarSesion()
+    }
 
     if(rol == "administrador"){
         let adminPanel = document.createElement("a");
