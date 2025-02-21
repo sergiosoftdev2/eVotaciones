@@ -4,7 +4,8 @@ import {
     actualizarCandidato, borrarCandidato, insertarCandidato, buscarUsuarios,  
     buscarCiudadano, buscarLocalidad, buscarPartido, buscarElecciones,
     insertarEleccion, borrarEleccion, actualizarEleccion,
-    buscarUsuariosNoCandidatos
+    buscarUsuariosNoCandidatos,
+    buscarEleccionesFinalizadas
 } from "./api.js";
 
 document.addEventListener("DOMContentLoaded", function() {
@@ -280,30 +281,116 @@ async function candidatos(mainTitle) {
 }
 
 async function escrutinios(mainTitle){
+
     mainTitle.innerHTML = `
-    
         <button class="back" id="back">Atrás</button>
 
         <div class="busquedaCiudadanos" id="busquedaCiudadanos">
                 <div class="ciudadano" id="preFix">
-                    <h2>idCandidato</h2>
-                    <h2>idUsuario</h2>
-                    <h2>Partido</h2>
-                    <h2>Localidad</h2>
+                    <h2>idEleccion</h2>
+                    <h2>Tipo</h2>
+                    <h2>Estado</h2>
+                    <h2>Fecha Inicio</h2>
+                    <h2>Fecha Fin</h2>
                 </div>
                 <div class="contentInsert" id="contentInsert"></div>
             </div>
-            <div class="actionButtons">
-                <button id="insertarCiudadano" class="anadirCiudadano">Insertar</button>
-            </div>
         </div>
-    
     `
 
     let back = document.getElementById('back');
+    let contentInsert = document.getElementById('contentInsert');
+    let modal = document.getElementById('modal');
+    let anadirEleccionBtn = document.getElementById('anadirCiudadano');
+    let borrarEleccionBtn = document.getElementById('borrarCiudadano');
+    let actualizarEleccionBtn = document.getElementById('actualizarCiudadano');
+
+    crearInterfazElecciones()
+    
+    // PARA VOLVER AL MENU DE ADMINISTRADOR
     back.addEventListener("click", () => {
         adminMenuShow(mainTitle);
     });
+
+    async function crearInterfazElecciones(){
+
+        let elecciones = await buscarEleccionesFinalizadas().then(data => {
+            return data;
+        });
+
+        contentInsert.innerHTML = ""
+
+        if(elecciones.length > 0){
+
+            elecciones.forEach(eleccion => {
+
+                let elementoPadre = document.createElement('div');
+                elementoPadre.dataset.id = eleccion.idEleccion;
+                elementoPadre.classList.add('ciudadano');
+                
+                let idEleccion = document.createElement('p');
+                idEleccion.textContent = eleccion.idEleccion;
+    
+                let tipo = document.createElement('p');
+                tipo.textContent = eleccion.tipo;
+    
+                let estado = document.createElement('p');
+                estado.textContent = eleccion.estado;
+    
+                let fechaInicio = document.createElement('p');
+                fechaInicio.textContent = eleccion.fechaInicio;
+    
+                let fechaFin = document.createElement('p');
+                fechaFin.textContent = eleccion.fechaFin;
+    
+                elementoPadre.appendChild(idEleccion);
+                elementoPadre.appendChild(tipo);
+                elementoPadre.appendChild(estado);
+                elementoPadre.appendChild(fechaInicio);
+                elementoPadre.appendChild(fechaFin);
+
+                elementoPadre.addEventListener("click", () => {
+
+                    tipoModal.value = eleccion.tipo;
+                    estadoModal.value = eleccion.estado;
+                    fechaInicioModal.value = eleccion.fechaInicio;
+                    fechaFinModal.value = eleccion.fechaFin;
+
+                    borrarEleccionBtn.style.display = "block";
+                    actualizarEleccionBtn.style.display = "block";
+                    anadirEleccionBtn.style.display = "none";
+
+                    modal.classList.remove('noVisible');
+
+                    // BORRAR ELECCION
+                    borrarEleccionBtn.addEventListener("click", () => {
+                        borrarEleccion(eleccion.idEleccion);
+                        setTimeout(() => {
+                            modal.classList.add("noVisible");
+                            crearInterfazElecciones();
+                        }, 250);
+                    })
+
+                    // ACTUALIZAR ELECCION
+                    actualizarEleccionBtn.addEventListener("click", () => {
+                        actualizarEleccion(eleccion.idEleccion, tipoModal.value, estadoModal.value, fechaInicioModal.value, fechaFinModal.value);
+                        setTimeout(() => {
+                            modal.classList.add("noVisible");
+                            crearInterfazElecciones();
+                        }, 250);
+                    })
+
+                });
+    
+                contentInsert.appendChild(elementoPadre);
+    
+            })
+
+        }else{
+            contentInsert.innerHTML = `<p>No hay elecciones :(</p>`;
+        }
+
+    }
 }
 
 async function elecciones(mainTitle){
@@ -525,6 +612,7 @@ async function partidos(mainTitle){
                 <h2>idPartido</h2>
                 <h2>Nombre</h2>
                 <h2>Siglas</h2>
+                <h2>Logo</h2>
             </div>
             <div class="contentInsert" id="contentInsert"></div>
         </div>
@@ -547,6 +635,8 @@ async function partidos(mainTitle){
                         <input type="text" id="nombrePartido" autocomplete="off">
                     </div>
                 </div>
+                <h2><em>Logo*</em></h2>
+                <input type="text" id="logoPartido" autocomplete="off" placeholder="URL del logo">
                 <div class="buttonModalSide">
                     <button id="anadirCiudadano">Añadir Partido</button>
                     <button id="borrarCiudadano">Borrar</button>
@@ -569,6 +659,7 @@ async function partidos(mainTitle){
     // BUSQUEDA Y MUESTRA DE LOS DATOS EN PANTALLA
     let buscarPartidosPoliticos = await buscarPartidos().then(data => {
         contentInsert.innerHTML = ''; // Limpia el contenido antes de agregar nuevos elementos
+        console.log(data)
         data.forEach(element => {
             crearInterfazPartidos(element)
         });
@@ -587,21 +678,24 @@ async function partidos(mainTitle){
 
         let siglasPartido = document.getElementById('siglasPartido');
         let nombrePartido = document.getElementById('nombrePartido');
+        let logoPartido = document.getElementById('logoPartido');
 
         siglasPartido.value = '';
         nombrePartido.value = '';
+        logoPartido.value = '';
         
 
         anadirPartido.addEventListener("click", async () => {
             
             let siglas = siglasPartido.value;
             let nombre = nombrePartido.value;
+            let logoPartido = logoPartido.value;
             
             if(siglas.trim() === '' || nombre.trim() === '') {
                 alert('Por favor, completa todos los campos.');
                 return;
             }else{
-                insertarPartidoPolitico(nombre, siglas);
+                insertarPartidoPolitico(nombre, siglas, logo);
                 setTimeout(() => {
                     partidos(mainTitle);
                 }, 250);
@@ -636,10 +730,14 @@ async function partidos(mainTitle){
 
         let siglasPartido = document.createElement('p');
         siglasPartido.innerHTML = element.siglas;
+
+        let logoPartido = document.createElement('img');
+        logoPartido.src = element.logo;
         
         elementoPadre.appendChild(idPartido);
         elementoPadre.appendChild(nombrePartido);
         elementoPadre.appendChild(siglasPartido);
+        elementoPadre.appendChild(logoPartido);
 
         // EVENTO PARA PODER ACTUALIZAR Y BORRAR
         elementoPadre.addEventListener("click", () => {
@@ -648,6 +746,7 @@ async function partidos(mainTitle){
 
             let nombre = document.getElementById('nombrePartido');
             let siglas = document.getElementById('siglasPartido');
+            let logo = document.getElementById('logoPartido');
 
             borrarPartido.style.display = 'block';
             actualizarPartido.style.display = 'block';
@@ -664,7 +763,7 @@ async function partidos(mainTitle){
             })
 
             actualizarPartido.addEventListener("click", () => {
-                actualizarPartidoPolitico(element.idPartido, nombre.value, siglas.value)
+                actualizarPartidoPolitico(element.idPartido, nombre.value, siglas.value, logo.value)
                 setTimeout(() => {
                     partidos(mainTitle)
                 }, 250);

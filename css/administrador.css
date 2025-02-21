@@ -22,6 +22,10 @@
     border: 1px solid black;
 }
 
+.ciudadano img{
+    max-height: 50px;
+}
+
 #back{
     position: absolute;
     top: 100px;

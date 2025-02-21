@@ -61,11 +61,12 @@ export async function borrarPartidoPolitico(idPartido) {
     }
 }
 
-export async function actualizarPartidoPolitico(idPartido, nombre, siglas){
+export async function actualizarPartidoPolitico(idPartido, nombre, siglas, logo){
     let formData = new FormData();
     formData.append('idPartido', idPartido);
     formData.append('nombre', nombre);
     formData.append('siglas', siglas);
+    formData.append('logo', logo);
 
     console.log(nombre, siglas)
 
@@ -89,10 +90,11 @@ export async function actualizarPartidoPolitico(idPartido, nombre, siglas){
 
 }
 
-export async function insertarPartidoPolitico(nombre, siglas){
+export async function insertarPartidoPolitico(nombre, siglas, logo){
     let formData = new FormData();
     formData.append('nombre', nombre);
     formData.append('siglas', siglas);
+    formData.append('logo', logo);
 
     fetch("../api/INSERT/insertarPartido.php", {
         method: 'POST',
@@ -666,4 +668,46 @@ export async function buscarUsuariosNoCandidatos(){
         console.error("Error en buscarPartidos:", error); // Usa console.error para errores
         return null; // O un valor que indique un error, como un array vacío []
     }
+}
+
+export async function buscarEleccionesAbiertas(){
+
+    try {
+        const response = await fetch("../api/SELECT/buscarEleccionesAbiertas.php", {
+            method: 'POST',
+        });
+
+        if (!response.ok) {
+            throw new Error('Error en la petición');
+        }
+
+        const datos = await response.json();
+        return datos; // Retorna los datos aquí, dentro de la función asíncrona
+
+    } catch (error) {
+        console.error("Error en buscarPartidos:", error); // Usa console.error para errores
+        return null; // O un valor que indique un error, como un array vacío []
+    }
+
+}
+
+export async function buscarEleccionesFinalizadas(){
+
+    try {
+        const response = await fetch("../api/SELECT/buscarEleccionesFinalizadas.php", {
+            method: 'POST',
+        });
+
+        if (!response.ok) {
+            throw new Error('Error en la petición');
+        }
+
+        const datos = await response.json();
+        return datos; // Retorna los datos aquí, dentro de la función asíncrona
+
+    } catch (error) {
+        console.error("Error en buscarPartidos:", error); // Usa console.error para errores
+        return null; // O un valor que indique un error, como un array vacío []
+    }
+
 }

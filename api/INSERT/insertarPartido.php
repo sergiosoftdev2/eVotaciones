@@ -8,11 +8,13 @@
 
         $siglas = $_POST['siglas'];
         $nombre = $_POST['nombre'];
+        $logo = $_POST['logo'];
     
         // Consulta a la base de datos
-        $stmt = $conexion->prepare("INSERT INTO partido (siglas, nombre) VALUES (?, ?)");
+        $stmt = $conexion->prepare("INSERT INTO partido (siglas, nombre, logo) VALUES (?, ?, ?)");
         $stmt->bindParam(1, $siglas);
         $stmt->bindParam(2, $nombre);
+        $stmt->bindParam(3, $logo);
         $stmt->execute();
     
         if ($stmt->rowCount() > 0) {

@@ -9,15 +9,17 @@
         $idPartido = $_POST['idPartido'];
         $nombre = $_POST['nombre'];
         $siglas = $_POST['siglas'];
+        $logo = $_POST['logo'];
 
         // Consulta de actualización
         $stmt = $conexion->prepare("UPDATE partido 
-            SET nombre = ?, siglas = ?
+            SET nombre = ?, siglas = ?, logo = ?
             WHERE idPartido = ?");
         
         $stmt->bindParam(1, $nombre);
         $stmt->bindParam(2, $siglas);
-        $stmt->bindParam(3, $idPartido);
+        $stmt->bindParam(3, $logo);
+        $stmt->bindParam(4, $idPartido);
 
         $stmt->execute();
 
