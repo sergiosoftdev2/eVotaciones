@@ -4,9 +4,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let eleccionesDisponibles = document.getElementById('eleccionesDisponibles');
     let eleccionesFinalizadas = document.getElementById('eleccionesFinalizadas');
+    let menu = document.querySelector("#header");
+    
 
 
-    buscarEleccionesAbiertas().then((elecciones) => {
+    pantallaInicial();
+    sessionStorage.setItem("test", "probando sessionStorage");
+    console.log(sessionStorage.getItem("test"));
+    
+
+})
+
+async function pantallaInicial(){
+
+    let contenido = document.getElementById('notCentered');
+
+    contenido.innerHTML = `
+    
+        <h1 class="votantesTitle">Elecciones Disponibles:</h1>
+        <div class="" id="eleccionesDisponibles">
+
+        </div>
+        <h1 class="votantesTitle">Elecciones Pasadas:</h1>
+        <div class="" id="eleccionesFinalizadas">
+
+        </div>
+
+    
+    `;
+    
+    await buscarEleccionesAbiertas().then((elecciones) => {
         
 
         // CREANDO LAS CARD DE LAS ELECCIONES DISPONIBLES
@@ -39,6 +66,8 @@ document.addEventListener("DOMContentLoaded", () => {
             parentDiv.appendChild(fechaFin);
             parentDiv.appendChild(idEleccion);
 
+            parentDiv.addEventListener('click', () => votarEleccionActiva(eleccion.idEleccion));
+
             eleccionesDisponibles.appendChild(parentDiv);
 
         });
@@ -47,7 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     })
 
-    buscarEleccionesFinalizadas().then((elecciones) => {
+    await buscarEleccionesFinalizadas().then((elecciones) => {
         
         // CREANDO LAS CARD DE LAS ELECCIONES DISPONIBLES
         elecciones.forEach(eleccion => {
@@ -80,10 +109,86 @@ document.addEventListener("DOMContentLoaded", () => {
             parentDiv.appendChild(fechaFin);
             parentDiv.appendChild(idEleccion);
 
+            parentDiv.addEventListener('click', () => mostrarResultadoEleccion(eleccion.idEleccion));
+
             eleccionesFinalizadas.appendChild(parentDiv);
 
         });
 
     })
+}
 
-})
+function votarEleccionActiva(idEleccion){
+    
+    // BORRANDO CONTENIDO ANTERIOR
+    let contenido = document.getElementById('notCentered');
+    contenido.innerHTML = '<button class="back" id="back"><img src="https://cdn-icons-png.flaticon.com/512/3114/3114883.png">Atrás</button>'
+
+    // TITULO RESULTADOS ELECCION
+    let titulo = document.createElement('h2');
+    titulo.textContent = "VOTAR ELECCION";
+    titulo.classList.add('votantesTitle');
+    contenido.appendChild(titulo);
+
+    volverAtras()
+
+}
+
+function mostrarResultadoEleccion(idEleccion){
+
+    // BORRANDO CONTENIDO ANTERIOR
+    let contenido = document.getElementById('notCentered');
+    contenido.innerHTML = '<button class="back" id="back"><img src="https://cdn-icons-png.flaticon.com/512/3114/3114883.png">Atrás</button>'
+
+    let titulo = document.createElement('h2');
+    titulo.textContent = "RESULTADOS ELECCION";
+    titulo.classList.add('votantesTitle');
+    contenido.appendChild(titulo);
+
+    volverAtras()
+
+    // CHART JS
+    graficoDonut(contenido);
+
+
+}
+
+function graficoDonut(contenido){
+
+    let canvasParent = document.createElement('div');
+    canvasParent.classList.add('canvasParent');
+    
+
+    const canvas = document.createElement('canvas');
+    canvas.id = 'myDonutChart';
+    canvasParent.appendChild(canvas);
+    contenido.appendChild(canvasParent);
+
+    const ctx = document.getElementById('myDonutChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['PSOE', 'PP', 'CS', 'VOX', 'Unidas Podemos'],
+            datasets: [{
+                data: [12, 19, 3, 5, 2],
+                backgroundColor: ['#c81d11', '#1d498b', '#f34d00', '#57ba33', '#732a66']
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                }
+            }
+        }
+    });
+
+}
+
+function volverAtras(contenido){
+    let back = document.getElementById('back');
+    back.addEventListener('click', () => {
+        pantallaInicial()
+    })
+}

@@ -7,7 +7,6 @@ document.addEventListener("DOMContentLoaded", () => {
     let login = document.getElementById("login");
     let register = document.getElementById("registro");
 
-
     if(sessionStorage.getItem("idUsuario")){
         login.style.display = "none";
         register.style.display = "none";
@@ -15,7 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
         logout.innerText = "Cerrar Sesion";
         logout.href = "/eVotaciones/vistas/login.html";
         menu.appendChild(logout);
-        cerrarSesion()
+        logout.addEventListener("click", () => cerrarSesion());
     }
 
     if(rol == "administrador"){

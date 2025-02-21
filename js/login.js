@@ -55,7 +55,6 @@ async function iniciarSesion(event){
             if(datos.success){
                 
                 datos = datos.datos[0]
-                cerrarSesion()
                 anadirSesion(datos.idUsuario, idCenso.idCenso, datos.rol);
                 if(datos.rol == 'administrador'){
                     window.location.href = "/eVotaciones/vistas/administrador.html";
