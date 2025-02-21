@@ -719,3 +719,27 @@ export async function buscarEleccionesFinalizadas(){
     }
 
 }
+
+export async function buscarUsuarioVotado(idUsuario, idEleccion){
+
+    let formData = new FormData();
+    formData.append('idUsuario', idUsuario);
+    formData.append('idEleccion', idEleccion);
+
+    try {
+        const response = await fetch("../api/SELECT/buscarEleccionesUsuarioVotado.php", {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error('Error en la petición');
+        }
+
+        const datos = await response.json();
+        return datos;
+    } catch (error) {
+        console.log(error);
+    }
+
+}

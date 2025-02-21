@@ -1,4 +1,4 @@
-import { buscarEleccionesAbiertas, buscarEleccionesFinalizadas } from "./api.js"
+import { buscarEleccionesAbiertas, buscarEleccionesFinalizadas, buscarPartidos, buscarUsuarioVotado } from "./api.js"
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -9,8 +9,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     pantallaInicial();
-    sessionStorage.setItem("test", "probando sessionStorage");
-    console.log(sessionStorage.getItem("test"));
     
 
 })
@@ -34,41 +32,48 @@ async function pantallaInicial(){
     `;
     
     await buscarEleccionesAbiertas().then((elecciones) => {
-        
 
         // CREANDO LAS CARD DE LAS ELECCIONES DISPONIBLES
-        elecciones.forEach(eleccion => {
+        elecciones.forEach(async eleccion => {
 
-            let parentDiv = document.createElement('div');
-            parentDiv.classList.add('eleccion');
+            let haVotado = await buscarUsuarioVotado(sessionStorage.getItem('idUsuario'), eleccion.idEleccion).then(data => {
+                return data;
+            })
 
-            let imagen = document.createElement('img');
-            let titulo = document.createElement('h2');
+            if(haVotado == false){
+                let parentDiv = document.createElement('div');
+                parentDiv.classList.add('eleccion');
 
-            if(eleccion.tipo == "general"){
-                imagen.src = " /eVotaciones/img/bandera.png";
-                titulo.textContent = "ELECCIONES GENERALES";
+                let imagen = document.createElement('img');
+                let titulo = document.createElement('h2');
+
+                if(eleccion.tipo == "general"){
+                    imagen.src = " /eVotaciones/img/bandera.png";
+                    titulo.textContent = "ELECCIONES GENERALES";
+                }else{
+                    imagen.src = " /eVotaciones/img/comunidades.png";
+                    titulo.textContent = "ELECCIONES AUTONOMICAS";
+                }
+
+                let fechaInicio = document.createElement('p');
+                fechaInicio.innerHTML = "<b>Fecha Inicio: </b>" + eleccion.fechaInicio;
+                let fechaFin = document.createElement('p');
+                fechaFin.innerHTML = "<b>Fecha Fin: </b>" + eleccion.fechaFin;
+                let idEleccion = document.createElement('p');
+                idEleccion.innerHTML = "<b>ID ELECCION: </b>" + eleccion.idEleccion;
+
+                parentDiv.appendChild(imagen);
+                parentDiv.appendChild(titulo);
+                parentDiv.appendChild(fechaInicio);
+                parentDiv.appendChild(fechaFin);
+                parentDiv.appendChild(idEleccion);
+
+                parentDiv.addEventListener('click', () => votarEleccionActiva(eleccion.idEleccion));
+
+                eleccionesDisponibles.appendChild(parentDiv);
             }else{
-                imagen.src = " /eVotaciones/img/comunidades.png";
-                titulo.textContent = "ELECCIONES AUTONOMICAS";
+                return;
             }
-
-            let fechaInicio = document.createElement('p');
-            fechaInicio.innerHTML = "<b>Fecha Inicio: </b>" + eleccion.fechaInicio;
-            let fechaFin = document.createElement('p');
-            fechaFin.innerHTML = "<b>Fecha Fin: </b>" + eleccion.fechaFin;
-            let idEleccion = document.createElement('p');
-            idEleccion.innerHTML = "<b>ID ELECCION: </b>" + eleccion.idEleccion;
-
-            parentDiv.appendChild(imagen);
-            parentDiv.appendChild(titulo);
-            parentDiv.appendChild(fechaInicio);
-            parentDiv.appendChild(fechaFin);
-            parentDiv.appendChild(idEleccion);
-
-            parentDiv.addEventListener('click', () => votarEleccionActiva(eleccion.idEleccion));
-
-            eleccionesDisponibles.appendChild(parentDiv);
 
         });
 
@@ -130,6 +135,52 @@ function votarEleccionActiva(idEleccion){
     titulo.classList.add('votantesTitle');
     contenido.appendChild(titulo);
 
+    let formularioVoto = `
+    
+        <div class="partidosAVotar" id="partidosAVotar">
+        
+        </div>
+    
+    `
+
+    contenido.innerHTML += formularioVoto;
+
+    buscarPartidos().then(partidos => {
+        partidos.forEach(partido => {
+
+            let option = document.createElement('div');
+            option.classList.add('partido');
+            
+            let siglas = document.createElement('h3');
+            siglas.textContent = partido.siglas;
+
+            let nombre = document.createElement('p');
+            nombre.textContent = partido.nombre;
+
+            let imgContainer = document.createElement('div');
+            imgContainer.classList.add('imgContainer');
+
+            let imagen = document.createElement('img');
+            imagen.src = partido.logo;
+
+            imgContainer.appendChild(imagen);
+
+            option.appendChild(imgContainer);
+            option.appendChild(siglas);
+            option.appendChild(nombre);
+
+            option.addEventListener("click", () => {
+                
+            })
+
+            let select = document.getElementById('partidosAVotar');
+            select.appendChild(option);
+
+        })
+    })
+
+
+    // BOTON PARA VOLVER ATRAS
     volverAtras()
 
 }
@@ -186,7 +237,7 @@ function graficoDonut(contenido){
 
 }
 
-function volverAtras(contenido){
+function volverAtras(){
     let back = document.getElementById('back');
     back.addEventListener('click', () => {
         pantallaInicial()

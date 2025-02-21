@@ -120,3 +120,75 @@
 #back img{
     height: 100%;
 }
+
+.partidosAVotar{
+    margin-top: 50px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(100px, 1fr));
+    gap: 50px;
+}
+
+.partido{
+    position: relative;
+    background-color: white;
+    cursor: pointer;
+    width: 100%;
+    border: 1px solid var(--border-color);
+    padding: 20px;
+    box-sizing: border-box;
+    border-radius: 10px;
+
+    transition: .2s;
+
+}
+
+.partido::before{
+
+    content: "";
+
+    scale: 0.5;
+    
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: -1;
+    border-radius: 5px;
+
+    filter: blur(10px);
+
+    background: rgb(255,0,0);
+    background: linear-gradient(45deg, rgba(255,0,0,1) 0%, rgba(255,231,0,1) 33%, rgba(255,231,0,1) 66%, rgba(255,0,0,1) 100%);
+
+    transition: 0.2s;
+
+}
+
+.partido:hover::before {
+    animation: scaleAnimation 5s infinite;
+    scale: 1;
+}
+
+.partido .imgContainer{
+    height: 100px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+}
+
+.partido h3{
+    margin-top: 20px !important;
+}
+
+.partido h3, p{
+    margin: 0;
+}
+
+
+
+.partido img{
+    width: 100%;
+}
