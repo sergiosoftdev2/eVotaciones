@@ -122,7 +122,7 @@ function mostrarCenso(){
                 setTimeout(() => {
                     crearInterfaz(datos[index]);
                     resolve();
-                }, 1 * index);
+                }, 100 * index);
             });
         }
 

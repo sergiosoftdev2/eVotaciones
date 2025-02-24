@@ -95,9 +95,16 @@ async function candidatos(mainTitle) {
 
     let candidatosData = await buscarCandidatos();
     if (candidatosData.length > 0) {
-        candidatosData.forEach(candidato => {
-            crearInterfazCandidatos(candidato);
-        });
+        contentInsert.innerHTML = ''; // Limpia el contenido antes de agregar nuevos elementos
+        
+        for (let index = 0; index < candidatosData.length; index++) {
+            await new Promise(resolve => {
+                setTimeout(() => {
+                    crearInterfazCandidatos(candidatosData[index]); // Usar "data" en lugar de "datos"
+                    resolve();
+                }, 5 * index);
+            });
+        }
     } else {
         contentInsert.innerHTML = `<p>No hay candidatos :(</p>`;
     }
@@ -565,13 +572,19 @@ async function partidos(mainTitle){
     let back = document.getElementById('back');
 
     // BUSQUEDA Y MUESTRA DE LOS DATOS EN PANTALLA
-    let buscarPartidosPoliticos = await buscarPartidos().then(data => {
+    let buscarPartidosPoliticos = await buscarPartidos().then(async (data) => { 
         contentInsert.innerHTML = ''; // Limpia el contenido antes de agregar nuevos elementos
-        console.log(data)
-        data.forEach(element => {
-            crearInterfazPartidos(element)
-        });
+        
+        for (let index = 0; index < data.length; index++) {
+            await new Promise(resolve => {
+                setTimeout(() => {
+                    crearInterfazPartidos(data[index]); // Usar "data" en lugar de "datos"
+                    resolve();
+                }, 5 * index);
+            });
+        }
     });
+
     
     // ABRE EL MODAL PARA INSERTAR UN NUEVO PARTIDO
     insertarPartido.addEventListener("click", () => {
