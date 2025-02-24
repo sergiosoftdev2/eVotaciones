@@ -195,8 +195,7 @@ function votarEleccionActiva(idEleccion){
 
                     // E INSERTAMOS COMO QUE EL USUARIO HA VOTADO EN LAS ELECCIONES
                     insertarUsuarioHaVotado(idEleccion, sessionStorage.getItem('idUsuario')).then(data => {
-                        console.log(data)
-                        
+                        window.location.href = "/eVotaciones/vistas/votantes.html";
                     });
 
                 }
