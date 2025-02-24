@@ -2,12 +2,16 @@ import {
     
     buscarEleccionesAbiertas, buscarEleccionesFinalizadas, buscarPartidos, buscarUsuarioVotado, 
     votosPorPartidoEleccion, insertarUsuarioHaVotado, insertarVotoGenerales, votosPorLocalidadEleccion, 
-    buscarPartido
+    buscarPartido,
+    comprobarSesion
 } 
     from "./api.js"
 
 document.addEventListener("DOMContentLoaded", () => {
 
+    if(!comprobarSesion()){
+        window.location.href = "/eVotaciones/index.html";
+    }
     pantallaInicial();    
 
 })
