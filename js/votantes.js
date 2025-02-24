@@ -7,11 +7,8 @@ import {
     from "./api.js"
 
 document.addEventListener("DOMContentLoaded", () => {
-    
 
-
-    pantallaInicial();
-    
+    pantallaInicial();    
 
 })
 
@@ -57,6 +54,9 @@ async function pantallaInicial(){
                 let parentDiv = document.createElement('div');
                 parentDiv.classList.add('eleccion');
 
+                let imageContainer = document.createElement('div');
+                imageContainer.classList.add('imgContainerEleccion');
+
                 let imagen = document.createElement('img');
                 let titulo = document.createElement('h2');
 
@@ -75,7 +75,8 @@ async function pantallaInicial(){
                 let idEleccion = document.createElement('p');
                 idEleccion.innerHTML = "<b>ID ELECCION: </b>" + eleccion.idEleccion;
 
-                parentDiv.appendChild(imagen);
+                imageContainer.appendChild(imagen);
+                parentDiv.appendChild(imageContainer);
                 parentDiv.appendChild(titulo);
                 parentDiv.appendChild(fechaInicio);
                 parentDiv.appendChild(fechaFin);
@@ -90,8 +91,6 @@ async function pantallaInicial(){
 
         });
 
-
-
     })
 
     await buscarEleccionesFinalizadas().then((elecciones) => {
@@ -104,6 +103,8 @@ async function pantallaInicial(){
 
             let titulo = document.createElement('h2');
             let imagen = document.createElement('img');
+            let imageContainerElecciones = document.createElement('div');
+            imageContainerElecciones.classList.add('imgContainerEleccion');
 
             if(eleccion.tipo == "general"){
                 imagen.src = " ../img/bandera.png";
@@ -121,7 +122,8 @@ async function pantallaInicial(){
             let idEleccion = document.createElement('p');
             idEleccion.innerHTML = "<b>ID ELECCION: </b>" + eleccion.idEleccion;
 
-            parentDiv.appendChild(imagen);
+            imageContainerElecciones.appendChild(imagen);
+            parentDiv.appendChild(imageContainerElecciones);
             parentDiv.appendChild(titulo);
             parentDiv.appendChild(fechaInicio);
             parentDiv.appendChild(fechaFin);

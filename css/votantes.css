@@ -16,9 +16,68 @@
     }
 }
 
+@keyframes fadeInOutFondo {
+    0% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+
+body{
+    background-color: var(--back-color);
+    color: white;
+}
+
+#circle1{
+    position: absolute;
+    width: 400px;
+    top: -100px;
+    left: -100px;
+    height: 400px;
+    border-radius: 100%;
+    background-color: #ae0d12;
+    filter: blur(100px);
+    z-index: -1;
+    opacity: 0.5;
+    animation: fadeInOutFondo 10s infinite;
+}
+
+#circle2{
+    position: absolute;
+    width: 400px;
+    top: 600px;
+    right: -200px;
+    height: 400px;
+    border-radius: 100%;
+    background-color: #fabe00;
+    filter: blur(100px);
+    z-index: -1;
+    opacity: 0.3;
+    animation: fadeInOutFondo 5s infinite;
+}
+
+.contenido {
+    position: absolute;
+    width: 100dvw;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.contenido video{
+    width: 100%;
+    opacity: .05;
+}
+
 .votantesTitle{
     font-size: 3rem;
-    text-decoration: underline;
     margin-bottom: 2rem;
     margin: 0;
 }
@@ -29,7 +88,7 @@
     cursor: pointer;
     width: 20%;
     padding: 20px;
-    background-color: white;
+    background-image: linear-gradient(to right top, #000000, #0f0f0f, #191919, #212121, #2a2a2a);
     box-sizing: border-box;
     border: 1px solid var(--border-color);
     border-radius: 5px;
@@ -69,6 +128,16 @@
 
 .eleccion img{
     width:100%;
+}
+
+.imgContainerEleccion{
+    height: 30%;
+    overflow: hidden;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--border-color);
+    object-fit: contain;
 }
 
 #eleccionesFinalizadas{

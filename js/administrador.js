@@ -165,7 +165,7 @@ async function candidatos(mainTitle) {
     async function crearInterfazCandidatos(candidato) {
 
         let nombrePartido = await buscarPartido(candidato.idPartido).then(data => {
-            return data[0].nombre;
+            return data[0].logo;
         });
 
         let nombreLocalidad = await buscarLocalidad(candidato.idLocalidad).then(data => {
@@ -185,8 +185,8 @@ async function candidatos(mainTitle) {
         let idUsuario = document.createElement('p');
         idUsuario.textContent = candidato.idUsuario;
 
-        let partido = document.createElement('p');
-        partido.textContent = nombrePartido; // Asumiendo que tienes el nombre del partido en los datos
+        let partido = document.createElement('img');
+        partido.src = nombrePartido; // Asumiendo que tienes el nombre del partido en los datos
 
         let localidad = document.createElement('p');
         localidad.textContent = nombreLocalidad; // Asumiendo que tienes el nombre de la localidad
@@ -206,9 +206,15 @@ async function candidatos(mainTitle) {
             localidadesSelect.innerHTML = "";
             idUsuarioInput.innerHTML = "";
 
-            cargarPartidos(partidoSelect);
-            cargarLocalidades(localidadesSelect);
+            cargarPartidos(partidoSelect).then(() => {
+                partidoSelect.value = candidato.idPartido;
+            });
+            cargarLocalidades(localidadesSelect).then(() => {
+                localidadesSelect.value = candidato.idLocalidad;
+            });
+
             idUsuarioInput.innerHTML = `<option>${candidato.idUsuario}</option>`;
+            numeroCandidatoSelect.value = candidato.numeroCandidato;
 
             anadirCandidatoBtn.style.display = "none";
             borrarCandidatoBtn.style.display = "block";

@@ -2,6 +2,7 @@
     --main-width: 1456px;
     --border-color: rgb(95, 95, 95);
     --header-height: 100px;
+    --back-color: rgb(34, 34, 34);
 }
 
 *{
@@ -139,7 +140,7 @@ header .menu a:hover{
 }
 
 .notCentered{
-    min-height: 100dvh;
+    min-height: calc(100dvh - 100px);
     display: flex;
     flex-direction: column;
     padding-inline: 20px;
