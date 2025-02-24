@@ -188,11 +188,13 @@ function votarEleccionActiva(idEleccion){
                     
                     // INSERTAMOS EL VOTO EN LA TABLA VOTOS
                     insertarVotoGenerales(idEleccion, partido.idPartido).then(data => {
+                        console.log(data)
                     })
 
                     // E INSERTAMOS COMO QUE EL USUARIO HA VOTADO EN LAS ELECCIONES
                     insertarUsuarioHaVotado(idEleccion, sessionStorage.getItem('idUsuario')).then(data => {
-                        window.location.href = "/eVotaciones/vistas/votantes.html";
+                        console.log(data)
+                        
                     });
 
                 }
@@ -210,73 +212,59 @@ function votarEleccionActiva(idEleccion){
 
 }
 
-function mostrarResultadoEleccion(idEleccion){
-
-    // BORRANDO CONTENIDO ANTERIOR
+function mostrarResultadoEleccion(idEleccion) {
     let contenido = document.getElementById('notCentered');
-    contenido.innerHTML = '<button class="back" id="back"><img src="https://cdn-icons-png.flaticon.com/512/3114/3114883.png">Atrás</button>'
+    contenido.innerHTML = '<button class="back" id="back"><img src="https://cdn-icons-png.flaticon.com/512/3114/3114883.png">Atrás</button>';
 
     let titulo = document.createElement('h2');
     titulo.textContent = "RESULTADOS ELECCION";
     titulo.classList.add('votantesTitle');
     contenido.appendChild(titulo);
 
-    volverAtras()
-
-    votosPorLocalidadEleccion(idEleccion).then(votos => {
-        console.log(votos)
-    })
+    volverAtras();
 
     let partidosPadre = document.createElement('div');
     partidosPadre.classList.add('partidosEleccionPadre');
 
-    votosPorPartidoEleccion(idEleccion).then(votos => {
-
-        console.log(votos)
-
-        votos.forEach(votosPartido => {
-
-            buscarPartido(votosPartido.idPartido).then(partido => {
-
-                let nombre = partido[0].nombre;
-                let siglas = partido[0].siglas;
-                let logo = partido[0].logo;
-                let votosPartidoPolitico = votosPartido.total_votos;
-            
-                let parentDiv = document.createElement('div');
-                parentDiv.classList.add('partidoEleccion');
-
-                let nombrePartido = document.createElement('h3');
-                nombrePartido.textContent = nombre;
-
-                let siglasPartido = document.createElement('p');
-                siglasPartido.textContent = siglas;
-
-                let votosMostrar = document.createElement('p');
-                votosMostrar.textContent = votosPartidoPolitico + " votos";
-
-                let imagenPartido = document.createElement('img');
-                imagenPartido.src = logo;
-
-                parentDiv.appendChild(imagenPartido);
-                parentDiv.appendChild(nombrePartido);
-                parentDiv.appendChild(siglasPartido);
-                parentDiv.appendChild(votosMostrar);
-
-                let notCentered = document.getElementById('notCentered');
-                partidosPadre.appendChild(parentDiv);
-            
+    votosPorPartidoEleccion(idEleccion).then(async votos => {
+        const partidosConDetalles = await Promise.all(
+            votos.map(async votosPartido => {
+                const partido = await buscarPartido(votosPartido.idPartido);
+                return {
+                    ...votosPartido,
+                    nombre: partido[0].nombre,
+                    siglas: partido[0].siglas,
+                    logo: partido[0].logo
+                };
             })
-        })
+        );
+
+        partidosConDetalles.forEach(partido => {
+            let parentDiv = document.createElement('div');
+            parentDiv.classList.add('partidoEleccion');
+
+            let nombrePartido = document.createElement('h3');
+            nombrePartido.textContent = partido.nombre;
+
+            let siglasPartido = document.createElement('p');
+            siglasPartido.textContent = partido.siglas;
+
+            let votosMostrar = document.createElement('p');
+            votosMostrar.textContent = partido.total_votos + " votos";
+
+            let imagenPartido = document.createElement('img');
+            imagenPartido.src = partido.logo;
+
+            parentDiv.appendChild(imagenPartido);
+            parentDiv.appendChild(nombrePartido);
+            parentDiv.appendChild(siglasPartido);
+            parentDiv.appendChild(votosMostrar);
+
+            partidosPadre.appendChild(parentDiv);
+        });
 
         contenido.appendChild(partidosPadre);
-
-    })
-
-    // CHART JS
-    // graficoDonut(contenido);
-
-
+    });
 }
 
 function graficoDonut(contenido){

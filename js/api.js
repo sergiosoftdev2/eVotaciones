@@ -773,6 +773,11 @@ export async function insertarVotoGenerales(idEleccion, idPartido, idLocalidad){
     let formData = new FormData();
     formData.append('idEleccion', idEleccion);
     formData.append('idPartido', idPartido);
+
+    if(idLocalidad == undefined){
+        idLocalidad = 0;
+    }
+
     formData.append('idLocalidad', idLocalidad);
 
     try {
