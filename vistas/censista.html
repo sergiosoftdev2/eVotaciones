@@ -28,29 +28,33 @@
     </header>
     
     <main class="main">
-        <section class="mainTitle centered">
-            <h1>Menú Censo</h1>
-            <div class="buscar">
-                <label for="">Ordenar Por: </label>
-                <select name="" id="comunidades">
-                    <option value="">Comunidad Autonoma</option>
-                </select>
-                <select name="" id="localidadesComunidad" disabled></select>
-            </div>
-            <div class="busquedaCiudadanos" id="busquedaCiudadanos">
-                <div class="ciudadano" id="preFix">
-                    <h2>IDCenso</h2>
-                    <h2>DNI</h2>
-                    <h2>Nombre</h2>
-                    <h2>Apellido</h2>
-                    <h2>Email</h2>
-                    <h2>F. Nacimiento</h2>
-                    <h2>Localidad</h2>
-                </div>
-                <div class="contentInsert" id="contentInsert"></div>
-            </div>
+        <section class="mainTitle" id="mainTitle">
+
             <div class="actionButtons">
-                <button id="insertarCiudadano" class="anadirCiudadano">Insertar</button>
+                <button id="insertarCiudadano"><img src="/eVotaciones/img/plus.svg">Insertar</button> 
+            </div>
+
+            <div style="width: 90%;">
+                <div class="buscar">
+                    <label for="">Ordenar Por: </label>
+                    <select name="" id="comunidades">
+                        <option value="">Comunidad Autonoma</option>
+                    </select>
+                    <select name="" id="localidadesComunidad" disabled></select>
+                </div>
+                <div class="busquedaCiudadanos" id="busquedaCiudadanos">
+                    <div class="ciudadano" id="preFix">
+                        <h2>IDCenso</h2>
+                        <h2>DNI</h2>
+                        <h2>Nombre</h2>
+                        <h2>Apellido</h2>
+                        <h2>Email</h2>
+                        <h2>F. Nacimiento</h2>
+                        <h2>Localidad</h2>
+                    </div>
+                    <div class="contentInsert" id="contentInsert"></div>
+                </div>
+
             </div>
         </section>
        

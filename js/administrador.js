@@ -25,9 +25,16 @@ document.addEventListener("DOMContentLoaded", function() {
 
 async function candidatos(mainTitle) {
     let modalContainer = document.getElementById('modalContainer');
+    mainTitle.classList.add("adminPanel");
 
     mainTitle.innerHTML = `
-        <button class="back" id="back">Atrás</button>
+        
+        
+        <div class="actionButtons">
+            <button class="back" id="back"><img src="/eVotaciones/img/back.svg">Atrás</button>
+            <button id="insertarCandidato"><img src="/eVotaciones/img/plus.svg">Insertar</button> 
+        </div>
+        
         <div class="busquedaCiudadanos" id="busquedaCiudadanos">
             <div class="ciudadano" id="preFix">
                 <h2>idCandidato</h2>
@@ -38,8 +45,6 @@ async function candidatos(mainTitle) {
             </div>
             <div class="contentInsert" id="contentInsert"></div>
         </div>
-        <div class="actionButtons">
-            <button id="insertarCandidato" class="anadirCiudadano">Insertar</button> </div>
     `;
 
     modalContainer.innerHTML = `
@@ -153,7 +158,7 @@ async function candidatos(mainTitle) {
     async function crearInterfazCandidatos(candidato) {
 
         let nombrePartido = await buscarPartido(candidato.idPartido).then(data => {
-            return data;
+            return data[0].nombre;
         });
 
         let nombreLocalidad = await buscarLocalidad(candidato.idLocalidad).then(data => {
@@ -244,6 +249,7 @@ async function candidatos(mainTitle) {
 
     async function cargarPartidos(selectElement) {
         let partidos = await buscarPartidos();
+
         partidos.forEach(partido => {
             let option = document.createElement('option');
             option.value = partido.idPartido;
@@ -269,9 +275,10 @@ async function candidatos(mainTitle) {
         selectElement.innerHTML = "";
 
         let usuarios = await buscarUsuariosNoCandidatos().then(async data => {
+
             data.forEach(async usuario => {
                 let miCiudadano = await buscarCiudadano(usuario.idCenso).then(ciudadano => {  
-                    return ciudadano;
+                    return ciudadano[0];
                 });
 
                 let option = document.createElement('option');
@@ -287,125 +294,18 @@ async function candidatos(mainTitle) {
     
 }
 
-async function escrutinios(mainTitle){
-
-    mainTitle.innerHTML = `
-        <button class="back" id="back">Atrás</button>
-
-        <div class="busquedaCiudadanos" id="busquedaCiudadanos">
-                <div class="ciudadano" id="preFix">
-                    <h2>idEleccion</h2>
-                    <h2>Tipo</h2>
-                    <h2>Estado</h2>
-                    <h2>Fecha Inicio</h2>
-                    <h2>Fecha Fin</h2>
-                </div>
-                <div class="contentInsert" id="contentInsert"></div>
-            </div>
-        </div>
-    `
-
-    let back = document.getElementById('back');
-    let contentInsert = document.getElementById('contentInsert');
-    let modal = document.getElementById('modal');
-    let anadirEleccionBtn = document.getElementById('anadirCiudadano');
-    let borrarEleccionBtn = document.getElementById('borrarCiudadano');
-    let actualizarEleccionBtn = document.getElementById('actualizarCiudadano');
-
-    crearInterfazElecciones()
-    
-    // PARA VOLVER AL MENU DE ADMINISTRADOR
-    back.addEventListener("click", () => {
-        adminMenuShow(mainTitle);
-    });
-
-    async function crearInterfazElecciones(){
-
-        let elecciones = await buscarEleccionesFinalizadas().then(data => {
-            return data;
-        });
-
-        contentInsert.innerHTML = ""
-
-        if(elecciones.length > 0){
-
-            elecciones.forEach(eleccion => {
-
-                let elementoPadre = document.createElement('div');
-                elementoPadre.dataset.id = eleccion.idEleccion;
-                elementoPadre.classList.add('ciudadano');
-                
-                let idEleccion = document.createElement('p');
-                idEleccion.textContent = eleccion.idEleccion;
-    
-                let tipo = document.createElement('p');
-                tipo.textContent = eleccion.tipo;
-    
-                let estado = document.createElement('p');
-                estado.textContent = eleccion.estado;
-    
-                let fechaInicio = document.createElement('p');
-                fechaInicio.textContent = eleccion.fechaInicio;
-    
-                let fechaFin = document.createElement('p');
-                fechaFin.textContent = eleccion.fechaFin;
-    
-                elementoPadre.appendChild(idEleccion);
-                elementoPadre.appendChild(tipo);
-                elementoPadre.appendChild(estado);
-                elementoPadre.appendChild(fechaInicio);
-                elementoPadre.appendChild(fechaFin);
-
-                elementoPadre.addEventListener("click", () => {
-
-                    tipoModal.value = eleccion.tipo;
-                    estadoModal.value = eleccion.estado;
-                    fechaInicioModal.value = eleccion.fechaInicio;
-                    fechaFinModal.value = eleccion.fechaFin;
-
-                    borrarEleccionBtn.style.display = "block";
-                    actualizarEleccionBtn.style.display = "block";
-                    anadirEleccionBtn.style.display = "none";
-
-                    modal.classList.remove('noVisible');
-
-                    // BORRAR ELECCION
-                    borrarEleccionBtn.addEventListener("click", () => {
-                        borrarEleccion(eleccion.idEleccion);
-                        setTimeout(() => {
-                            modal.classList.add("noVisible");
-                            crearInterfazElecciones();
-                        }, 250);
-                    })
-
-                    // ACTUALIZAR ELECCION
-                    actualizarEleccionBtn.addEventListener("click", () => {
-                        actualizarEleccion(eleccion.idEleccion, tipoModal.value, estadoModal.value, fechaInicioModal.value, fechaFinModal.value);
-                        setTimeout(() => {
-                            modal.classList.add("noVisible");
-                            crearInterfazElecciones();
-                        }, 250);
-                    })
-
-                });
-    
-                contentInsert.appendChild(elementoPadre);
-    
-            })
-
-        }else{
-            contentInsert.innerHTML = `<p>No hay elecciones :(</p>`;
-        }
-
-    }
-}
-
 async function elecciones(mainTitle){
 
     let modalContainer = document.getElementById('modalContainer');
 
+    mainTitle.classList.add("adminPanel");
+
     mainTitle.innerHTML = `
-        <button class="back" id="back">Atrás</button>
+
+        <div class="actionButtons">
+            <button class="back" id="back"><img src="/eVotaciones/img/back.svg">Atrás</button>
+            <button id="insertarCiudadano"><img src="/eVotaciones/img/plus.svg">Insertar</button> 
+        </div>
 
         <div class="busquedaCiudadanos" id="busquedaCiudadanos">
                 <div class="ciudadano" id="preFix">
@@ -416,9 +316,6 @@ async function elecciones(mainTitle){
                     <h2>Fecha Fin</h2>
                 </div>
                 <div class="contentInsert" id="contentInsert"></div>
-            </div>
-            <div class="actionButtons">
-                <button id="insertarCiudadano" class="anadirCiudadano">Insertar</button>
             </div>
         </div>
     `
@@ -612,8 +509,15 @@ async function partidos(mainTitle){
 
     let modalContainer = document.getElementById('modalContainer');
 
+    mainTitle.classList.add("adminPanel");
+
     mainTitle.innerHTML = `
-        <button class="back" id="back">Atrás</button>
+
+        <div class="actionButtons">
+            <button class="back" id="back"><img src="/eVotaciones/img/back.svg">Atrás</button>
+            <button id="insertarPartido"><img src="/eVotaciones/img/plus.svg">Insertar</button> 
+        </div>
+
         <div class="busquedaCiudadanos" id="busquedaCiudadanos">
             <div class="ciudadano" id="preFix">
                 <h2>idPartido</h2>
@@ -622,9 +526,6 @@ async function partidos(mainTitle){
                 <h2>Logo</h2>
             </div>
             <div class="contentInsert" id="contentInsert"></div>
-        </div>
-        <div class="actionButtons">
-            <button id="insertarPartido" class="anadirCiudadano">Insertar</button>
         </div>
     `;
 
@@ -798,16 +699,14 @@ function adminMenuShow(mainTitle){
             <div id="gestionElecciones" class="adminPanels">
                 <h2>Elecciones</h2>
             </div>
-            <div id="gestionEscrutinios" class="adminPanels">
-                <h2>Escrutinios</h2>
-            </div>
         </div>
     `
+
+    mainTitle.classList.remove("adminPanel");
 
     let gestionCandidaatos = document.getElementById('gestionCandidatos');
     let gestionPartidos = document.getElementById('gestionPartidos');
     let gestionElecciones = document.getElementById('gestionElecciones');
-    let gestionEscrutinios = document.getElementById('gestionEscrutinios');
 
     gestionCandidaatos.addEventListener("click", function() {
         candidatos(mainTitle);
@@ -815,10 +714,6 @@ function adminMenuShow(mainTitle){
 
     gestionPartidos.addEventListener("click", function() {
         partidos(mainTitle);
-    });
-
-    gestionEscrutinios.addEventListener("click", function() {
-        escrutinios(mainTitle);
     });
 
     gestionElecciones.addEventListener("click", function() {

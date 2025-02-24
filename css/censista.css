@@ -30,16 +30,20 @@
     }
 }
 
-.mainTitle{
-    padding-top: 40px;
-}
-
 .buscar{
     display: flex;
-    justify-content: left;
+    justify-content: right;
     align-items: center;
-    margin-bottom: 20px;
-    width: 90%;
+    padding: 10px;
+    color: white;
+    gap: 20px;
+    box-sizing: border-box;
+    width: 100%;
+    background-color: #272727;
+}
+
+.buscar label{
+    margin-right: auto;
 }
 
 .buscar select{
@@ -48,21 +52,21 @@
     margin-right: 0;
     padding: 10px;
     box-sizing: border-box;
-    margin-left: auto;
-    background-color: white;
+    background-color: rgb(34, 34, 34);
+    color: white;
     border: 1px solid var(--border-color);
     border-radius: 10px;
 }
 
 .busquedaCiudadanos{
     position: relative;
-    height: 500px;
+    height: 100%;
     box-sizing: border-box;
-    background-color: white;
-    border: 1px solid var(--border-color);
-    width: 90%;
-    border-radius: 10px;
+    background-color: rgb(34, 34, 34);
+    width: 100%;
     display: flex;
+    color: white;
+
     flex-direction: column;
 }
 
@@ -117,10 +121,11 @@
 
 #preFix{
     animation: 0s fadeInLeft ;
+    cursor: auto;
 }
 
 #preFix:hover{
-    background-color: white;
+    background-color: transparent;
 }
 
 #modal{
@@ -247,4 +252,78 @@
     display: flex;
     width: 100%;
     gap: 20px;
+}
+
+header{
+    position: relative;
+}
+
+.main{
+    width: 100dvw;
+    margin: 0;
+    border: 0;
+}
+
+.mainTitle{
+    width: 100dvw;
+    height: calc(100dvh - 75px);
+    display: flex;
+    padding-top: 0;
+    box-sizing: border-box;
+    position: relative;
+    left: 0;
+    border: 0;
+}
+
+.adminPanel{
+    flex-direction: row;
+}
+
+.adminPanel .actionButtons{
+    margin: 0;
+    background-color: rgb(34, 34, 34);
+    border-right: 1px solid var(--border-color);
+    width:10%;
+    flex-direction: column;
+    padding: 10px;
+    gap: 0;
+}
+
+.adminPanel .actionButtons button{
+    color: white;
+    padding: 10px;
+    cursor: pointer;
+    background-color: transparent;
+    border-radius: 5px;
+    display: flex;
+    font-weight: bold;
+    align-items: center;
+    justify-content: left;
+    font-size: 1rem;
+    border: 0;
+    gap: 5px;
+
+    transition: .2s;
+
+}
+
+.adminPanel .actionButtons button img{
+    width: 20%;
+    padding: 5px;
+    box-sizing: border-box;
+    transition: .2s;
+
+}
+
+.adminPanel .actionButtons button:hover img{
+    margin-right: 10px;
+}
+
+.adminPanel .actionButtons button:hover{
+    background-color: rgba(88, 88, 88, 0.8);
+}
+
+.adminPanel .actionButtons .anadirCiudadano{
+    background-color: transparent;
+    height: 10%;
 }

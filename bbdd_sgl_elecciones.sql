@@ -1,3 +1,32 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Servidor: 127.0.0.1
+-- Tiempo de generación: 24-02-2025 a las 09:17:32
+-- Versión del servidor: 10.4.32-MariaDB
+-- Versión de PHP: 8.2.12
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Base de datos: `bbdd_sgl_elecciones`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `candidato`
+--
+
 CREATE TABLE `candidato` (
   `idCandidato` int(11) NOT NULL,
   `idUsuario` int(11) NOT NULL,
@@ -308,7 +337,7 @@ CREATE TABLE `voto` (
   `idVoto` int(11) NOT NULL,
   `idEleccion` int(11) NOT NULL,
   `idPartido` int(11) NOT NULL,
-  `idLocalidad` int(11) NOT NULL,
+  `idLocalidad` int(11) DEFAULT NULL,
   `fechaHora` timestamp NOT NULL DEFAULT current_timestamp(),
   `idCandidato` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -318,11 +347,9 @@ CREATE TABLE `voto` (
 --
 
 INSERT INTO `voto` (`idVoto`, `idEleccion`, `idPartido`, `idLocalidad`, `fechaHora`, `idCandidato`) VALUES
-(6, 7, 16, 0, '2025-02-21 16:49:46', NULL),
-(7, 7, 12, 0, '2025-02-21 17:44:37', NULL),
-(8, 7, 12, 0, '2025-02-21 17:49:12', NULL),
-(9, 7, 14, 0, '2025-02-21 17:51:03', NULL),
-(10, 7, 4, 0, '2025-02-21 17:51:32', NULL);
+(11, 7, 4, NULL, '2025-02-24 08:08:07', NULL),
+(12, 7, 2, NULL, '2025-02-24 08:09:02', NULL),
+(13, 7, 2, NULL, '2025-02-24 08:09:10', NULL);
 
 -- --------------------------------------------------------
 
@@ -341,8 +368,6 @@ CREATE TABLE `votousuarioeleccion` (
 
 INSERT INTO `votousuarioeleccion` (`idUsuario`, `idEleccion`) VALUES
 (44, 7),
-(51, 7),
-(52, 7),
 (53, 7),
 (54, 7);
 
@@ -484,7 +509,60 @@ ALTER TABLE `usuario`
 -- AUTO_INCREMENT de la tabla `voto`
 --
 ALTER TABLE `voto`
-  MODIFY `idVoto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `idVoto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+
+--
+-- Restricciones para tablas volcadas
+--
+
+--
+-- Filtros para la tabla `candidato`
+--
+ALTER TABLE `candidato`
+  ADD CONSTRAINT `candidato_ibfk_1` FOREIGN KEY (`idUsuario`) REFERENCES `usuario` (`idUsuario`) ON DELETE CASCADE,
+  ADD CONSTRAINT `candidato_ibfk_2` FOREIGN KEY (`idPartido`) REFERENCES `partido` (`idPartido`) ON DELETE CASCADE,
+  ADD CONSTRAINT `candidato_ibfk_3` FOREIGN KEY (`idLocalidad`) REFERENCES `localidad` (`idLocalidad`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `censo`
+--
+ALTER TABLE `censo`
+  ADD CONSTRAINT `censo_ibfk_1` FOREIGN KEY (`idLocalidad`) REFERENCES `localidad` (`idLocalidad`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `localidad`
+--
+ALTER TABLE `localidad`
+  ADD CONSTRAINT `localidad_ibfk_1` FOREIGN KEY (`idComunidad`) REFERENCES `comunidadautonoma` (`idComunidad`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `resultado`
+--
+ALTER TABLE `resultado`
+  ADD CONSTRAINT `resultado_ibfk_1` FOREIGN KEY (`idEleccion`) REFERENCES `eleccion` (`idEleccion`) ON DELETE CASCADE,
+  ADD CONSTRAINT `resultado_ibfk_2` FOREIGN KEY (`idPartido`) REFERENCES `partido` (`idPartido`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `usuario`
+--
+ALTER TABLE `usuario`
+  ADD CONSTRAINT `usuario_ibfk_1` FOREIGN KEY (`idCenso`) REFERENCES `censo` (`idCenso`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `voto`
+--
+ALTER TABLE `voto`
+  ADD CONSTRAINT `fk_idCandidato` FOREIGN KEY (`idCandidato`) REFERENCES `candidato` (`idCandidato`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `voto_ibfk_1` FOREIGN KEY (`idPartido`) REFERENCES `partido` (`idPartido`) ON DELETE CASCADE,
+  ADD CONSTRAINT `voto_ibfk_2` FOREIGN KEY (`idLocalidad`) REFERENCES `localidad` (`idLocalidad`) ON DELETE CASCADE,
+  ADD CONSTRAINT `voto_ibfk_3` FOREIGN KEY (`idEleccion`) REFERENCES `eleccion` (`idEleccion`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `votousuarioeleccion`
+--
+ALTER TABLE `votousuarioeleccion`
+  ADD CONSTRAINT `votousuarioeleccion_ibfk_1` FOREIGN KEY (`idUsuario`) REFERENCES `usuario` (`idUsuario`),
+  ADD CONSTRAINT `votousuarioeleccion_ibfk_2` FOREIGN KEY (`idEleccion`) REFERENCES `eleccion` (`idEleccion`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -13,6 +13,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let localidades = document.getElementById('localidadesComunidad');
     const censista = document.getElementById('busquedaCiudadanos');
     const contentInsert = document.getElementById('contentInsert');
+    let mainTitle = document.getElementById('mainTitle');
+
+    mainTitle.classList.add("adminPanel")
 
     if(sessionStorage.getItem('rol') != 'censista'){
         window.location.href = "/eVotaciones/vistas/login.html";
