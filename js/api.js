@@ -90,27 +90,30 @@ export async function actualizarPartidoPolitico(idPartido, nombre, siglas, logo)
 
 }
 
-export async function insertarPartidoPolitico(nombre, siglas, logo){
+export async function insertarPartidoPolitico(nombre, siglas, logo) {
     let formData = new FormData();
     formData.append('nombre', nombre);
     formData.append('siglas', siglas);
     formData.append('logo', logo);
 
-    fetch("../api/INSERT/insertarPartido.php", {
-        method: 'POST',
-        body: formData
-    }).then(response => {
-        if (!response.ok) {
-            throw new Error('Error en la petición');
-        }
-        return response.json();
-    }).then(datos => {
-        return datos;
-    }).catch(error => {
-        console.log(error);
-    });
+    try {
+        const response = await fetch("../api/INSERT/insertarPartido.php", {
+            method: 'POST',
+            body: formData
+        });
 
+        if (!response.ok) {
+            throw new Error(`Error en la petición: ${response.status}`);
+        }
+
+        const datos = await response.json();
+        return datos;
+    } catch (error) {
+        console.error("Error en la petición:", error);
+        return { success: false, error: error.message };
+    }
 }
+
 
 export async function buscarCandidatos() {
     try {
@@ -153,13 +156,14 @@ export async function borrarCandidato(idCandidato) {
     }
 }
 
-export async function actualizarCandidato(idCandidato, idUsuario, idPartido, idLocalidad, numeroCandidato){
+export async function actualizarCandidato(idCandidato, idUsuario, idPartido, idLocalidad, numeroCandidato, eleccionAsociada){
     let formData = new FormData();
     formData.append('idPartido', idPartido);
     formData.append('idCandidato', idCandidato);
     formData.append('idUsuario', idUsuario);
     formData.append('idLocalidad', idLocalidad);
     formData.append('numeroCandidato', numeroCandidato);
+    formData.append('eleccionAsociada', eleccionAsociada);
 
     try {
         const response = await fetch("../api/UPDATE/actualizarCandidato.php", {
@@ -181,11 +185,12 @@ export async function actualizarCandidato(idCandidato, idUsuario, idPartido, idL
 
 }
 
-export async function insertarCandidato(idUsuario, idPartido, idLocalidad, numeroCandidato){
+export async function insertarCandidato(idUsuario, idPartido, idLocalidad, numeroCandidato, eleccionAsociada){
     let formData = new FormData();
     formData.append('idUsuario', idUsuario);
     formData.append('idPartido', idPartido);
     formData.append('idLocalidad', idLocalidad);
+    formData.append('eleccionAsociada', eleccionAsociada);
     formData.append('numeroCandidato', numeroCandidato);
 
     fetch("../api/INSERT/insertarCandidato.php", {

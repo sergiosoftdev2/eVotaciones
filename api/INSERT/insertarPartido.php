@@ -23,8 +23,8 @@
             echo json_encode(["message" => "error"]);
         }
     } catch (PDOException $e) {
-        // Captura errores de la base de datos y los devuelve como JSON
-        echo json_encode(['error' => $e->getMessage()]);
+        echo json_encode(['success' => false, 'error' => $e->getMessage(), 'code' => $e->getCode()]);
     }
+    
 
 ?>

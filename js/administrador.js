@@ -42,6 +42,7 @@ async function candidatos(mainTitle) {
                 <h2>Partido</h2>
                 <h2>Localidad</h2>
                 <h2>Numero de Candidato</h2>
+                <h2>Eleccion Asociada</h2>
             </div>
             <div class="contentInsert" id="contentInsert"></div>
         </div>
@@ -62,12 +63,19 @@ async function candidatos(mainTitle) {
                 </div>
                 <h2>Localidad</h2>
                 <select id="localidadesSelect"></select>
-                <h2>Numero de Candidato</h2>
-                <select id="numeroCandidatoSelect">
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                </select>
+                <div style="display: flex; gap: 30px;">
+                    <div style="width: 50%;">
+                        <h2>Numero de Candidato</h2>
+                        <select id="numeroCandidatoSelect">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                        </select>
+                    </div>
+                    <div style="width: 50%;">
+                        <h2>Elección Asociada</h2>
+                        <select id="eleccionAsociada"></select> </div>
+                </div>
                 <div class="buttonModalSide">
                     <button id="anadirCiudadano">Añadir Candidato</button>
                     <button id="borrarCiudadano">Borrar</button>
@@ -85,6 +93,7 @@ async function candidatos(mainTitle) {
 
     // OBTENIENDO LOS PARAMETROS DEL MODAL
     let idUsuarioInput = document.getElementById('idUsuario');
+    let eleccionAsociada = document.getElementById('eleccionAsociada')
     let numeroCandidatoSelect = document.getElementById('numeroCandidatoSelect');
     let partidoSelect = document.getElementById('partidoSelect');
     let localidadesSelect = document.getElementById('localidadesSelect');
@@ -97,14 +106,10 @@ async function candidatos(mainTitle) {
     if (candidatosData.length > 0) {
         contentInsert.innerHTML = ''; // Limpia el contenido antes de agregar nuevos elementos
         
-        for (let index = 0; index < candidatosData.length; index++) {
-            await new Promise(resolve => {
-                setTimeout(() => {
-                    crearInterfazCandidatos(candidatosData[index]); // Usar "data" en lugar de "datos"
-                    resolve();
-                }, 5 * index);
-            });
-        }
+        candidatosData.forEach(candidato => {
+            crearInterfazCandidatos(candidato);
+        });
+
     } else {
         contentInsert.innerHTML = `<p>No hay candidatos :(</p>`;
     }
@@ -122,6 +127,7 @@ async function candidatos(mainTitle) {
         cargarPartidos(partidoSelect);
         cargarLocalidades(localidadesSelect);
         cargarUsuarios(idUsuarioInput);
+        cargarElecciones(eleccionAsociada)
 
 
         anadirCandidatoBtn.style.display = "block";
@@ -136,13 +142,14 @@ async function candidatos(mainTitle) {
             let idPartido = partidoSelect.value;
             let idLocalidad = localidadesSelect.value;
             let numeroCandidato = numeroCandidatoSelect.value;
+            let eleccionAsociadaValue = eleccionAsociada.value;
 
-            if (!idUsuario || !idPartido || !idLocalidad) {
+            if (!idUsuario || !idPartido || !idLocalidad || eleccionAsociadaValue) {
                 alert('Por favor, completa todos los campos.');
                 return;
             }
 
-            let nuevoCandidato = await insertarCandidato(idUsuario, idPartido, idLocalidad, numeroCandidato).then(data => {
+            let nuevoCandidato = await insertarCandidato(idUsuario, idPartido, idLocalidad, numeroCandidato, eleccionAsociadaValue).then(data => {
                 return data;
             });
 
@@ -182,6 +189,9 @@ async function candidatos(mainTitle) {
         let numeroCandidato = document.createElement('p');
         numeroCandidato.textContent = candidato.numeroCandidato;
 
+        let eleccionAsociada = document.createElement('p');
+        eleccionAsociada.textContent = candidato.eleccionAsociada;
+
         let idUsuario = document.createElement('p');
         idUsuario.textContent = candidato.idUsuario;
 
@@ -212,6 +222,7 @@ async function candidatos(mainTitle) {
             cargarLocalidades(localidadesSelect).then(() => {
                 localidadesSelect.value = candidato.idLocalidad;
             });
+            cargarElecciones()
 
             idUsuarioInput.innerHTML = `<option>${candidato.idUsuario}</option>`;
             numeroCandidatoSelect.value = candidato.numeroCandidato;
@@ -232,6 +243,7 @@ async function candidatos(mainTitle) {
             });
 
             actualizarCandidatoBtn.addEventListener("click", async () => {
+
                 let actualizado = await actualizarCandidato(candidato.idCandidato, idUsuarioInput.value, partidoSelect.value, localidadesSelect.value, numeroCandidatoSelect.value);
                 if (actualizado.success) {
                     alert("Candidato actualizado correctamente");
@@ -247,13 +259,15 @@ async function candidatos(mainTitle) {
                 let idUsuario = idUsuarioInput.value;
                 let idPartido = partidoSelect.value;
                 let idLocalidad = localidadesSelect.value;
+                let eleccionAsociada = document.getElementById('eleccionAsociada').value;
+
 
                 if (!idUsuario || !idPartido || !idLocalidad) {
                     alert('Por favor, completa todos los campos.');
                     return;
                 }
 
-                let nuevoCandidato = await insertarCandidato(idUsuario, idPartido, idLocalidad);
+                let nuevoCandidato = await insertarCandidato(idUsuario, idPartido, idLocalidad, eleccionAsociada);
 
             })
 
@@ -303,7 +317,20 @@ async function candidatos(mainTitle) {
             })
         });
     }
-      
+     
+    async function cargarElecciones(){
+        let eleccionAsociada = document.getElementById('eleccionAsociada');
+        eleccionAsociada.innerHTML = "";
+
+        let elecciones = await buscarElecciones().then(data => {
+            data.forEach(eleccion => {
+                let option = document.createElement('option');
+                option.value = eleccion.idEleccion;
+                option.text = eleccion.idEleccion;
+                eleccionAsociada.appendChild(option);
+            })
+        });
+    }
     
 }
 
@@ -417,10 +444,7 @@ async function elecciones(mainTitle){
 
             insertarEleccion(tipo, estado, fechaInicio, fechafin);
 
-            setTimeout(() => {
-                modal.classList.add("noVisible");
-                crearInterfazElecciones();
-            }, 250);
+            crearInterfazElecciones()
 
         })
 
@@ -581,14 +605,9 @@ async function partidos(mainTitle){
     let buscarPartidosPoliticos = await buscarPartidos().then(async (data) => { 
         contentInsert.innerHTML = ''; // Limpia el contenido antes de agregar nuevos elementos
         
-        for (let index = 0; index < data.length; index++) {
-            await new Promise(resolve => {
-                setTimeout(() => {
-                    crearInterfazPartidos(data[index]); // Usar "data" en lugar de "datos"
-                    resolve();
-                }, 5 * index);
-            });
-        }
+        data.forEach(partido => {
+            crearInterfazPartidos(partido);
+        });
     });
 
     
@@ -622,7 +641,11 @@ async function partidos(mainTitle){
                 alert('Por favor, completa todos los campos.');
                 return;
             }else{
-                insertarPartidoPolitico(nombre, siglas, logo);
+                insertarPartidoPolitico(nombre, siglas, logo).then(data => {
+                    if(data.success == false){
+                        alert("El Partido Político ya existe");
+                    }
+                });
                 setTimeout(() => {
                     partidos(mainTitle);
                 }, 250);
@@ -684,17 +707,23 @@ async function partidos(mainTitle){
             logo.value = element.logo;
 
             borrarPartido.addEventListener("click", () => {
-                borrarPartidoPolitico(element.idPartido)
-                setTimeout(() => {
-                    partidos(mainTitle)
-                }, 250);
+                if(confirm("¿Quieres eliminar este partido político?")){
+                    borrarPartidoPolitico(element.idPartido)
+                    setTimeout(() => {
+                        partidos(mainTitle)
+                    }, 250);
+                }else{
+                    return;
+                }
             })
 
             actualizarPartido.addEventListener("click", () => {
-                actualizarPartidoPolitico(element.idPartido, nombre.value, siglas.value, logo.value)
-                setTimeout(() => {
-                    partidos(mainTitle)
-                }, 250);
+                if(confirm("¿Quieres actualizar este partido político?")){
+                    actualizarPartidoPolitico(element.idPartido, nombre.value, siglas.value, logo.value)
+                    setTimeout(() => {
+                        partidos(mainTitle)
+                    }, 250);
+                }
             })
 
         })

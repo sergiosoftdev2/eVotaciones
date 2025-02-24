@@ -205,6 +205,8 @@ async function modalCiudadano(idCenso){
 
     if(idCenso != undefined){
         
+        miCiudadano = miCiudadano[0]
+
         let nombre = document.getElementById('nombre');
         let apellido = document.getElementById('apellido');
         let dni = document.getElementById('dni');
@@ -265,7 +267,7 @@ async function modalCiudadano(idCenso){
         let localidad = document.getElementById('localidades');
 
         dni.removeAttribute("disabled");
-        dni.style.backgroundColor = "#FFF";
+        dni.style.backgroundColor = "rgb(34, 34, 34)";
 
         nombre.value = ""
         apellido.value = "";

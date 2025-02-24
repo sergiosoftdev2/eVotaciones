@@ -84,8 +84,10 @@
     text-align: left;
     height: 100px;
 
-    transition: .2s;
+
     animation: fadeInLeft 0.5s;
+    transition: .2s;
+    
 }
 
 .ciudadano:hover{

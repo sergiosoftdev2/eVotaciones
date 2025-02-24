@@ -11,17 +11,19 @@
         $idPartido = $_POST['idPartido'];
         $idLocalidad = $_POST['idLocalidad'];
         $numeroCandidato = $_POST['numeroCandidato'];
+        $eleccionAsocidada = $_POST['eleccionAsociada'];
 
         // Consulta de actualización
         $stmt = $conexion->prepare("UPDATE candidato 
-            SET idPartido = ?, idUsuario = ?, idLocalidad = ?, numeroCandidato = ?
+            SET idPartido = ?, idUsuario = ?, idLocalidad = ?, numeroCandidato = ?, eleccionAsociada = ?
             WHERE idCandidato = ?");
         
         $stmt->bindParam(1, $idPartido);
         $stmt->bindParam(2, $idUsuario);
         $stmt->bindParam(3, $idLocalidad);
         $stmt->bindParam(4, $numeroCandidato);
-        $stmt->bindParam(5, $idCandidato);
+        $stmt->bindParam(5, $eleccionAsocidada);
+        $stmt->bindParam(6, $idCandidato);
 
         $stmt->execute();
 
