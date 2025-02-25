@@ -1,0 +1,144 @@
+body{
+    background-color: var(--back-color);
+    color: white;
+}
+
+.cuentaUsuario{
+
+    padding-top: 80px;
+    padding-inline: 20px;
+    height: calc(80dvh);
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    justify-content: left;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    color: white
+}
+
+.cuentaUsuario .accountTitle{
+    font-size: 5rem;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 20px;
+}
+
+.cuentaUsuario h2{
+    margin: 0;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+}
+
+.cuentaUsuario input{
+    position: relative;
+    background-color: var(--back-color);
+    padding: 5px;
+    width: 40%;
+    box-sizing: border-box;
+    color: white;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    margin-bottom: 20px;
+
+    transition: .2s;
+
+}
+
+.cuentaUsuario input::after{
+    content: "";
+    width: 100%;
+    filter: blur(0px);
+    height: 100%;
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.267);
+    z-index: -1;
+    top: 0;
+    left: 0;
+    transition: .2s;
+}
+
+.cuentaUsuario input:focus::after{
+    filter: blur(20px);
+}
+
+.cuentaUsuario input:hover{
+    width: 45%;
+}
+
+.cuentaUsuario input:focus{
+    width: 50%;
+}
+
+.mainTitle::after{
+    background-image: none;
+}
+
+#borrar, #actualizar{
+    position: relative;
+    padding: 10px;
+    border-radius: 5px;
+    color: white;
+    width: 150px;
+    cursor: pointer;
+    font-weight: bold;
+
+    transition: .2s;
+}
+
+#borrar{
+    border: 1px solid rgb(255, 152, 152);
+    background-color: rgb(223, 57, 57);
+    margin-right: 10px;
+}
+
+.borrar::after{
+    content: "";
+    width: 100%;
+    filter: blur(0px);
+    height: 100%;
+    position: absolute;
+    background-color: rgb(223, 57, 57);
+    z-index: -1;
+    top: 0;
+    left: 0;
+    transition: .2s;
+}
+
+.borrar:hover::after{
+    filter: blur(20px);
+}
+
+.actualizar::after{
+    content: "";
+    width: 100%;
+    filter: blur(0px);
+    height: 100%;
+    position: absolute;
+    background-color: rgb(77, 126, 190);
+    z-index: -1;
+    top: 0;
+    left: 0;
+    transition: .2s;
+}
+
+.actualizar:hover::after{
+    filter: blur(20px);
+}
+
+.borrar:hover, .actualizar:hover{
+    width: 200px;
+    opacity: 1;
+    scale: 1.01;
+    border: 1px solid rgb(255, 255, 255);
+}
+
+.actualizar{
+    border: 1px solid rgb(227, 239, 255);
+    background-color: rgb(77, 126, 190);
+    z-index: 2;
+}
+
+.disabled{
+    background-color: rgb(184, 215, 255);
+    opacity: 0.5;
+}

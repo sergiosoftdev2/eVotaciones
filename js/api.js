@@ -907,3 +907,27 @@ export async function enviarCorreo(emailDestinatario, nombreDestinatario, asunto
         console.log("Error:", error);
     }
 }
+
+export async function actualizarCorreo(idCenso, email){
+    let formData = new FormData();
+    formData.append('idCenso', idCenso);
+    formData.append('mail', email);
+
+    try {
+        const response = await fetch("../api/UPDATE/actualizarEmail.php", {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error('Error en la petición');
+        }
+
+        const datos = await response.json();
+        return datos;
+    
+    } catch (error) {
+        console.log(error);
+    }
+
+}

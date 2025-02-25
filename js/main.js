@@ -8,12 +8,20 @@ document.addEventListener("DOMContentLoaded", () => {
     let register = document.getElementById("registro");
 
     if(sessionStorage.getItem("idUsuario")){
+        
         login.style.display = "none";
         register.style.display = "none";
+
+        let cuenta = document.createElement("a");
+        cuenta.innerText = "Mi Cuenta";
+        cuenta.href = "/eVotaciones/vistas/perfil.html";
+
         let logout = document.createElement("a");
         logout.innerText = "Cerrar Sesion";
         logout.href = "/eVotaciones/vistas/login.html";
+        
         menu.appendChild(logout);
+        menu.appendChild(cuenta);
         logout.addEventListener("click", () => cerrarSesion());
     }
 
