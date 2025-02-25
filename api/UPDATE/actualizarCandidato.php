@@ -11,7 +11,7 @@
         $idPartido = $_POST['idPartido'];
         $idLocalidad = $_POST['idLocalidad'];
         $numeroCandidato = $_POST['numeroCandidato'];
-        $eleccionAsocidada = $_POST['eleccionAsociada'];
+        $eleccionAsociada = $_POST['eleccionAsociada'];
 
         // Consulta de actualización
         $stmt = $conexion->prepare("UPDATE candidato 
@@ -22,7 +22,7 @@
         $stmt->bindParam(2, $idUsuario);
         $stmt->bindParam(3, $idLocalidad);
         $stmt->bindParam(4, $numeroCandidato);
-        $stmt->bindParam(5, $eleccionAsocidada);
+        $stmt->bindParam(5, $eleccionAsociada);
         $stmt->bindParam(6, $idCandidato);
 
         $stmt->execute();

@@ -186,6 +186,9 @@ export async function actualizarCandidato(idCandidato, idUsuario, idPartido, idL
 }
 
 export async function insertarCandidato(idUsuario, idPartido, idLocalidad, numeroCandidato, eleccionAsociada){
+
+    console.log(idUsuario, idPartido, idLocalidad, numeroCandidato, eleccionAsociada)
+
     let formData = new FormData();
     formData.append('idUsuario', idUsuario);
     formData.append('idPartido', idPartido);

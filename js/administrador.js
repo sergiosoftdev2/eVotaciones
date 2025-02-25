@@ -138,13 +138,14 @@ async function candidatos(mainTitle) {
         anadirCandidatoBtn = document.getElementById("anadirCiudadano"); // Reasignar el nuevo botón sin eventos previos
 
         anadirCandidatoBtn.addEventListener("click", async () => {
+
             let idUsuario = idUsuarioInput.value;
             let idPartido = partidoSelect.value;
             let idLocalidad = localidadesSelect.value;
             let numeroCandidato = numeroCandidatoSelect.value;
             let eleccionAsociadaValue = eleccionAsociada.value;
 
-            if (!idUsuario || !idPartido || !idLocalidad || eleccionAsociadaValue) {
+            if (!idUsuario || !idPartido || !idLocalidad || !eleccionAsociadaValue) {
                 alert('Por favor, completa todos los campos.');
                 return;
             }
@@ -189,8 +190,8 @@ async function candidatos(mainTitle) {
         let numeroCandidato = document.createElement('p');
         numeroCandidato.textContent = candidato.numeroCandidato;
 
-        let eleccionAsociada = document.createElement('p');
-        eleccionAsociada.textContent = candidato.eleccionAsociada;
+        let eleccionAsociadaContainer = document.createElement('p');
+        eleccionAsociadaContainer.textContent = candidato.eleccionAsociada;
 
         let idUsuario = document.createElement('p');
         idUsuario.textContent = candidato.idUsuario;
@@ -206,6 +207,7 @@ async function candidatos(mainTitle) {
         elementoPadre.appendChild(partido);
         elementoPadre.appendChild(localidad);
         elementoPadre.appendChild(numeroCandidato);
+        elementoPadre.appendChild(eleccionAsociadaContainer);
         contentInsert.appendChild(elementoPadre);
 
         elementoPadre.addEventListener("click", () => {
@@ -222,7 +224,10 @@ async function candidatos(mainTitle) {
             cargarLocalidades(localidadesSelect).then(() => {
                 localidadesSelect.value = candidato.idLocalidad;
             });
-            cargarElecciones()
+
+            cargarElecciones().then(() => {
+                eleccionAsociada.value = candidato.eleccionAsociada;
+            });
 
             idUsuarioInput.innerHTML = `<option>${candidato.idUsuario}</option>`;
             numeroCandidatoSelect.value = candidato.numeroCandidato;
@@ -253,23 +258,6 @@ async function candidatos(mainTitle) {
                     candidatosActualizados.forEach(candidato => crearInterfazCandidatos(candidato));
                 }
             });
-
-            anadirCandidatoBtn.addEventListener("click", async () => {
-
-                let idUsuario = idUsuarioInput.value;
-                let idPartido = partidoSelect.value;
-                let idLocalidad = localidadesSelect.value;
-                let eleccionAsociada = document.getElementById('eleccionAsociada').value;
-
-
-                if (!idUsuario || !idPartido || !idLocalidad) {
-                    alert('Por favor, completa todos los campos.');
-                    return;
-                }
-
-                let nuevoCandidato = await insertarCandidato(idUsuario, idPartido, idLocalidad, eleccionAsociada);
-
-            })
 
         });
     }
@@ -434,8 +422,6 @@ async function elecciones(mainTitle){
             let estado = document.getElementById('estado').value;
             let fechaInicio = document.getElementById('fechainicio').value;
             let fechafin = document.getElementById('fechafin').value;
-
-            console.log(tipo, estado, fechaInicio, fechafin)
 
             if(!tipo || !estado || !fechaInicio || !fechafin){
                 alert('Por favor, completa todos los campos.');
