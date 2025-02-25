@@ -878,3 +878,32 @@ export async function votosPorPartidoEleccion(idEleccion) {
     }
 
 }
+
+export async function enviarCorreo(emailDestinatario, nombreDestinatario, asunto, mensaje) {
+    let formData = new FormData();
+    formData.append('emailDestinatario', emailDestinatario);
+    formData.append('nombreDestinatario', nombreDestinatario);
+    formData.append('asunto', asunto);
+    formData.append('mensaje', mensaje);
+
+    try {
+        const response = await fetch("../api/correo.php", {
+            method: 'POST',
+            body: formData
+        });
+
+        // Log the response text to inspect the content
+        const text = await response.text();
+        console.log("Response text:", text);
+
+        if (!response.ok) {
+            throw new Error('Error en la petición');
+        }
+
+        const datos = JSON.parse(text);  // Manually parse the response
+        return datos;
+
+    } catch (error) {
+        console.log("Error:", error);
+    }
+}
