@@ -40,6 +40,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         if(confirm("¿Quieres borrar tu cuenta?")){
             
             borrarUsuario(sessionStorage.getItem("idCenso")).then(datos => {
+                console.log(datos)
                 cerrarSesion()
                 window.location.href = "../index.html"
             })
