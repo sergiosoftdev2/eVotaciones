@@ -931,3 +931,24 @@ export async function actualizarCorreo(idCenso, email){
     }
 
 }
+
+export async function borrarUsuario(idCenso) {
+    let formData = new FormData();
+    formData.append('idCenso', idCenso);
+
+    try {
+        const response = await fetch("../api/DELETE/borrarUsuario.php", {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error('Error en la petición');
+        }
+
+        const datos = await response.json();
+        return datos;
+    } catch (error) {
+        console.log(error);
+    }
+}

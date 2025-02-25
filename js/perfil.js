@@ -1,4 +1,4 @@
-import { buscarCiudadano, actualizarCorreo } from "./api.js"
+import { buscarCiudadano, actualizarCorreo, cerrarSesion, borrarUsuario } from "./api.js"
 
 document.addEventListener("DOMContentLoaded", async () => {
 
@@ -34,6 +34,17 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         })
 
+    })
+
+    borrar.addEventListener("click", () => {
+        if(confirm("¿Quieres borrar tu cuenta?")){
+            
+            borrarUsuario(sessionStorage.getItem("idCenso")).then(datos => {
+                cerrarSesion()
+                window.location.href = "../index.html"
+            })
+            
+        }
     })
 
     
