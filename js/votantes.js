@@ -233,6 +233,89 @@ function votarEleccionActivaGenerales(idEleccion){
 
 }
 
+function votarEleccionActivaAutonomicas(idEleccion){
+    
+    // BORRANDO CONTENIDO ANTERIOR
+    let contenido = document.getElementById('notCentered');
+    contenido.innerHTML = '<button class="back" id="back"><img src="https://cdn-icons-png.flaticon.com/512/3114/3114883.png">Atrás</button>'
+
+    // TITULO RESULTADOS ELECCION
+    let titulo = document.createElement('h2');
+    titulo.textContent = "VOTAR ELECCION";
+    titulo.classList.add('votantesTitle');
+    contenido.appendChild(titulo);
+
+    let formularioVoto = `
+    
+        <div class="partidosAVotar" id="partidosAVotar">
+        
+        </div>
+    
+    `
+
+    contenido.innerHTML += formularioVoto;
+
+    buscarPartidos().then(partidos => {
+        partidos.forEach(partido => {
+
+            let option = document.createElement('div');
+            option.classList.add('partido');
+            
+            let siglas = document.createElement('h3');
+            siglas.textContent = partido.siglas;
+
+            let nombre = document.createElement('p');
+            nombre.textContent = partido.nombre;
+
+            let imgContainer = document.createElement('div');
+            imgContainer.classList.add('imgContainer');
+
+            let imagen = document.createElement('img');
+            imagen.src = partido.logo;
+
+            imgContainer.appendChild(imagen);
+
+            option.appendChild(imgContainer);
+            option.appendChild(siglas);
+            option.appendChild(nombre);
+
+            option.addEventListener("click", () => {
+                if(confirm("¿Estas seguro de que quieres votar a " + partido.nombre + "?")){
+                    alert("Voto realizado con exito");
+                    
+                    // INSERTAMOS EL VOTO EN LA TABLA VOTOS
+                    insertarVotoGenerales(idEleccion, partido.idPartido).then(data => {
+                        console.log(data)
+                    })
+
+                    // E INSERTAMOS COMO QUE EL USUARIO HA VOTADO EN LAS ELECCIONES
+                    insertarUsuarioHaVotado(idEleccion, sessionStorage.getItem('idUsuario')).then(data => {
+                        if (idCenso) {
+                            buscarCiudadano(idCenso).then(data => {
+                                enviarCorreo(data[0].email, data[0].nombre, "Votación Elecciones", "Su voto se ha registrado correctamente").then(mensaje => {
+                                    window.location.href = "/eVotaciones/vistas/votantes.html";
+                                });
+                            });
+                        } else {
+                            console.error("ID Censo no encontrado en sessionStorage");
+                        }
+                    });
+
+                }
+            })
+
+            let select = document.getElementById('partidosAVotar');
+            select.appendChild(option);
+
+        })
+    })
+
+
+    // BOTON PARA VOLVER ATRAS
+    volverAtras()
+
+}
+
 function mostrarResultadoEleccion(idEleccion) {
     let contenido = document.getElementById('notCentered');
     contenido.innerHTML = '<button class="back" id="back"><img src="https://cdn-icons-png.flaticon.com/512/3114/3114883.png">Atrás</button>';

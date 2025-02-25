@@ -30,9 +30,9 @@
         if ($stmt->rowCount() > 0) {
             echo json_encode(["success" => true, "message" => "Datos actualizados correctamente"]);
         } else {
-            echo json_encode(["success" => false, "message" => "No se realizaron cambios"]);
+            echo json_encode(["success" => false, "message" => "No se realizaron cambios", "datos" => $_POST]);
         }
     } catch (PDOException $e) {
-        echo json_encode(['error' => $e->getMessage()]);
+        echo json_encode(['error' => $e->getMessage(), "datos" => $_POST]);
     }
 ?>

@@ -249,7 +249,7 @@ async function candidatos(mainTitle) {
 
             actualizarCandidatoBtn.addEventListener("click", async () => {
 
-                let actualizado = await actualizarCandidato(candidato.idCandidato, idUsuarioInput.value, partidoSelect.value, localidadesSelect.value, numeroCandidatoSelect.value);
+                let actualizado = await actualizarCandidato(candidato.idCandidato, idUsuarioInput.value, partidoSelect.value, localidadesSelect.value, numeroCandidatoSelect.value, eleccionAsociada.value);
                 if (actualizado.success) {
                     alert("Candidato actualizado correctamente");
                     modal.classList.add("noVisible");
