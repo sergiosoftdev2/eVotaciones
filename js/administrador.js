@@ -427,7 +427,7 @@ async function elecciones(mainTitle){
             }
 
             insertarEleccion(tipo, estado, fechaInicio, fechafin);
-
+            modal.classList.add('noVisible');
             crearInterfazElecciones()
 
         })

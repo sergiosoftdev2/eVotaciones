@@ -57,6 +57,7 @@ async function pantallaInicial(){
             })
 
             if(haVotado.state == false){
+
                 let parentDiv = document.createElement('div');
                 parentDiv.classList.add('eleccion');
 
@@ -88,7 +89,12 @@ async function pantallaInicial(){
                 parentDiv.appendChild(fechaFin);
                 parentDiv.appendChild(idEleccion);
 
-                parentDiv.addEventListener('click', () => votarEleccionActiva(eleccion.idEleccion));
+                if(eleccion.tipo == "general"){
+                    parentDiv.addEventListener('click', () => votarEleccionActivaGenerales(eleccion.idEleccion));
+                }else{
+                    parentDiv.addEventListener('click', () => votarEleccionActivaAutonomicas(eleccion.idEleccion));
+                }
+                
 
                 eleccionesDisponibles.appendChild(parentDiv);
             }else{
@@ -144,7 +150,7 @@ async function pantallaInicial(){
     })
 }
 
-function votarEleccionActiva(idEleccion){
+function votarEleccionActivaGenerales(idEleccion){
     
     // BORRANDO CONTENIDO ANTERIOR
     let contenido = document.getElementById('notCentered');
