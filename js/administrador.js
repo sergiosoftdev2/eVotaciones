@@ -363,9 +363,7 @@ async function elecciones(mainTitle){
                     <div style="width: 50%;">
                         <h2>Estado</h2>
                         <select id="estado">
-                            <option value="abierta">Abierta</option>
                             <option value="cerrada">Cerrada</option>
-                            <option value="finalizada">Finalizada</option>
                         </select>
                     </div>
                 </div>
@@ -719,6 +717,123 @@ async function partidos(mainTitle){
     }
 }
 
+async function escrutinios(mainTitle){
+
+    let modalContainer = document.getElementById('modalContainer');
+
+    mainTitle.classList.add("adminPanel");
+
+    mainTitle.innerHTML = `
+
+        <div class="actionButtons">
+            <button class="back" id="back"><img src="/eVotaciones/img/back.svg">Atrás</button>
+        </div>
+
+        <div class="busquedaCiudadanos" id="busquedaCiudadanos">
+                <div class="ciudadano" id="preFix">
+                    <h2>idEleccion</h2>
+                    <h2>Tipo</h2>
+                    <h2>Estado</h2>
+                </div>
+                <div class="contentInsert" id="contentInsert"></div>
+            </div>
+        </div>
+    `
+
+    modalContainer.innerHTML = `
+        <div id="modal" class="noVisible">
+            <button id="cerrarModal" class="closeButton"><img src="../img/cross.svg" alt=""></button>
+            <div class="ciudadanoModal" id="modalContent">
+                <h2>Estado</h2>
+                    <select id="estado">
+                        <option value="cerrada">Cerrada</option>
+                        <option value="abierta">Abierta</option>
+                        <option value="finalizada">Finalizada</option>
+                    </select>
+                <div class="buttonModalSide">
+                    <button id="actualizarCiudadano">Modificar</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    let insertarEleccionBtn = document.getElementById('insertarCiudadano');
+    let back = document.getElementById('back');
+    let contentInsert = document.getElementById('contentInsert');
+    let modal = document.getElementById('modal');
+    let cerrarModal = document.getElementById('cerrarModal');
+    let anadirEleccionBtn = document.getElementById('anadirCiudadano');
+    let borrarEleccionBtn = document.getElementById('borrarCiudadano');
+    let actualizarEleccionBtn = document.getElementById('actualizarCiudadano');
+    let fechaInicioModal = document.getElementById('fechainicio');
+    let fechaFinModal = document.getElementById('fechafin');
+    let tipoModal = document.getElementById('tipo');
+    let estadoModal = document.getElementById('estado');
+
+    crearInterfazElecciones()
+    
+    // PARA VOLVER AL MENU DE ADMINISTRADOR
+    back.addEventListener("click", () => {
+        adminMenuShow(mainTitle);
+    });
+
+    // PARA CERRAR EL MODAL
+    cerrarModal.addEventListener("click", () => {
+        modal.classList.add('noVisible');
+    });
+    
+    async function crearInterfazElecciones() {
+        let elecciones = await buscarElecciones().then(data => {
+            return data;
+        });
+
+        contentInsert.innerHTML = "";
+
+        if (elecciones.length > 0) {
+            elecciones.forEach(eleccion => {
+                let elementoPadre = document.createElement('div');
+                elementoPadre.dataset.id = eleccion.idEleccion;
+                elementoPadre.classList.add('ciudadano');
+                
+                let idEleccion = document.createElement('p');
+                idEleccion.textContent = eleccion.idEleccion;
+
+                let tipo = document.createElement('p');
+                tipo.textContent = eleccion.tipo;
+
+                let estado = document.createElement('p');
+                estado.textContent = eleccion.estado;
+
+                elementoPadre.appendChild(idEleccion);
+                elementoPadre.appendChild(tipo);
+                elementoPadre.appendChild(estado);
+
+                elementoPadre.addEventListener("click", () => {
+                    estadoModal.value = eleccion.estado;
+                    actualizarEleccionBtn.style.display = "block";
+                    actualizarEleccionBtn.style.width = "100%"
+
+                    modal.classList.remove('noVisible');
+
+                    // ACTUALIZAR ELECCION
+                    actualizarEleccionBtn.onclick = () => {
+                        actualizarEleccion(eleccion.idEleccion, eleccion.tipo, estadoModal.value, eleccion.fechaInicio, eleccion.fechaFin);
+                        setTimeout(() => {
+                            modal.classList.add("noVisible");
+                            crearInterfazElecciones();
+                        }, 250);
+                    };
+                });
+
+                contentInsert.appendChild(elementoPadre);
+            });
+        } else {
+            contentInsert.innerHTML = `<p>No hay elecciones :(</p>`;
+        }
+    }
+
+}
+
 function adminMenuShow(mainTitle){
 
     mainTitle.innerHTML = `
@@ -733,6 +848,9 @@ function adminMenuShow(mainTitle){
             <div id="gestionElecciones" class="adminPanels">
                 <h2>Elecciones</h2>
             </div>
+            <div id="gestionEscrutinios" class="adminPanels">
+                <h2>Escrutinios</h2>
+            </div>
         </div>
     `
 
@@ -740,6 +858,7 @@ function adminMenuShow(mainTitle){
 
     let gestionCandidaatos = document.getElementById('gestionCandidatos');
     let gestionPartidos = document.getElementById('gestionPartidos');
+    let gestionEscrutinios = document.getElementById('gestionEscrutinios');
     let gestionElecciones = document.getElementById('gestionElecciones');
 
     gestionCandidaatos.addEventListener("click", function() {
@@ -752,6 +871,10 @@ function adminMenuShow(mainTitle){
 
     gestionElecciones.addEventListener("click", function() {
         elecciones(mainTitle);
+    });
+
+    gestionEscrutinios.addEventListener("click", function() {
+        escrutinios(mainTitle);
     });
 
 }

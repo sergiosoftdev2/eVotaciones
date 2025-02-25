@@ -4,24 +4,14 @@ import {
     votosPorPartidoEleccion, insertarUsuarioHaVotado, insertarVotoGenerales, votosPorLocalidadEleccion, 
     buscarPartido, comprobarSesion, enviarCorreo,
     buscarCiudadano
-} 
-    from "./api.js"
+} from "./api.js"
+
+const idCenso = sessionStorage.getItem("idCenso");
 
 document.addEventListener("DOMContentLoaded", () => {
 
     if(!comprobarSesion()){
         window.location.href = "/eVotaciones/index.html";
-    }
-
-    const idCenso = sessionStorage.getItem("idCenso");
-    if (idCenso) {
-        buscarCiudadano(idCenso).then(data => {
-            enviarCorreo(data[0].email, data[0].nombre, "Hola", "Que tal").then(mensaje => {
-                console.log(mensaje);
-            });
-        });
-    } else {
-        console.error("ID Censo no encontrado en sessionStorage");
     }
 
     pantallaInicial();    
@@ -211,7 +201,15 @@ function votarEleccionActiva(idEleccion){
 
                     // E INSERTAMOS COMO QUE EL USUARIO HA VOTADO EN LAS ELECCIONES
                     insertarUsuarioHaVotado(idEleccion, sessionStorage.getItem('idUsuario')).then(data => {
-                        window.location.href = "/eVotaciones/vistas/votantes.html";
+                        if (idCenso) {
+                            buscarCiudadano(idCenso).then(data => {
+                                enviarCorreo(data[0].email, data[0].nombre, "Votación Elecciones", "Su voto se ha registrado correctamente").then(mensaje => {
+                                    window.location.href = "/eVotaciones/vistas/votantes.html";
+                                });
+                            });
+                        } else {
+                            console.error("ID Censo no encontrado en sessionStorage");
+                        }
                     });
 
                 }
