@@ -5,7 +5,8 @@ import {
     buscarCiudadano, buscarLocalidad, buscarPartido, buscarElecciones,
     insertarEleccion, borrarEleccion, actualizarEleccion,
     buscarUsuariosNoCandidatos,
-    buscarEleccionesFinalizadas
+    buscarEleccionesFinalizadas,
+    buscarDNICandidato
 } from "./api.js";
 
 document.addEventListener("DOMContentLoaded", function() {
@@ -194,7 +195,10 @@ async function candidatos(mainTitle) {
         eleccionAsociadaContainer.textContent = candidato.eleccionAsociada;
 
         let idUsuario = document.createElement('p');
-        idUsuario.textContent = candidato.idUsuario;
+        await buscarDNICandidato(candidato.idUsuario).then(data=>{
+            idUsuario.textContent = data[0].nombre + " " + data[0].apellido;
+        })
+        
 
         let partido = document.createElement('img');
         partido.src = nombrePartido; // Asumiendo que tienes el nombre del partido en los datos

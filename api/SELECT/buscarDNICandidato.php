@@ -12,7 +12,7 @@ try {
     $stmt = $conexion->prepare("
         SELECT c.* 
         FROM censo c
-        INNER JOIN usuarios u ON c.idCenso = u.idCenso
+        INNER JOIN usuario u ON c.idCenso = u.idCenso
         WHERE u.idUsuario = ?
     ");
     $stmt->bindParam(1, $idUsuario);
