@@ -3,7 +3,10 @@ import {
     buscarEleccionesAbiertas, buscarEleccionesFinalizadas, buscarPartidos, buscarUsuarioVotado, 
     votosPorPartidoEleccion, insertarUsuarioHaVotado, insertarVotoGenerales, votosPorLocalidadEleccion, 
     buscarPartido, comprobarSesion, enviarCorreo,
-    buscarCiudadano
+    buscarCiudadano,
+    buscarCandidatosAutonomicas,
+    buscarDNICandidato,
+    insertarVotoAutonomicas
 } from "./api.js"
 
 const idCenso = sessionStorage.getItem("idCenso");
@@ -233,7 +236,17 @@ function votarEleccionActivaGenerales(idEleccion){
 
 }
 
-function votarEleccionActivaAutonomicas(idEleccion){
+async function votarEleccionActivaAutonomicas(idEleccion){
+
+    let idLocalidadUsuario;
+
+    await buscarCiudadano(sessionStorage.getItem("idCenso")).then(data => {
+        idLocalidadUsuario = data[0].idLocalidad;
+    })
+
+    let candidatos = await buscarCandidatosAutonomicas(idEleccion, idLocalidadUsuario).then(data => {
+        return data;
+    })
     
     // BORRANDO CONTENIDO ANTERIOR
     let contenido = document.getElementById('notCentered');
@@ -255,68 +268,86 @@ function votarEleccionActivaAutonomicas(idEleccion){
 
     contenido.innerHTML += formularioVoto;
 
-    buscarPartidos().then(partidos => {
-        partidos.forEach(partido => {
+    let partidosContainer = document.createElement('div');
+    partidosContainer.classList.add('partidosContainer');
+    contenido.appendChild(partidosContainer);
 
-            let option = document.createElement('div');
-            option.classList.add('partido');
-            
-            let siglas = document.createElement('h3');
-            siglas.textContent = partido.siglas;
+    (async () => {
+        for (const candidato of candidatos) {
+    
+            let datosPartido = await buscarPartido(candidato.idPartido);
+            let datosCandidato = await buscarDNICandidato(candidato.idUsuario);
+    
+            let existeDivPartido = document.querySelector(`div[data-id="${candidato.idPartido}"]`);
+    
+            if (!existeDivPartido) {
+                let partido = document.createElement('div');
+                partido.classList.add('partidoAutonomicas');
+                partido.dataset.id = candidato.idPartido;
+    
+                let imageContainerAutonomicas = document.createElement('div');
+                imageContainerAutonomicas.classList.add('imgContainerAutonomicas');
+    
+                let imageLogo = document.createElement('img');
+                imageLogo.src = datosPartido[0].logo;
+    
+                let candidatosAutonomicasContainer = document.createElement('div');
+                candidatosAutonomicasContainer.classList.add('candidatosAutonomicasContainer');
+    
+                let infoContainer = document.createElement('div');
+                infoContainer.classList.add('infoContainer');
 
-            let nombre = document.createElement('p');
-            nombre.textContent = partido.nombre;
+                let partidoTitle = document.createElement('h3');
+                partidoTitle.textContent = datosPartido[0].nombre;
+    
+                let candidatoTexto = document.createElement('p');
+                candidatoTexto.textContent = datosCandidato[0].nombre + " " + datosCandidato[0].apellido;
 
-            let imgContainer = document.createElement('div');
-            imgContainer.classList.add('imgContainer');
+                candidatoTexto.addEventListener('click', () => votarCandidato(candidato))
+    
+                imageContainerAutonomicas.appendChild(imageLogo);
+                
+                infoContainer.appendChild(partidoTitle);
+                infoContainer.appendChild(candidatoTexto);
+                
+                partido.appendChild(imageContainerAutonomicas);
+                partido.appendChild(infoContainer);
+                
+                partidosContainer.appendChild(partido);
+            }else{
 
-            let imagen = document.createElement('img');
-            imagen.src = partido.logo;
+                let partido = document.querySelector(`div[data-id="${candidato.idPartido}"]`);
+                let infoContainer = partido.querySelector('.infoContainer');
 
-            imgContainer.appendChild(imagen);
+                let candidatoTexto = document.createElement('p');
+                candidatoTexto.textContent = datosCandidato[0].nombre + " " + datosCandidato[0].apellido;
 
-            option.appendChild(imgContainer);
-            option.appendChild(siglas);
-            option.appendChild(nombre);
+                candidatoTexto.addEventListener('click', () => votarCandidato(candidato))
 
-            option.addEventListener("click", () => {
-                if(confirm("¿Estas seguro de que quieres votar a " + partido.nombre + "?")){
-                    alert("Voto realizado con exito");
-                    
-                    // INSERTAMOS EL VOTO EN LA TABLA VOTOS
-                    insertarVotoGenerales(idEleccion, partido.idPartido).then(data => {
-                        console.log(data)
-                    })
+                infoContainer.appendChild(candidatoTexto);
 
-                    // E INSERTAMOS COMO QUE EL USUARIO HA VOTADO EN LAS ELECCIONES
-                    insertarUsuarioHaVotado(idEleccion, sessionStorage.getItem('idUsuario')).then(data => {
-                        if (idCenso) {
-                            buscarCiudadano(idCenso).then(data => {
-                                enviarCorreo(data[0].email, data[0].nombre, "Votación Elecciones", "Su voto se ha registrado correctamente").then(mensaje => {
-                                    window.location.href = "/eVotaciones/vistas/votantes.html";
-                                });
-                            });
-                        } else {
-                            console.error("ID Censo no encontrado en sessionStorage");
-                        }
-                    });
-
-                }
+            }
+        }
+    })();
+    
+    function votarCandidato(candidato){
+        if(confirm("¿Estás seguro de que quieres votar a este candidato?")){
+            insertarVotoAutonomicas(idEleccion, candidato.idPartido, candidato.idLocalidad, candidato.idCandidato).then(data => {
+                insertarUsuarioHaVotado(idEleccion, sessionStorage.getItem("idUsuario")).then(data => {
+                    alert("Voto registrado correctamente");
+                    window.location.reload();
+                })
             })
-
-            let select = document.getElementById('partidosAVotar');
-            select.appendChild(option);
-
-        })
-    })
-
+        }
+    }
 
     // BOTON PARA VOLVER ATRAS
     volverAtras()
 
 }
 
-function mostrarResultadoEleccion(idEleccion) {
+async function mostrarResultadoEleccion(idEleccion) {
+
     let contenido = document.getElementById('notCentered');
     contenido.innerHTML = '<button class="back" id="back"><img src="https://cdn-icons-png.flaticon.com/512/3114/3114883.png">Atrás</button>';
 
@@ -331,6 +362,7 @@ function mostrarResultadoEleccion(idEleccion) {
     partidosPadre.classList.add('partidosEleccionPadre');
 
     votosPorPartidoEleccion(idEleccion).then(async votos => {
+
         const partidosConDetalles = await Promise.all(
             votos.map(async votosPartido => {
                 const partido = await buscarPartido(votosPartido.idPartido);
@@ -347,6 +379,9 @@ function mostrarResultadoEleccion(idEleccion) {
             let parentDiv = document.createElement('div');
             parentDiv.classList.add('partidoEleccion');
 
+            let imageContainer = document.createElement('div');
+            imageContainer.classList.add('imgContainer');
+
             let nombrePartido = document.createElement('h3');
             nombrePartido.textContent = partido.nombre;
 
@@ -358,8 +393,10 @@ function mostrarResultadoEleccion(idEleccion) {
 
             let imagenPartido = document.createElement('img');
             imagenPartido.src = partido.logo;
+            imagenPartido.dataset.id = partido.idPartido;
 
-            parentDiv.appendChild(imagenPartido);
+            imageContainer.appendChild(imagenPartido);
+            parentDiv.appendChild(imageContainer);
             parentDiv.appendChild(nombrePartido);
             parentDiv.appendChild(siglasPartido);
             parentDiv.appendChild(votosMostrar);
@@ -368,60 +405,173 @@ function mostrarResultadoEleccion(idEleccion) {
         });
 
         contenido.appendChild(partidosPadre);
+        graficoDonut(contenido, votos);
     });
 }
 
-function graficoDonut(contenido){
+async function mostrarResultadoEleccionAutonomica(idEleccion) {
 
+    let contenido = document.getElementById('notCentered');
+    contenido.innerHTML = '<button class="back" id="back"><img src="https://cdn-icons-png.flaticon.com/512/3114/3114883.png">Atrás</button>';
+
+    let titulo = document.createElement('h2');
+    titulo.textContent = "RESULTADOS ELECCION";
+    titulo.classList.add('votantesTitle');
+    contenido.appendChild(titulo);
+
+    volverAtras();
+
+    let partidosPadre = document.createElement('div');
+    partidosPadre.classList.add('partidosEleccionPadre');
+
+    votosPorPartidoEleccion(idEleccion).then(async votos => {
+
+        const partidosConDetalles = await Promise.all(
+            votos.map(async votosPartido => {
+                const partido = await buscarPartido(votosPartido.idPartido);
+                return {
+                    ...votosPartido,
+                    nombre: partido[0].nombre,
+                    siglas: partido[0].siglas,
+                    logo: partido[0].logo
+                };
+            })
+        );
+
+        partidosConDetalles.forEach(partido => {
+            let parentDiv = document.createElement('div');
+            parentDiv.classList.add('partidoEleccion');
+
+            let imageContainer = document.createElement('div');
+            imageContainer.classList.add('imgContainer');
+
+            let nombrePartido = document.createElement('h3');
+            nombrePartido.textContent = partido.nombre;
+
+            let siglasPartido = document.createElement('p');
+            siglasPartido.textContent = partido.siglas;
+
+            let votosMostrar = document.createElement('p');
+            votosMostrar.textContent = partido.total_votos + " votos";
+
+            let imagenPartido = document.createElement('img');
+            imagenPartido.src = partido.logo;
+            imagenPartido.dataset.id = partido.idPartido;
+
+            imageContainer.appendChild(imagenPartido);
+            parentDiv.appendChild(imageContainer);
+            parentDiv.appendChild(nombrePartido);
+            parentDiv.appendChild(siglasPartido);
+            parentDiv.appendChild(votosMostrar);
+
+            partidosPadre.appendChild(parentDiv);
+        });
+
+        contenido.appendChild(partidosPadre);
+        graficoDonut(contenido, votos);
+    });
+}
+
+function graficoDonut(contenido, votos) {
     let canvasParent = document.createElement('div');
     canvasParent.classList.add('canvasParent');
 
     const canvas = document.createElement('canvas');
     canvas.id = 'myChart';
+
     canvasParent.appendChild(canvas);
     contenido.appendChild(canvasParent);
 
     const ctx = document.getElementById('myChart').getContext('2d');
+    Chart.register(ChartDataLabels);
 
-    new Chart(ctx, {
-        type: 'bar',
+    let chart = new Chart(ctx, {
+        type: 'pie',
         data: {
-            labels: ['Localidad 1', 'Localidad 2', 'Localidad 3', 'Localidad 4'], // Localidades
+            labels: [],
             datasets: [
                 {
-                    label: 'Partido A', // Nombre del partido A
-                    data: [10, 15, 30, 4000], // Votos del partido A
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)', // Color de las barras
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    borderWidth: 1
-                },
-                {
-                    label: 'Partido B', // Nombre del partido B
-                    data: [20, 25, 35, 40], // Votos del partido B
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)', // Color de las barras
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
+                    label: 'Votos',
+                    data: [],
+                    backgroundColor: [],
+                    borderWidth: 1,
+                    hoverOffset: 40
                 }
             ]
         },
         options: {
             responsive: true,
-            scales: {
-                x: {
-                    beginAtZero: true
+            maintainAspectRatio: true, // 🔹 Desactiva la relación de aspecto
+            plugins: {
+                tooltip: {
+                    enabled: true,
+                    padding: 50,
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    titleColor: '#fff',
+                    bodyColor: '#fff',
+                    bodyFont: {
+                        size: 14
+                    },
+                    callbacks: {
+                        title: function(tooltipItems) {
+                            return tooltipItems[0].label;
+                        },
+                        label: function(context) {
+                            return context.parsed + ' votos';
+                        }
+                    }
                 },
-                y: {
-                    beginAtZero: true
+                legend: {
+                    position: 'bottom',
+                    title: { display: true, padding: 5 },
+                    labels: {
+                        padding: 25,
+                        boxWidth: 10,
+                        font: {
+                            size: 14  // Tamaño de fuente más grande
+                        },
+                        usePointStyle: true,  // Usa estilos de punto en lugar de rectángulos
+                        pointStyle: 'circle'  // Forma de los puntos de la leyenda
+                    },
+                    margin: 30  // Margen adicional alrededor de toda la leyenda
                 }
             },
-            plugins: {
-                legend: {
-                    position: 'top',
+            layout: {
+                padding: {
+                    bottom: 30 // Add padding at the bottom
                 }
             }
         }
     });
 
+    // Rest of your function remains the same
+    votos.forEach(async voto => {
+        await buscarPartido(voto.idPartido).then(partido => {
+            // Your existing code
+            let imagen = document.querySelector(`img[data-id="${voto.idPartido}"]`);
+
+            // ColorThief code...
+            const colorThief = new ColorThief();
+
+            if (imagen.complete) {
+                let color = colorThief.getColor(imagen);
+                const colorRGB = `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
+                chart.data.datasets[0].backgroundColor.push(colorRGB);
+            } else {
+                imagen.addEventListener('load', function() {
+                    colorThief.getColor(imagen);
+                });
+            }
+
+            const partidoSiglas = partido[0].siglas;
+            const votosPartido = voto.total_votos;
+
+            chart.data.labels.push(partidoSiglas);
+            chart.data.datasets[0].data.push(votosPartido);
+
+            chart.update();
+        });
+    });
 }
 
 function volverAtras(){

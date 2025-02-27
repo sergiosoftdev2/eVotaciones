@@ -4,7 +4,7 @@ header('Content-Type: application/json');
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
-require '../vendor/autoload.php';  // if your 'vendor' directory is one level up
+require '../vendor/autoload.php';
 $mail = new PHPMailer(true);
 
 try {

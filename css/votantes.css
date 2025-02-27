@@ -150,9 +150,32 @@ body{
     padding-top: 100px;
 }
 
-.canvasParent{
-    width: 75%;
+.imgContainer{
+    height: 20%;
+    overflow: hidden;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.canvasParent {
+    width: 100%;
+    max-width: 600px;
+    min-height: 550px; /* Increased height to accommodate the full chart */
     margin: 0 auto;
+    margin-block: 50px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    overflow: visible; /* Changed from auto to visible */
+}
+
+canvas {
+    width: 100%;
+    height: 100% !important;
+    display: block;
+    margin-bottom: 50px; /* Add margin at the bottom */
 }
 
 #back{
@@ -269,14 +292,45 @@ body{
 }
 
 .partidoEleccion{
+    position: relative;
+    background-color: var(--back-color);
     display: flex;
     border: 1px solid var(--border-color);
     flex-direction: column;
     width: 200px;
     gap: 10px;
     margin-bottom: 20px;
+    border-radius: 5px;
     padding: 20px;
     box-sizing: border-box;
+}
+
+.partidoEleccion::before{
+
+    content: "";
+
+    scale: 0.5;
+    
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: -1;
+    border-radius: 5px;
+
+    filter: blur(10px);
+
+    background: rgb(255,0,0);
+    background: linear-gradient(45deg, rgba(255,0,0,1) 0%, rgba(255,231,0,1) 33%, rgba(255,231,0,1) 66%, rgba(255,0,0,1) 100%);
+
+    transition: 0.2s;
+
+}
+
+.partidoEleccion:hover::before {
+    animation: scaleAnimation 5s infinite;
+    scale: 1;
 }
 
 .partidoEleccion img{
@@ -287,4 +341,66 @@ body{
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
+}
+
+.partidosContainer{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.partidoAutonomicas{
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    background-color: var(--back-color);
+    min-height: 200px;
+}
+
+.partidoAutonomicas h3{
+    font-size: 2rem;
+    margin: 0;
+    margin-bottom: 10px;
+}
+
+.partidoAutonomicas .imgContainerAutonomicas{
+    border-radius: 5px;
+    height: 100%;
+    width: 20%;
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--border-color);
+    justify-content: center;
+    overflow: hidden;
+}
+
+.partidoAutonomicas .imgContainerAutonomicas img{
+    width: 100%;
+    scale: 1.2;
+}
+
+.partidoAutonomicas .infoContainer{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 40;
+}
+
+.partidoAutonomicas .infoContainer p{
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    box-sizing: border-box;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    background-color: var(--back-color);
+
+    transition: 0.2s;
+}
+
+.partidoAutonomicas .infoContainer p:hover{
+    background-color: var(--border-color);
 }

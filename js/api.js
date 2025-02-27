@@ -806,6 +806,32 @@ export async function insertarVotoGenerales(idEleccion, idPartido, idLocalidad){
 
 }
 
+export async function insertarVotoAutonomicas(idEleccion, idPartido, idLocalidad, idCandidato){
+
+    let formData = new FormData();
+    formData.append('idEleccion', idEleccion);
+    formData.append('idPartido', idPartido);
+    formData.append('idCandidato', idCandidato);
+    formData.append('idLocalidad', idLocalidad);
+
+    try {
+        const response = await fetch("../api/INSERT/insertarVotoAutonomicas.php", {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error('Error en la petición');
+        }
+
+        const datos = await response.json();
+        return datos;
+    } catch (error) {
+        console.log(error);
+    }
+
+}
+
 export async function buscarVotosEleccion(idEleccion){
 
     let formData = new FormData();
@@ -951,4 +977,28 @@ export async function borrarUsuario(idCenso) {
     } catch (error) {
         console.log(error);
     }
+}
+
+export async function buscarCandidatosAutonomicas(idEleccion, idLocalidad){
+
+    let formData = new FormData();
+    formData.append('idEleccion', idEleccion);
+    formData.append('idLocalidad', idLocalidad);
+
+    try {
+        const response = await fetch("../api/SELECT/buscarCandidatosAutonomicas.php", {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error('Error en la petición');
+        }
+
+        const datos = await response.json();
+        return datos;
+    } catch (error) {
+        console.log(error);
+    }
+
 }
