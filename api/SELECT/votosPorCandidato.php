@@ -7,17 +7,16 @@
 
         $idEleccion = $_POST['idEleccion'];
     
-        // Consulta a la base de datos: contamos los votos por idLocalidad y partido
+        // Consulta a la base de datos: contar votos por candidato
         $stmt = $conexion->prepare("
-            SELECT idLocalidad, idPartido, COUNT(*) as num_votos
+            SELECT idPartido, idLocalidad, idCandidato, COUNT(*) AS total_votos
             FROM voto 
             WHERE idEleccion = ? 
-            GROUP BY idLocalidad, idPartido
-            ORDER BY idLocalidad;
+            GROUP BY idCandidato 
+            ORDER BY total_votos DESC;
         ");
-
         $stmt->bindParam(1, $idEleccion);
-        $stmt->execute();  // Sin parámetros aquí
+        $stmt->execute();  // Ejecutar la consulta
     
         if ($stmt->rowCount() > 0) {
             $datos = $stmt->fetchAll(PDO::FETCH_ASSOC);

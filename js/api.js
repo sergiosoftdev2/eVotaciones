@@ -572,6 +572,29 @@ export async function buscarDNICandidato(idUsuario){
 
 }
 
+export async function buscarCandidato(idCandidato){
+    let formData = new FormData();
+    formData.append('idCandidato', idCandidato);
+
+    try {
+        const response = await fetch("../api/SELECT/buscarCandidato.php", {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error('Error en la petición');
+        }
+
+        const datos = await response.json();
+        return datos;
+
+    } catch (error) {
+        console.log(error);
+    }
+
+}
+
 export async function buscarElecciones() {
 
     try {
@@ -887,6 +910,32 @@ export async function votosPorPartidoEleccion(idEleccion) {
 
     try {
         const response = await fetch("../api/SELECT/votosPorPartido.php", {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error('Error en la petición');
+        }
+
+        const datos = await response.json();
+        return datos; // Retorna los datos aquí, dentro de la función asíncrona
+
+    } catch (error) {
+        console.error("Error en buscarPartidos:", error); // Usa console.error para errores
+        return null; // O un valor que indique un error, como un array vacío []
+    }
+
+}
+
+export async function votosPorCandidato(idEleccion, idLocalidad) {
+
+    let formData = new FormData();
+    formData.append('idEleccion', idEleccion);
+    formData.append('idLocalidad', idLocalidad);
+
+    try {
+        const response = await fetch("../api/SELECT/votosPorCandidato.php", {
             method: 'POST',
             body: formData
         });

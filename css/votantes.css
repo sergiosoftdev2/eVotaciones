@@ -70,6 +70,7 @@ body{
     position: absolute;
     width: 100dvw;
     left: 0;
+    z-index: -10;
     top: 0;
     overflow: hidden;
     box-sizing: border-box;
@@ -386,7 +387,6 @@ canvas {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    z-index: 40;
 }
 
 .partidoAutonomicas .infoContainer p{
@@ -403,4 +403,19 @@ canvas {
 
 .partidoAutonomicas .infoContainer p:hover{
     background-color: var(--border-color);
+}
+
+.buscar{
+    margin-bottom: 30px;
+}
+
+.buscar select{
+    margin-left: 20px;
+    width: 30%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid var(--border-color);
+    box-sizing: border-box;
+    background-color: var(--back-color);
+    color: var(--text-color);
 }
