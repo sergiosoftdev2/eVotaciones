@@ -9,7 +9,7 @@
     
         // Consulta a la base de datos: contar votos por candidato
         $stmt = $conexion->prepare("
-            SELECT idPartido, idLocalidad, idCandidato, COUNT(*) AS total_votos
+            SELECT idEleccion, idPartido, idLocalidad, idCandidato, COUNT(*) AS total_votos
             FROM voto 
             WHERE idEleccion = ? 
             GROUP BY idCandidato 

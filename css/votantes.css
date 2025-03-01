@@ -406,13 +406,15 @@ canvas {
 }
 
 .buscar{
-    margin-bottom: 30px;
+    align-items: center;
+    display: flex;
 }
 
 .buscar select{
     margin-left: 20px;
     width: 30%;
     padding: 10px;
+    height: 50%;
     border-radius: 5px;
     border: 1px solid var(--border-color);
     box-sizing: border-box;

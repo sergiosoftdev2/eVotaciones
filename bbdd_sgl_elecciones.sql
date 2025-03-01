@@ -1,11 +1,5 @@
--- phpMyAdmin SQL Dump
--- version 5.2.1
--- https://www.phpmyadmin.net/
---
--- Servidor: 127.0.0.1
--- Tiempo de generación: 01-03-2025 a las 22:01:45
--- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.2.12
+CREATE DATABASE IF NOT EXISTS `bbdd_sgl_elecciones` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+USE `bbdd_sgl_elecciones`;
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
