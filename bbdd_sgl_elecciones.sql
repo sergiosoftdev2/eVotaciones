@@ -1,25 +1,5 @@
-CREATE DATABASE IF NOT EXISTS `bbdd_sgl_elecciones` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
-USE `bbdd_sgl_elecciones`;
-
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-START TRANSACTION;
-SET time_zone = "+00:00";
-
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
-
---
--- Base de datos: `bbdd_sgl_elecciones`
---
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `candidato`
---
+CREATE DATABASE bbdd_sgl_elecciones;
+USE bbdd_sgl_elecciones;
 
 CREATE TABLE `candidato` (
   `idCandidato` int(11) NOT NULL,
@@ -41,7 +21,6 @@ INSERT INTO `candidato` (`idCandidato`, `idUsuario`, `idPartido`, `idLocalidad`,
 (34, 67, 17, 2, '1', 9),
 (35, 52, 12, 1, '1', 9),
 (36, 60, 14, 2, '1', 9),
-(37, 67, 17, 2, '1', 9),
 (38, 70, 5, 2, '1', 9);
 
 -- --------------------------------------------------------
@@ -166,7 +145,8 @@ CREATE TABLE `eleccion` (
 
 INSERT INTO `eleccion` (`idEleccion`, `tipo`, `estado`, `fechaInicio`, `fechaFin`) VALUES
 (7, 'general', 'finalizada', '2025-02-21', '2025-02-22'),
-(9, 'autonomica', 'finalizada', '2025-02-25', '2025-02-28');
+(9, 'autonomica', 'finalizada', '2025-02-25', '2025-02-28'),
+(11, 'general', 'finalizada', '2025-03-08', '2025-03-05');
 
 -- --------------------------------------------------------
 
@@ -326,7 +306,8 @@ INSERT INTO `usuario` (`idUsuario`, `idCenso`, `password`, `rol`) VALUES
 (103, 129, '$2y$10$E4tB4rC93y.aHu1GrlEqPucfgSiIKbioRV5M1dZ4NFuiVb/2fClgW', 'votante'),
 (104, 125, '$2y$10$iOBF7zrm7XKX8Nj6gwxVUOgfDrX5f/v/Y5gVYTMT1qhHCIqMKF5de', 'votante'),
 (105, 115, '$2y$10$sFZ1FqY1C1.UAw58000lIutkEpgP4rp378gpEV9XGDaIaO1ABJgmW', 'votante'),
-(106, 112, '$2y$10$AEWWJ3ox6dm5pvVPLliMk.d0hSUJwjAgCOnUvepGhMwZnVJo1cfzy', 'votante');
+(106, 112, '$2y$10$AEWWJ3ox6dm5pvVPLliMk.d0hSUJwjAgCOnUvepGhMwZnVJo1cfzy', 'votante'),
+(107, 74, '$2y$10$UBPh.6.ssExoDB9QrVTBFuylF6NASswuAYObVVwdyyZXjHCvJyGTO', 'votante');
 
 -- --------------------------------------------------------
 
@@ -355,13 +336,14 @@ INSERT INTO `voto` (`idVoto`, `idEleccion`, `idPartido`, `idLocalidad`, `fechaHo
 (15, 7, 6, NULL, '2025-02-24 10:56:38', NULL),
 (18, 9, 2, 1, '2025-02-27 11:02:37', 31),
 (19, 7, 14, NULL, '2025-02-27 11:04:20', NULL),
-(20, 7, 5, NULL, '2025-02-27 11:06:37', NULL),
 (21, 9, 2, 1, '2025-02-27 11:18:13', 31),
 (22, 9, 12, 1, '2025-02-27 11:23:48', 35),
 (23, 9, 2, 1, '2025-02-27 12:14:46', 32),
 (24, 9, 14, 2, '2025-02-27 12:20:57', 36),
 (25, 9, 5, 2, '2025-02-27 12:21:29', 38),
-(26, 9, 17, 2, '2025-02-27 12:21:55', 34);
+(26, 9, 17, 2, '2025-02-27 12:21:55', 34),
+(29, 11, 14, NULL, '2025-03-01 22:06:05', NULL),
+(30, 11, 5, NULL, '2025-03-01 22:06:16', NULL);
 
 -- --------------------------------------------------------
 
@@ -380,9 +362,12 @@ CREATE TABLE `votousuarioeleccion` (
 
 INSERT INTO `votousuarioeleccion` (`idUsuario`, `idEleccion`) VALUES
 (44, 7),
+(44, 11),
 (50, 7),
 (50, 9),
+(51, 11),
 (54, 7),
+(54, 11),
 (63, 7),
 (64, 9),
 (67, 7),
@@ -390,7 +375,8 @@ INSERT INTO `votousuarioeleccion` (`idUsuario`, `idEleccion`) VALUES
 (103, 9),
 (104, 9),
 (105, 9),
-(106, 9);
+(106, 9),
+(107, 11);
 
 --
 -- Índices para tablas volcadas
@@ -503,7 +489,7 @@ ALTER TABLE `comunidadautonoma`
 -- AUTO_INCREMENT de la tabla `eleccion`
 --
 ALTER TABLE `eleccion`
-  MODIFY `idEleccion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `idEleccion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de la tabla `localidad`
@@ -515,7 +501,7 @@ ALTER TABLE `localidad`
 -- AUTO_INCREMENT de la tabla `partido`
 --
 ALTER TABLE `partido`
-  MODIFY `idPartido` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
+  MODIFY `idPartido` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT de la tabla `resultado`
@@ -527,13 +513,13 @@ ALTER TABLE `resultado`
 -- AUTO_INCREMENT de la tabla `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `idUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=107;
+  MODIFY `idUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=108;
 
 --
 -- AUTO_INCREMENT de la tabla `voto`
 --
 ALTER TABLE `voto`
-  MODIFY `idVoto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `idVoto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- Restricciones para tablas volcadas
