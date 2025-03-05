@@ -216,7 +216,7 @@ function votarEleccionActivaGenerales(idEleccion){
                     })
 
                     // E INSERTAMOS COMO QUE EL USUARIO HA VOTADO EN LAS ELECCIONES
-                    insertarUsuarioHaVotado(idEleccion, sessionStorage.getItem('idUsuario')).then(data => {
+                    insertarUsuarioHaVotado(idEleccion, sessionStorage.getItem('idUsuario')).then(() => {
                         if (idCenso) {
                             buscarCiudadano(idCenso).then(data => {
                                 enviarCorreo(data[0].email, data[0].nombre, "Votación Elecciones", "Su voto se ha registrado correctamente")
