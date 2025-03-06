@@ -2,8 +2,9 @@ import {
     
     buscarEleccionesAbiertas, buscarEleccionesFinalizadas, buscarPartidos, buscarUsuarioVotado, 
     votosPorPartidoEleccion, insertarUsuarioHaVotado, insertarVotoGenerales, votosPorLocalidadEleccion, 
-    buscarPartido, comprobarSesion, enviarCorreo, buscarCiudadano, buscarCandidatosAutonomicas, buscarDNICandidato, 
-    insertarVotoAutonomicas, buscarCandidato, buscarLocalidad, votosPorCandidato, buscarUsuario
+    buscarPartido, comprobarSesion, enviarCorreo, buscarCiudadano, buscarDNICandidato, 
+    insertarVotoAutonomicas, buscarCandidato, buscarLocalidad, buscarCandidatosAutonomicasPartido, buscarUsuario,
+    buscarCandidatosAutonomicas
 
 } from "./api.js"
 
@@ -160,7 +161,7 @@ async function pantallaInicial(){
     })
 }
 
-function votarEleccionActivaGenerales(idEleccion){
+async function votarEleccionActivaGenerales(idEleccion){
     
     // BORRANDO CONTENIDO ANTERIOR
     let contenido = document.getElementById('notCentered');
@@ -171,6 +172,10 @@ function votarEleccionActivaGenerales(idEleccion){
     titulo.textContent = "VOTAR ELECCION";
     titulo.classList.add('votantesTitle');
     contenido.appendChild(titulo);
+
+    let localidadUsuario = await buscarCiudadano(sessionStorage.getItem("idCenso")).then(localidad => {
+        return localidad[0].idLocalidad;
+    })
 
     let formularioVoto = `
     
@@ -211,7 +216,7 @@ function votarEleccionActivaGenerales(idEleccion){
                     alert("Voto realizado con exito");
                     
                     // INSERTAMOS EL VOTO EN LA TABLA VOTOS
-                    insertarVotoGenerales(idEleccion, partido.idPartido).then(data => {
+                    insertarVotoGenerales(idEleccion, partido.idPartido, localidadUsuario).then(data => {
                         console.log(data)
                     })
 
@@ -251,6 +256,7 @@ async function votarEleccionActivaAutonomicas(idEleccion){
     })
 
     let candidatos = await buscarCandidatosAutonomicas(idEleccion, idLocalidadUsuario).then(data => {
+        console.log(data)
         return data;
     })
     
@@ -271,6 +277,10 @@ async function votarEleccionActivaAutonomicas(idEleccion){
         </div>
     
     `
+
+    let localidadUsuario = await buscarCiudadano(sessionStorage.getItem("idCenso")).then(localidad => {
+        return localidad[0].idLocalidad;
+    })
 
     contenido.innerHTML += formularioVoto;
 
@@ -315,7 +325,7 @@ async function votarEleccionActivaAutonomicas(idEleccion){
                 let candidatoTexto = document.createElement('p');
                 candidatoTexto.textContent = datosCandidato[0].nombre + " " + datosCandidato[0].apellido;
 
-                candidatoTexto.addEventListener('click', () => votarCandidato(candidato))
+                partido.addEventListener('click', () => votarPartido(candidato.idPartido))
     
                 imageContainerAutonomicas.appendChild(imageLogo);
                 
@@ -334,17 +344,15 @@ async function votarEleccionActivaAutonomicas(idEleccion){
                 let candidatoTexto = document.createElement('p');
                 candidatoTexto.textContent = datosCandidato[0].nombre + " " + datosCandidato[0].apellido;
 
-                candidatoTexto.addEventListener('click', () => votarCandidato(candidato))
-
                 infoContainer.appendChild(candidatoTexto);
 
             }
         }
     })();
     
-    function votarCandidato(candidato){
+    function votarPartido(idPartido){
         if(confirm("¿Estás seguro de que quieres votar a este candidato?")){
-            insertarVotoAutonomicas(idEleccion, candidato.idPartido, candidato.idLocalidad, candidato.idCandidato).then(data => {
+            insertarVotoAutonomicas(idEleccion, idPartido, localidadUsuario).then(data => {
                 insertarUsuarioHaVotado(idEleccion, sessionStorage.getItem("idUsuario")).then(data => {
                     alert("Voto registrado correctamente");
                     if (idCenso) {
@@ -371,6 +379,12 @@ async function mostrarResultadoEleccion(idEleccion) {
     contenido.innerHTML = `
         <button class="back" id="back"><img src="https://cdn-icons-png.flaticon.com/512/3114/3114883.png">Atrás</button>
         <h2 class="votantesTitle">RESULTADOS ELECCION</h2>
+        <div class="buscar" id="buscar">
+            <h3>Filtrar por localidad:</h3>
+            <select id="localidadSelect">
+                <option selected value="0"><b>Todas las localidades</b></option>
+            </select>
+        </div>
         <div class="partidosEleccionPadre" id="partidosEleccionPadre">
     `;
 
@@ -378,7 +392,40 @@ async function mostrarResultadoEleccion(idEleccion) {
 
     let partidosPadre = document.getElementById('partidosEleccionPadre');
 
+
+    // EL SELECT DE LOCALIDADES
+    let localidadSelect = document.getElementById('localidadSelect');
+    let localidadesSet = new Set();
+    
+    let partidosLocalidades = await votosPorLocalidadEleccion(idEleccion).then(async votos => {
+        votos.forEach(voto => {
+            localidadesSet.add(voto.idLocalidad);
+        });
+    })
+
+    localidadesSet.forEach(async localidad => {
+        await buscarLocalidad(localidad).then((localidadNombre) =>{
+            let option = document.createElement('option');
+            option.value = localidad;
+            option.textContent = localidadNombre;
+            localidadSelect.appendChild(option);
+        });
+    
+    })
+
+
+    contenido.addEventListener("change", async (event) => {
+        if (event.target.id === 'localidadSelect') {
+            const nuevaLocalidad = event.target.value;
+            if (nuevaLocalidad) {
+                mostrarVotosPorLocalidad(nuevaLocalidad)
+            }
+        }
+    })
+
     votosPorPartidoEleccion(idEleccion).then(async votos => {
+
+        partidosPadre.innerHTML = "";
 
         const partidosConDetalles = await Promise.all(
             votos.map(async votosPartido => {
@@ -392,6 +439,36 @@ async function mostrarResultadoEleccion(idEleccion) {
             })
         );
 
+        mostrarRes(partidosConDetalles)
+
+        contenido.appendChild(partidosPadre);
+        graficoDonut(contenido, votos);
+    });
+
+    function mostrarVotosPorLocalidad(idLocalidad){
+        votosPorPartidoEleccion(idEleccion, idLocalidad).then(async votos => {
+
+            partidosPadre.innerHTML = "";
+
+            const partidosConDetalles = await Promise.all(
+                votos.map(async votosPartido => {
+                    const partido = await buscarPartido(votosPartido.idPartido);
+                    return {
+                        ...votosPartido,
+                        nombre: partido[0].nombre,
+                        siglas: partido[0].siglas,
+                        logo: partido[0].logo
+                    };
+                })
+            );
+    
+            mostrarRes(partidosConDetalles)
+            graficoDonut(contenido, votos);
+        });
+    }
+
+
+    function mostrarRes(partidosConDetalles){
         partidosConDetalles.forEach(partido => {
             let parentDiv = document.createElement('div');
             parentDiv.classList.add('partidoEleccion');
@@ -420,10 +497,8 @@ async function mostrarResultadoEleccion(idEleccion) {
 
             partidosPadre.appendChild(parentDiv);
         });
+    }
 
-        contenido.appendChild(partidosPadre);
-        graficoDonut(contenido, votos);
-    });
 }
 
 async function mostrarResultadoEleccionAutonomica(idEleccion) {
@@ -434,6 +509,7 @@ async function mostrarResultadoEleccionAutonomica(idEleccion) {
     let localidadUsuario = await buscarCiudadano(sessionStorage.getItem("idCenso")).then(localidad => {
         return localidad[0].idLocalidad;
     })
+
     let partidosLocalidades = await votosPorLocalidadEleccion(idEleccion).then(async votos => {
         votos.forEach(voto => {
             localidadesSet.add(voto.idLocalidad);
@@ -449,7 +525,7 @@ async function mostrarResultadoEleccionAutonomica(idEleccion) {
                 <option disabled selected>Localidades</option>
             </select>
         </div>
-        <div id="votosPorCandidatoContainer" class="partidosContainer">
+        <div id="votosPorPartidoContainer" class="partidosContainer">
             <!-- AQUI VAN LOS INSERT DE LOS CANDIDATOS CON SUS VOTOS -->
         </div>
     `;
@@ -477,82 +553,79 @@ async function mostrarResultadoEleccionAutonomica(idEleccion) {
     mostrarRes(idEleccion, localidadUsuario);
 
     async function mostrarRes(idEleccion, idLocalidadChange){
+
+        let votosPorPartidoContainer = document.getElementById('votosPorPartidoContainer');
+        votosPorPartidoContainer.innerHTML = "";
         
         let votosPorPartidoLocalidad = [];
+        let stats = [];
 
         votosPorLocalidadEleccion(idEleccion, localidadUsuario).then(async votos => {
 
-            let buscarCandidatos = await votosPorCandidato(idEleccion).then(async votos => {
-
-                let votosPorCandidatoContainer = document.getElementById('votosPorCandidatoContainer');
-                votosPorCandidatoContainer.innerHTML = "";
-
-                for(const candidato of votos){
-
-                    if(candidato.idLocalidad == idLocalidadChange){
-
-                        // ESTA LOGICA ES SOLO PARA EL DONUT DE ABAJO
-                        let partidoEncontrado = votosPorPartidoLocalidad.find(partido => partido.idPartido == candidato.idPartido);
-
-                        if (partidoEncontrado) {
-                            partidoEncontrado.total_votos += candidato.total_votos;
-                        } else {
-                            votosPorPartidoLocalidad.push({
-                                idPartido: candidato.idPartido,
-                                total_votos: candidato.total_votos
-                            });
-                        }
-                        // AQUI TERMINA
-
-                        // Obtener datos del partido y candidato
-                        let datosPartido = await buscarPartido(candidato.idPartido);
-                        let datosCandidato;
-                        let idUsuarioCandidato = await buscarCandidato(candidato.idCandidato);
-                        datosCandidato = await buscarDNICandidato(idUsuarioCandidato[0].idUsuario);
-                        
-                        // Crear elementos HTML
-                        let partido = document.createElement('div');
-                        partido.classList.add('partidoAutonomicas');
-                        partido.dataset.id = candidato.idPartido;
-                        
-                        let imageContainerAutonomicas = document.createElement('div');
-                        imageContainerAutonomicas.classList.add('imgContainerAutonomicas');
-                        
-                        let imageLogo = document.createElement('img');
-                        imageLogo.src = datosPartido[0].logo;
-                        
-                        let candidatosAutonomicasContainer = document.createElement('div');
-                        candidatosAutonomicasContainer.classList.add('candidatosAutonomicasContainer');
-                        
-                        let infoContainer = document.createElement('div');
-                        infoContainer.classList.add('infoContainer');
-                        
-                        let partidoTitle = document.createElement('h3');
-                        partidoTitle.textContent = datosPartido[0].nombre;
-                        
-                        let candidatoTexto = document.createElement('p');
-                        candidatoTexto.textContent = `${datosCandidato[0].nombre} ${datosCandidato[0].apellido}`;
-                        
-                        let votosTexto = document.createElement('p');
-                        votosTexto.textContent = `${candidato.total_votos} votos`;
-                        
-                        imageContainerAutonomicas.appendChild(imageLogo);
-                        infoContainer.appendChild(partidoTitle);
-                        infoContainer.appendChild(candidatoTexto);
-                        infoContainer.appendChild(votosTexto);
-                        partido.appendChild(imageContainerAutonomicas);
-                        partido.appendChild(infoContainer);
-                        votosPorCandidatoContainer.appendChild(partido);
-
-                    }
-    
+            // RELLENAMOS LOS VOTOS POR PARTIDO Y LOS AGRUPAMOS POR LOCALIDAD
+            for(const voto of votos){
+                if(voto.idLocalidad == idLocalidadChange){
+                    votosPorPartidoLocalidad.push(voto);
                 }
-    
-    
-            }).then(() => {
-                graficoDonut(contenido, votosPorPartidoLocalidad);
-            })
+            };
+            
+            for(const voto of votosPorPartidoLocalidad){
 
+                let datosPartido = await buscarPartido(voto.idPartido);
+
+                // Crear elementos HTML
+                let partido = document.createElement('div');
+                partido.classList.add('partidoAutonomicas');
+                partido.dataset.id = voto.idPartido;
+
+                let imageContainerAutonomicas = document.createElement('div');
+                imageContainerAutonomicas.classList.add('imgContainerAutonomicas');
+                
+                let imageLogo = document.createElement('img');
+                imageLogo.src = datosPartido[0].logo;
+
+                let votosTexto = document.createElement('h3');
+                votosTexto.textContent = `${voto.num_votos} votos`;
+                votosTexto.style = "margin: 0; font-size: 1.2rem;";
+
+                let candidatosAutonomicasContainer = document.createElement('div');
+                candidatosAutonomicasContainer.classList.add('candidatosAutonomicasContainer');
+                
+                let infoContainer = document.createElement('div');
+                infoContainer.classList.add('infoContainer');
+                
+                let partidoTitle = document.createElement('h3');
+                partidoTitle.textContent = datosPartido[0].nombre;
+
+                imageContainerAutonomicas.appendChild(imageLogo);
+                infoContainer.appendChild(partidoTitle);
+                infoContainer.appendChild(votosTexto);
+
+                let candidatos = await buscarCandidatosAutonomicasPartido(idEleccion, idLocalidadChange, voto.idPartido);
+
+                for (const candidato of candidatos) {
+                    
+                    let datosCandidato = await buscarDNICandidato(candidato.idUsuario);
+                    let candidatoTexto = document.createElement('p');
+                    candidatoTexto.textContent = `${datosCandidato[0].nombre} ${datosCandidato[0].apellido}`;
+                    infoContainer.appendChild(candidatoTexto);
+                }
+
+
+                
+                partido.appendChild(imageContainerAutonomicas);
+                partido.appendChild(infoContainer);
+                votosPorPartidoContainer.appendChild(partido);
+
+                // ES PARA EL GRAFICO
+                stats.push({
+                    idPartido: voto.idPartido,
+                    total_votos: voto.num_votos
+                });
+
+            }
+
+            graficoDonut(contenido, stats);
             volverAtras()
     
         });

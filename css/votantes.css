@@ -363,6 +363,9 @@ canvas {
     border-radius: 5px;
     background-color: var(--back-color);
     min-height: 200px;
+
+    transition: .2s;
+
 }
 
 .partidoAutonomicas h3{
@@ -406,8 +409,9 @@ canvas {
     transition: 0.2s;
 }
 
-.partidoAutonomicas .infoContainer p:hover{
+.partidoAutonomicas:hover{
     background-color: var(--border-color);
+    cursor: pointer;
 }
 
 .buscar{

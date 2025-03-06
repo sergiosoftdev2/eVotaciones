@@ -7,11 +7,13 @@
 
         $idEleccion = $_POST['idEleccion'];
         $idLocalidad = $_POST['idLocalidad'];
+        $idPartido = $_POST['idPartido'];
 
         // Consulta modificada para agrupar por idPartido
-        $stmt = $conexion->prepare("SELECT * FROM candidato WHERE eleccionAsociada = ? AND idLocalidad = ? ORDER BY numeroCandidato ASC");
+        $stmt = $conexion->prepare("SELECT * FROM candidato WHERE eleccionAsociada = ? AND idLocalidad = ? AND idPartido = ? ORDER BY numeroCandidato ASC");
         $stmt->bindParam(1, $idEleccion);
         $stmt->bindParam(2, $idLocalidad);
+        $stmt->bindParam(3, $idPartido);
         $stmt->execute();
         
         // Comprobamos si hay resultados

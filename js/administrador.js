@@ -502,10 +502,11 @@ async function elecciones(mainTitle){
 
                     // BORRAR ELECCION
                     borrarEleccionBtn.addEventListener("click", () => {
-                        borrarEleccion(eleccion.idEleccion);
+                        borrarEleccion(eleccion.idEleccion)
                         setTimeout(() => {
+                            console.log("hola")
                             modal.classList.add("noVisible");
-                            crearInterfazElecciones();
+                            
                         }, 250);
                     })
 
