@@ -107,6 +107,11 @@ async function pantallaInicial(){
     })
 
     await buscarEleccionesFinalizadas().then((elecciones) => {
+
+        if(elecciones.message == false){
+            eleccionesFinalizadas.innerHTML += "<p>No hay elecciones pasadas :(</p>"
+            return
+        }
         
         // CREANDO LAS CARD DE LAS ELECCIONES DISPONIBLES
         elecciones.forEach(eleccion => {
@@ -211,7 +216,7 @@ function votarEleccionActivaGenerales(idEleccion){
                     })
 
                     // E INSERTAMOS COMO QUE EL USUARIO HA VOTADO EN LAS ELECCIONES
-                    insertarUsuarioHaVotado(idEleccion, sessionStorage.getItem('idUsuario')).then(data => {
+                    insertarUsuarioHaVotado(idEleccion, sessionStorage.getItem('idUsuario')).then(() => {
                         if (idCenso) {
                             buscarCiudadano(idCenso).then(data => {
                                 enviarCorreo(data[0].email, data[0].nombre, "Votación Elecciones", "Su voto se ha registrado correctamente")
@@ -274,6 +279,12 @@ async function votarEleccionActivaAutonomicas(idEleccion){
     contenido.appendChild(partidosContainer);
 
     (async () => {
+
+        if(candidatos.message == false){
+            contenido.innerHTML += "<p>No hay candidatos activos en tu localidad :(</p>"
+            return
+        }
+
         for (const candidato of candidatos) {
     
             let datosPartido = await buscarPartido(candidato.idPartido);
@@ -336,7 +347,14 @@ async function votarEleccionActivaAutonomicas(idEleccion){
             insertarVotoAutonomicas(idEleccion, candidato.idPartido, candidato.idLocalidad, candidato.idCandidato).then(data => {
                 insertarUsuarioHaVotado(idEleccion, sessionStorage.getItem("idUsuario")).then(data => {
                     alert("Voto registrado correctamente");
-                    window.location.reload();
+                    if (idCenso) {
+                        buscarCiudadano(idCenso).then(data => {
+                            enviarCorreo(data[0].email, data[0].nombre, "Votación Elecciones", "Su voto se ha registrado correctamente")
+                            window.location.href = "/eVotaciones/vistas/votantes.html";
+                        });
+                    } else {
+                        console.error("ID Censo no encontrado en sessionStorage");
+                    }
                 })
             })
         }

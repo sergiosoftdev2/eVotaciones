@@ -21,7 +21,7 @@
             echo json_encode($datos);
         } else {
             // Si no se encuentran datos, devolvemos un array vacío
-            echo json_encode(['message' => 'No data found']);
+            echo json_encode(['message' => false]);
         }
     } catch (PDOException $e) {
         // Si ocurre un error, lo capturamos y devolvemos el mensaje como JSON
