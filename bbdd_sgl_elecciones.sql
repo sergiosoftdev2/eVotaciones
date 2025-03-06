@@ -1,4 +1,4 @@
-CREATE DATABASE bbdd_sgl_elecciones;
+CREATE DATABASE IF NOT EXISTS "bbdd_sgl_elecciones";
 USE bbdd_sgl_elecciones;
 
 CREATE TABLE `candidato` (
@@ -15,13 +15,15 @@ CREATE TABLE `candidato` (
 --
 
 INSERT INTO `candidato` (`idCandidato`, `idUsuario`, `idPartido`, `idLocalidad`, `numeroCandidato`, `eleccionAsociada`) VALUES
-(31, 44, 2, 1, '1', 9),
-(32, 62, 2, 1, '2', 9),
-(33, 50, 4, 2, '1', 9),
-(34, 67, 17, 2, '1', 9),
-(35, 52, 12, 1, '1', 9),
-(36, 60, 14, 2, '1', 9),
-(38, 70, 5, 2, '1', 9);
+(39, 44, 5, 1, '2', 13),
+(40, 60, 14, 18, '1', 13),
+(41, 50, 2, 1, '1', 13),
+(42, 51, 2, 1, '2', 13),
+(43, 61, 4, 1, '1', 13),
+(44, 52, 5, 2, '1', 13),
+(45, 62, 6, 15, '1', 13),
+(46, 63, 2, 15, '1', 13),
+(47, 66, 4, 15, '1', 12);
 
 -- --------------------------------------------------------
 
@@ -144,9 +146,8 @@ CREATE TABLE `eleccion` (
 --
 
 INSERT INTO `eleccion` (`idEleccion`, `tipo`, `estado`, `fechaInicio`, `fechaFin`) VALUES
-(7, 'general', 'finalizada', '2025-02-21', '2025-02-22'),
-(9, 'autonomica', 'finalizada', '2025-02-25', '2025-02-28'),
-(11, 'general', 'finalizada', '2025-03-08', '2025-03-05');
+(12, 'general', 'finalizada', '2025-03-06', '2025-03-07'),
+(13, 'autonomica', 'finalizada', '2025-03-07', '2025-03-08');
 
 -- --------------------------------------------------------
 
@@ -320,30 +321,26 @@ CREATE TABLE `voto` (
   `idEleccion` int(11) NOT NULL,
   `idPartido` int(11) NOT NULL,
   `idLocalidad` int(11) DEFAULT NULL,
-  `fechaHora` timestamp NOT NULL DEFAULT current_timestamp(),
-  `idCandidato` int(11) DEFAULT NULL
+  `fechaHora` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `voto`
 --
 
-INSERT INTO `voto` (`idVoto`, `idEleccion`, `idPartido`, `idLocalidad`, `fechaHora`, `idCandidato`) VALUES
-(11, 7, 4, NULL, '2025-02-24 07:08:07', NULL),
-(12, 7, 2, NULL, '2025-02-24 07:09:02', NULL),
-(13, 7, 2, NULL, '2025-02-24 07:09:10', NULL),
-(14, 7, 2, NULL, '2025-02-24 10:48:06', NULL),
-(15, 7, 6, NULL, '2025-02-24 10:56:38', NULL),
-(18, 9, 2, 1, '2025-02-27 11:02:37', 31),
-(19, 7, 14, NULL, '2025-02-27 11:04:20', NULL),
-(21, 9, 2, 1, '2025-02-27 11:18:13', 31),
-(22, 9, 12, 1, '2025-02-27 11:23:48', 35),
-(23, 9, 2, 1, '2025-02-27 12:14:46', 32),
-(24, 9, 14, 2, '2025-02-27 12:20:57', 36),
-(25, 9, 5, 2, '2025-02-27 12:21:29', 38),
-(26, 9, 17, 2, '2025-02-27 12:21:55', 34),
-(29, 11, 14, NULL, '2025-03-01 22:06:05', NULL),
-(30, 11, 5, NULL, '2025-03-01 22:06:16', NULL);
+INSERT INTO `voto` (`idVoto`, `idEleccion`, `idPartido`, `idLocalidad`, `fechaHora`) VALUES
+(32, 12, 5, 15, '2025-03-06 17:07:16'),
+(33, 12, 2, 5, '2025-03-06 17:31:24'),
+(34, 12, 14, 48, '2025-03-06 17:31:35'),
+(35, 12, 2, 18, '2025-03-06 17:31:41'),
+(36, 12, 2, 12, '2025-03-06 17:31:48'),
+(37, 12, 14, 1, '2025-03-06 17:34:29'),
+(38, 12, 2, 1, '2025-03-06 17:34:45'),
+(39, 13, 2, 15, '2025-03-06 17:49:56'),
+(40, 13, 2, 1, '2025-03-06 18:43:03'),
+(41, 13, 5, 1, '2025-03-06 18:43:20'),
+(42, 13, 2, 1, '2025-03-06 18:43:41'),
+(43, 13, 4, 1, '2025-03-06 19:20:03');
 
 -- --------------------------------------------------------
 
@@ -361,22 +358,17 @@ CREATE TABLE `votousuarioeleccion` (
 --
 
 INSERT INTO `votousuarioeleccion` (`idUsuario`, `idEleccion`) VALUES
-(44, 7),
-(44, 11),
-(50, 7),
-(50, 9),
-(51, 11),
-(54, 7),
-(54, 11),
-(63, 7),
-(64, 9),
-(67, 7),
-(102, 9),
-(103, 9),
-(104, 9),
-(105, 9),
-(106, 9),
-(107, 11);
+(44, 12),
+(50, 12),
+(50, 13),
+(51, 12),
+(52, 12),
+(54, 12),
+(54, 13),
+(64, 12),
+(64, 13),
+(102, 13),
+(107, 12);
 
 --
 -- Índices para tablas volcadas
@@ -453,8 +445,7 @@ ALTER TABLE `voto`
   ADD PRIMARY KEY (`idVoto`),
   ADD KEY `idPartido` (`idPartido`),
   ADD KEY `idLocalidad` (`idLocalidad`),
-  ADD KEY `idEleccion` (`idEleccion`),
-  ADD KEY `fk_idCandidato` (`idCandidato`);
+  ADD KEY `idEleccion` (`idEleccion`);
 
 --
 -- Indices de la tabla `votousuarioeleccion`
@@ -471,7 +462,7 @@ ALTER TABLE `votousuarioeleccion`
 -- AUTO_INCREMENT de la tabla `candidato`
 --
 ALTER TABLE `candidato`
-  MODIFY `idCandidato` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
+  MODIFY `idCandidato` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
 
 --
 -- AUTO_INCREMENT de la tabla `censo`
@@ -489,7 +480,7 @@ ALTER TABLE `comunidadautonoma`
 -- AUTO_INCREMENT de la tabla `eleccion`
 --
 ALTER TABLE `eleccion`
-  MODIFY `idEleccion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `idEleccion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT de la tabla `localidad`
@@ -519,7 +510,7 @@ ALTER TABLE `usuario`
 -- AUTO_INCREMENT de la tabla `voto`
 --
 ALTER TABLE `voto`
-  MODIFY `idVoto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `idVoto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
 
 --
 -- Restricciones para tablas volcadas
@@ -563,7 +554,6 @@ ALTER TABLE `usuario`
 -- Filtros para la tabla `voto`
 --
 ALTER TABLE `voto`
-  ADD CONSTRAINT `fk_idCandidato` FOREIGN KEY (`idCandidato`) REFERENCES `candidato` (`idCandidato`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `voto_ibfk_1` FOREIGN KEY (`idPartido`) REFERENCES `partido` (`idPartido`) ON DELETE CASCADE,
   ADD CONSTRAINT `voto_ibfk_2` FOREIGN KEY (`idLocalidad`) REFERENCES `localidad` (`idLocalidad`) ON DELETE CASCADE,
   ADD CONSTRAINT `voto_ibfk_3` FOREIGN KEY (`idEleccion`) REFERENCES `eleccion` (`idEleccion`) ON DELETE CASCADE;
@@ -573,7 +563,7 @@ ALTER TABLE `voto`
 --
 ALTER TABLE `votousuarioeleccion`
   ADD CONSTRAINT `votousuarioeleccion_ibfk_1` FOREIGN KEY (`idUsuario`) REFERENCES `usuario` (`idUsuario`),
-  ADD CONSTRAINT `votousuarioeleccion_ibfk_2` FOREIGN KEY (`idEleccion`) REFERENCES `eleccion` (`idEleccion`);
+  ADD CONSTRAINT `votousuarioeleccion_ibfk_2` FOREIGN KEY (`idEleccion`) REFERENCES `eleccion` (`idEleccion`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
