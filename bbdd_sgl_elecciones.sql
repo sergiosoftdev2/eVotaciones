@@ -1,5 +1,25 @@
-CREATE DATABASE IF NOT EXISTS "bbdd_sgl_elecciones";
+CREATE TABLE bbdd_sgl_elecciones;
 USE bbdd_sgl_elecciones;
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Base de datos: `bbdd_sgl_elecciones`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `candidato`
+--
 
 CREATE TABLE `candidato` (
   `idCandidato` int(11) NOT NULL,
@@ -152,6 +172,33 @@ INSERT INTO `eleccion` (`idEleccion`, `tipo`, `estado`, `fechaInicio`, `fechaFin
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `escanos`
+--
+
+CREATE TABLE `escanos` (
+  `escanos` int(11) NOT NULL,
+  `idLocalidad` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `escanos`
+--
+
+INSERT INTO `escanos` (`escanos`, `idLocalidad`) VALUES
+(56, 1),
+(26, 2),
+(24, 3),
+(35, 4),
+(22, 5),
+(13, 6),
+(20, 7),
+(22, 8),
+(18, 15),
+(25, 19);
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `localidad`
 --
 
@@ -251,20 +298,6 @@ INSERT INTO `partido` (`idPartido`, `nombre`, `siglas`, `logo`) VALUES
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `resultado`
---
-
-CREATE TABLE `resultado` (
-  `idResultado` int(11) NOT NULL,
-  `idEleccion` int(11) NOT NULL,
-  `idPartido` int(11) NOT NULL,
-  `votosObtenidos` int(11) DEFAULT 0,
-  `escañosObtenidos` int(11) DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
 -- Estructura de tabla para la tabla `usuario`
 --
 
@@ -329,18 +362,18 @@ CREATE TABLE `voto` (
 --
 
 INSERT INTO `voto` (`idVoto`, `idEleccion`, `idPartido`, `idLocalidad`, `fechaHora`) VALUES
-(32, 12, 5, 15, '2025-03-06 17:07:16'),
-(33, 12, 2, 5, '2025-03-06 17:31:24'),
-(34, 12, 14, 48, '2025-03-06 17:31:35'),
-(35, 12, 2, 18, '2025-03-06 17:31:41'),
-(36, 12, 2, 12, '2025-03-06 17:31:48'),
-(37, 12, 14, 1, '2025-03-06 17:34:29'),
-(38, 12, 2, 1, '2025-03-06 17:34:45'),
-(39, 13, 2, 15, '2025-03-06 17:49:56'),
-(40, 13, 2, 1, '2025-03-06 18:43:03'),
-(41, 13, 5, 1, '2025-03-06 18:43:20'),
-(42, 13, 2, 1, '2025-03-06 18:43:41'),
-(43, 13, 4, 1, '2025-03-06 19:20:03');
+(32, 12, 5, 15, '2025-03-06 16:07:16'),
+(33, 12, 2, 5, '2025-03-06 16:31:24'),
+(34, 12, 14, 48, '2025-03-06 16:31:35'),
+(35, 12, 2, 18, '2025-03-06 16:31:41'),
+(36, 12, 2, 12, '2025-03-06 16:31:48'),
+(37, 12, 14, 1, '2025-03-06 16:34:29'),
+(38, 12, 2, 1, '2025-03-06 16:34:45'),
+(39, 13, 2, 15, '2025-03-06 16:49:56'),
+(40, 13, 2, 1, '2025-03-06 17:43:03'),
+(41, 13, 5, 1, '2025-03-06 17:43:20'),
+(42, 13, 2, 1, '2025-03-06 17:43:41'),
+(43, 13, 4, 1, '2025-03-06 18:20:03');
 
 -- --------------------------------------------------------
 
@@ -407,6 +440,12 @@ ALTER TABLE `eleccion`
   ADD UNIQUE KEY `tipo` (`tipo`,`fechaInicio`,`fechaFin`);
 
 --
+-- Indices de la tabla `escanos`
+--
+ALTER TABLE `escanos`
+  ADD PRIMARY KEY (`idLocalidad`);
+
+--
 -- Indices de la tabla `localidad`
 --
 ALTER TABLE `localidad`
@@ -422,14 +461,6 @@ ALTER TABLE `partido`
   ADD UNIQUE KEY `siglas` (`siglas`),
   ADD UNIQUE KEY `nombre_2` (`nombre`),
   ADD UNIQUE KEY `siglas_2` (`siglas`);
-
---
--- Indices de la tabla `resultado`
---
-ALTER TABLE `resultado`
-  ADD PRIMARY KEY (`idResultado`),
-  ADD KEY `idEleccion` (`idEleccion`),
-  ADD KEY `idPartido` (`idPartido`);
 
 --
 -- Indices de la tabla `usuario`
@@ -495,12 +526,6 @@ ALTER TABLE `partido`
   MODIFY `idPartido` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
--- AUTO_INCREMENT de la tabla `resultado`
---
-ALTER TABLE `resultado`
-  MODIFY `idResultado` int(11) NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT de la tabla `usuario`
 --
 ALTER TABLE `usuario`
@@ -532,17 +557,16 @@ ALTER TABLE `censo`
   ADD CONSTRAINT `censo_ibfk_1` FOREIGN KEY (`idLocalidad`) REFERENCES `localidad` (`idLocalidad`) ON DELETE CASCADE;
 
 --
+-- Filtros para la tabla `escanos`
+--
+ALTER TABLE `escanos`
+  ADD CONSTRAINT `escanos_ibfk_1` FOREIGN KEY (`idLocalidad`) REFERENCES `localidad` (`idLocalidad`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Filtros para la tabla `localidad`
 --
 ALTER TABLE `localidad`
   ADD CONSTRAINT `localidad_ibfk_1` FOREIGN KEY (`idComunidad`) REFERENCES `comunidadautonoma` (`idComunidad`) ON DELETE CASCADE;
-
---
--- Filtros para la tabla `resultado`
---
-ALTER TABLE `resultado`
-  ADD CONSTRAINT `resultado_ibfk_1` FOREIGN KEY (`idEleccion`) REFERENCES `eleccion` (`idEleccion`) ON DELETE CASCADE,
-  ADD CONSTRAINT `resultado_ibfk_2` FOREIGN KEY (`idPartido`) REFERENCES `partido` (`idPartido`) ON DELETE CASCADE;
 
 --
 -- Filtros para la tabla `usuario`

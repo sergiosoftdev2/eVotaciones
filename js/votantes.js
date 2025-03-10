@@ -4,7 +4,7 @@ import {
     votosPorPartidoEleccion, insertarUsuarioHaVotado, insertarVotoGenerales, votosPorLocalidadEleccion, 
     buscarPartido, comprobarSesion, enviarCorreo, buscarCiudadano, buscarDNICandidato, 
     insertarVotoAutonomicas, buscarCandidato, buscarLocalidad, buscarCandidatosAutonomicasPartido, buscarUsuario,
-    buscarCandidatosAutonomicas
+    buscarCandidatosAutonomicas, obtenerEscanosLocalidad
 
 } from "./api.js"
 
@@ -554,11 +554,16 @@ async function mostrarResultadoEleccionAutonomica(idEleccion) {
 
     async function mostrarRes(idEleccion, idLocalidadChange){
 
+        let escanosTotalesLocalidad = await obtenerEscanosLocalidad(idLocalidadChange).then(escanos => {
+            return escanos[0].escanos;
+        });
+
         let votosPorPartidoContainer = document.getElementById('votosPorPartidoContainer');
         votosPorPartidoContainer.innerHTML = "";
         
         let votosPorPartidoLocalidad = [];
         let stats = [];
+        let votosTotales = 0;
 
         votosPorLocalidadEleccion(idEleccion, localidadUsuario).then(async votos => {
 
@@ -566,6 +571,7 @@ async function mostrarResultadoEleccionAutonomica(idEleccion) {
             for(const voto of votos){
                 if(voto.idLocalidad == idLocalidadChange){
                     votosPorPartidoLocalidad.push(voto);
+                    votosTotales = votosTotales + voto.num_votos;
                 }
             };
             
@@ -588,6 +594,10 @@ async function mostrarResultadoEleccionAutonomica(idEleccion) {
                 votosTexto.textContent = `${voto.num_votos} votos`;
                 votosTexto.style = "margin: 0; font-size: 1.2rem;";
 
+                let escanosTotales = document.createElement('h3');
+                escanosTotales.textContent = `${voto.num_votos*escanosTotalesLocalidad/votosTotales} Escaños`;
+                escanosTotales.style = "margin: 0; font-size: 1.2rem;";
+
                 let candidatosAutonomicasContainer = document.createElement('div');
                 candidatosAutonomicasContainer.classList.add('candidatosAutonomicasContainer');
                 
@@ -599,15 +609,23 @@ async function mostrarResultadoEleccionAutonomica(idEleccion) {
 
                 imageContainerAutonomicas.appendChild(imageLogo);
                 infoContainer.appendChild(partidoTitle);
+                infoContainer.appendChild(escanosTotales);
                 infoContainer.appendChild(votosTexto);
 
                 let candidatos = await buscarCandidatosAutonomicasPartido(idEleccion, idLocalidadChange, voto.idPartido);
 
                 for (const candidato of candidatos) {
                     
+                    console.log(candidato);
+
                     let datosCandidato = await buscarDNICandidato(candidato.idUsuario);
                     let candidatoTexto = document.createElement('p');
-                    candidatoTexto.textContent = `${datosCandidato[0].nombre} ${datosCandidato[0].apellido}`;
+                    if(candidato.numeroCandidato == 1 && votosPorPartidoLocalidad.indexOf(voto) == 0){
+                        candidatoTexto.innerHTML = `<b>Alcalde/Alcaldesa</b>: ${datosCandidato[0].nombre} ${datosCandidato[0].apellido}`;
+                    }else{
+                        candidatoTexto.textContent = `${datosCandidato[0].nombre} ${datosCandidato[0].apellido}`;
+                    }
+                    
                     infoContainer.appendChild(candidatoTexto);
                 }
 

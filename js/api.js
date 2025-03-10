@@ -1080,3 +1080,172 @@ export async function buscarCandidatosAutonomicas(idEleccion, idLocalidad){
     }
 
 }
+
+export async function buscarEscanos(){
+    let formData = new FormData();
+    try {
+        const response = await fetch("../api/SELECT/buscarEscanos.php", {
+            method: 'POST',
+            body: formData
+        });
+        if (!response.ok) {
+            throw new Error('Error en la petición');
+        }
+        const datos = await response.json();
+        return datos;
+    }catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+
+export async function insertarEscano(idLocalidad, numeroEscanos) {
+    let formData = new FormData();
+    formData.append('idLocalidad', idLocalidad);
+    formData.append('numeroEscanos', numeroEscanos);
+    try {
+        const response = await fetch("../api/INSERT/insertarEscano.php", {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error(`Error en la petición: ${response.status}`);
+        }
+
+        const datos = await response.json();
+        return datos;
+    } catch (error) {
+        console.error("Error en la petición:", error);
+        return { success: false, error: error.message };
+    }
+}
+
+export async function borrarEscano(idLocalidad){
+    let formData = new FormData();
+    formData.append('idLocalidad', idLocalidad);
+    try {
+        const response = await fetch("../api/DELETE/borrarEscano.php", {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error(`Error en la petición: ${response.status}`);
+        }
+
+        const datos = await response.json();
+        return datos;
+    }catch (error) {
+        console.log(error);
+    }
+}
+
+export async function actualizarEscanos(idLocalidad, numeroEscanos){
+    let formData = new FormData();
+    formData.append('idLocalidad', idLocalidad);
+    formData.append('numeroEscanos', numeroEscanos);
+
+    try {
+        const response = await fetch("../api/UPDATE/actualizarEscano.php", {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error(`Error en la petición: ${response.status}`);
+        }
+
+        const datos = await response.json();
+        return datos;
+    }catch (error) {
+        console.log(error);
+    }
+}
+
+export async function buscarLocalidadesEscanos(){
+    let formData = new FormData();
+    try {
+        const response = await fetch("../api/SELECT/buscarLocalidadesEscanos.php", {
+            method: 'POST',
+            body: formData
+        });
+        if (!response.ok) {
+            throw new Error('Error en la petición');
+        }
+        const datos = await response.json();
+        return datos;
+    }catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+
+
+
+export async function obtenerEscanosComunidad(idComunidad){
+    let formData = new FormData();
+    formData.append('comunidad', idComunidad);
+    try {
+        const response = await fetch("../api/SELECT/buscarEscanosComunidad.php", {
+            method: 'POST',
+            body: formData
+        });
+        if (!response.ok) {
+            throw new Error('Error en la petición');
+        }
+        const datos = await response.json();
+        return datos;
+
+    }catch (error) {
+        console.log(error);
+        return [];
+    }
+
+}
+
+export async function obtenerEscanosLocalidad(idLocalidad){
+    let formData = new FormData();
+    formData.append('idLocalidad', idLocalidad);
+    try {
+        const response = await fetch("../api/SELECT/buscarEscanosLocalidad.php", {
+            method: 'POST',
+            body: formData
+        });
+        if (!response.ok) {
+            throw new Error('Error en la petición');
+        }
+        const datos = await response.json();
+        return datos;
+
+    }catch (error) {
+        console.log(error);
+        return [];
+    }
+
+}
+
+export async function obtenerAlcalde(idLocalidad, idEleccion, idPartido){
+    let formData = new FormData();
+    formData.append('idLocalidad', idLocalidad);
+    formData.append('idEleccion', idEleccion);
+    formData.append('idPartido', idPartido);
+
+    console.log(idLocalidad, idEleccion, idPartido);
+
+    try {
+        const response = await fetch("../api/SELECT/buscarAlcalde.php", {
+            method: 'POST',
+            body: formData
+        });
+        if (!response.ok) {
+            throw new Error('Error en la petición');
+        }
+        const datos = await response.json();
+        return datos;
+
+    }catch (error) {
+        console.log(error);
+        return [];
+    }
+}

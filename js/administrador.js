@@ -1,12 +1,17 @@
 import { 
     obtenerLocalidades, buscarPartidos, actualizarPartidoPolitico, 
     borrarPartidoPolitico, insertarPartidoPolitico, buscarCandidatos,
-    actualizarCandidato, borrarCandidato, insertarCandidato, buscarUsuarios,  
+    actualizarCandidato, borrarCandidato, insertarCandidato, obtenerLocalidadesComunidad,
     buscarCiudadano, buscarLocalidad, buscarPartido, buscarElecciones,
     insertarEleccion, borrarEleccion, actualizarEleccion,
-    buscarUsuariosNoCandidatos,
-    buscarEleccionesFinalizadas,
-    buscarDNICandidato
+    buscarUsuariosNoCandidatos, obtenerEscanosComunidad,
+    obtenerComunidades, buscarDNICandidato, buscarEscanos, buscarLocalidadesEscanos, insertarEscano, borrarEscano, actualizarEscanos,
+    obtenerEscanosLocalidad,
+    enviarCorreo,
+    votosPorLocalidadEleccion,
+    votosPorPartidoEleccion,
+    obtenerAlcalde,
+    
 } from "./api.js";
 
 document.addEventListener("DOMContentLoaded", function() {
@@ -29,8 +34,7 @@ async function candidatos(mainTitle) {
     mainTitle.classList.add("adminPanel");
 
     mainTitle.innerHTML = `
-        
-        
+
         <div class="actionButtons">
             <button class="back" id="back"><img src="/eVotaciones/img/back.svg">Atrás</button>
             <button id="insertarCandidato"><img src="/eVotaciones/img/plus.svg">Insertar</button> 
@@ -823,8 +827,47 @@ async function escrutinios(mainTitle){
                     modal.classList.remove('noVisible');
 
                     // ACTUALIZAR ELECCION
-                    actualizarEleccionBtn.onclick = () => {
+                    actualizarEleccionBtn.onclick = async () => {
                         actualizarEleccion(eleccion.idEleccion, eleccion.tipo, estadoModal.value, eleccion.fechaInicio, eleccion.fechaFin);
+                        if(estadoModal.value == "finalizada" && eleccion.tipo == "autonomica"){
+                            // AQUI VA LO DEL CORREO A TODOS LOS ALCALDES
+                            let votosPorLocalidad = await votosPorLocalidadEleccion(eleccion.idEleccion).then(async data => {
+                                
+                                let comprobacionAlcalde = new Set();
+                                let alcaldes = []
+
+                                if(data.length > 0){
+                                    data.forEach(voto => {
+                                        if(comprobacionAlcalde.has(voto.idLocalidad)){
+                                            // AQUI ESTAMOS QUITANDO LOS PARTIDOS RESTANTES QUE NO SON LOS PRIMEROS
+                                        }else{
+                                            // AÑADIMOS LOS PARTIDOS CON MAS VOTOS DE CADA LOCALIDAD
+                                            comprobacionAlcalde.add(voto.idLocalidad)
+                                            alcaldes.push(voto);
+                                        }
+                                    });
+                                }
+
+                                for(let alcalde in alcaldes){
+
+                                    console.log(alcaldes[alcalde].idPartido);
+                                    console.log(alcaldes[alcalde].idLocalidad);
+
+                                    let obtenerCandidatosPartidoGanador = await obtenerAlcalde(alcaldes[alcalde].idLocalidad, eleccion.idEleccion, alcaldes[alcalde].idPartido)
+                                    .then(async data => {
+                                        
+                                        // OBTENEMOS EL CORREO
+                                        let correoCandidato = await buscarDNICandidato(data.idUsuario).then(alcaldeCenso => {
+                                            return alcaldeCenso[0].email;
+                                        })
+                                        
+                                        await enviarCorreo(correoCandidato, "GANADOR DE LAS ELECCIONES EN TU LOCALIDAD", "Felicidades, has sido elegido alcalde de tu localidad");
+                                    });
+                                }
+
+                                return data;
+                            });
+                        }
                         setTimeout(() => {
                             modal.classList.add("noVisible");
                             crearInterfazElecciones();
@@ -836,6 +879,252 @@ async function escrutinios(mainTitle){
             });
         } else {
             contentInsert.innerHTML = `<p>No hay elecciones :(</p>`;
+        }
+    }
+
+}
+
+async function escaños(mainTitle){
+    
+    let modalContainer = document.getElementById('modalContainer');
+    mainTitle.classList.add("adminPanel");
+
+    mainTitle.innerHTML = `
+
+        <div class="actionButtons">
+            <button class="back" id="back"><img src="/eVotaciones/img/back.svg">Atrás</button>
+            <button id="insertarCandidato"><img src="/eVotaciones/img/plus.svg">Insertar</button> 
+        </div>
+        <div style="width: 90%">
+            <div class="buscar">
+                <label for="">Ordenar Por: </label>
+                <select name="" id="comunidades">
+                    <option value="">Comunidad Autonoma</option>
+                </select>
+                <select name="" id="localidadesComunidad" disabled></select>
+            </div>
+            <div class="busquedaCiudadanos" id="busquedaCiudadanos">
+                    <div class="ciudadano" id="preFix">
+                        <h2>Localidad</h2>
+                        <h2>Escaños</h2>
+                    </div>
+                    <div class="contentInsert" id="contentInsert"></div>
+                </div>
+            </div>
+        </div>
+    `
+
+    modalContainer.innerHTML = `
+        <div id="modal" class="noVisible">
+            <button id="cerrarModal" class="closeButton"><img src="../img/cross.svg" alt=""></button>
+            <div class="ciudadanoModal" id="modalContent">
+                <div style="display: flex; gap: 20px;">
+                    <div style="width: 50%;">
+                    <h2>Localidades</h2>
+                    <select id="localidadesSelectModal"></select>
+                    </div>
+                    <div style="width: 50%;">
+                        <h2>Numero de Escaños</h2>
+                        <input type="number" id="numeroEscanos">
+                    </div>
+                </div>
+                <div class="buttonModalSide">
+                    <button id="anadirCiudadano">Añadir Escaños</button>
+                    <button id="borrarCiudadano">Borrar Registro</button>
+                    <button id="actualizarCiudadano">Actualizar Registro</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // PARA EL FILTRO
+    let comunidades = document.getElementById('comunidades');
+    let localidades = document.getElementById('localidadesComunidad');
+    let insertarCandidatoBtn = document.getElementById('insertarCandidato');
+
+    // PARA BUSCAR LAS COMUNIDADES
+    obtenerComunidades().then(response => {
+        response.forEach(comunidad => {
+            let comunidadOption = document.createElement('option');
+            comunidadOption.value = comunidad.idComunidad;
+            comunidadOption.textContent = comunidad.nombre;
+            comunidades.appendChild(comunidadOption);
+        });
+    })
+
+    // PARA BUSCAR LAS LOCALIDADES POR COMUNIDAD
+    comunidades.addEventListener('change', async () => {
+
+        if (comunidades.value == "") {
+            localidades.setAttribute("disabled", "disabled");
+            localidades.innerHTML = "";
+            contentInsert.innerHTML = "";
+            crearInterfazEscanos()
+            return;
+        }else{
+
+            let escanosComunidad = await obtenerEscanosComunidad(comunidades.value);
+            crearInterfazEscanos(escanosComunidad);
+
+            localidades.innerHTML = "";
+            let comunidadSeleccionada = comunidades.value;
+            let misLocalidades = await obtenerLocalidadesComunidad(comunidadSeleccionada);
+
+            localidades.removeAttribute("disabled");
+
+            misLocalidades.forEach(localidad => {
+                let localidadOption = document.createElement('option');
+                localidadOption.value = localidad.idLocalidad;
+                localidadOption.textContent = localidad.nombre;
+                localidades.appendChild(localidadOption);
+            });   
+        }
+    });
+
+    // PARA BUSCAR LOS CIUDADANOS POR LOCALIDAD
+    localidades.addEventListener('change', async () => {
+        let localidadSeleccionada = localidades.value;
+        let escanosPorLocalidad = await obtenerEscanosLocalidad(localidadSeleccionada);
+        crearInterfazEscanos(escanosPorLocalidad);  
+    });
+
+    let back = document.getElementById('back');
+    let contentInsert = document.getElementById('contentInsert');
+    let modal = document.getElementById('modal');
+    let cerrarModal = document.getElementById('cerrarModal');
+    let actualizarEleccionBtn = document.getElementById('actualizarCiudadano');
+    
+    let localidadesSelectModal = document.getElementById('localidadesSelectModal');
+    let numeroEscanos = document.getElementById('numeroEscanos');
+    
+    let anadirCandidatoBtn = document.getElementById('anadirCiudadano');
+    let borrarCandidatoBtn = document.getElementById('borrarCiudadano');
+    let actualizarCandidatoBtn = document.getElementById('actualizarCiudadano');
+
+    crearInterfazEscanos()
+
+    insertarCandidatoBtn.addEventListener("click", async () => {
+
+        modal.classList.remove("noVisible");
+        localidadesSelectModal.innerHTML = "";
+        numeroEscanos.value = "";
+
+
+        let localidadesRestantes = await buscarLocalidadesEscanos();
+        for(let localidad in localidadesRestantes){
+            let localidadOption = document.createElement('option');
+            localidadOption.value = localidadesRestantes[localidad].idLocalidad;
+            localidadOption.textContent = localidadesRestantes[localidad].nombre;
+            localidadesSelectModal.appendChild(localidadOption);
+        }
+
+        anadirCandidatoBtn.style.display = "block";
+        borrarCandidatoBtn.style.display = "none";
+        actualizarCandidatoBtn.style.display = "none";
+
+        anadirCandidatoBtn.replaceWith(anadirCandidatoBtn.cloneNode(true));
+        anadirCandidatoBtn = document.getElementById("anadirCiudadano"); // Reasignar el nuevo botón sin eventos previos
+
+        anadirCandidatoBtn.addEventListener("click", async () => {
+
+            let idLocalidadEscano = localidadesSelectModal.value;
+            let numeroEscanosInput = numeroEscanos.value;
+
+            if (!idLocalidadEscano || !numeroEscanosInput ) {
+                alert('Por favor, completa todos los campos.');
+                return;
+            }
+
+            let nuevoEscano = await insertarEscano(idLocalidadEscano, numeroEscanosInput).then(data => {
+                console.log(data);
+                return data;
+            });
+
+            setTimeout(() => {
+                crearInterfazEscanos()
+                modal.classList.add('noVisible');
+            }, 250);
+
+        });
+    });
+
+    // PARA VOLVER AL MENU DE ADMINISTRADOR
+    back.addEventListener("click", () => {
+        adminMenuShow(mainTitle);
+    });
+
+    // PARA CERRAR EL MODAL
+    cerrarModal.addEventListener("click", () => {
+        modal.classList.add('noVisible');
+    });
+    
+    async function crearInterfazEscanos(datosLocalidades) {
+
+        let escanos = await buscarEscanos().then(data => {
+            return data;
+        });
+        
+        if(datosLocalidades){
+            escanos = datosLocalidades
+        }
+
+        contentInsert.innerHTML = "";
+
+        if (escanos.length > 0) {
+
+            escanos.forEach(async escano => {
+
+                let elementoPadre = document.createElement('div');
+                elementoPadre.classList.add('ciudadano');
+                
+                let localidad = document.createElement('p');
+                localidad.textContent = await buscarLocalidad(escano.idLocalidad);
+
+                let escanosText = document.createElement('p');
+                escanosText.textContent = escano.escanos;
+
+                elementoPadre.appendChild(localidad);
+                elementoPadre.appendChild(escanosText);
+
+                elementoPadre.addEventListener("click", async () => {
+
+                    let nombreLocalidad = await buscarLocalidad(escano.idLocalidad);
+
+                    localidadesSelectModal.innerHTML = `<option value="${escano.idLocalidad}">${nombreLocalidad}</option>`;
+                    numeroEscanos.value = escano.escanos;
+
+                    anadirCandidatoBtn.style.display = "none";
+                    actualizarEleccionBtn.style.display = "block";
+                    actualizarEleccionBtn.style.width = "50%";
+                    borrarCandidatoBtn.style.display = "block";
+
+                    modal.classList.remove('noVisible');
+
+                    // ACTUALIZAR ESCAÑO
+                    actualizarEleccionBtn.onclick = () => {
+                        console.log(numeroEscanos.value)
+                        actualizarEscanos(escano.idLocalidad, numeroEscanos.value);
+                        setTimeout(() => {
+                            modal.classList.add("noVisible");
+                            crearInterfazEscanos();
+                        }, 250);
+                    };
+
+                    // BORRAR ESCAÑO
+                    borrarCandidatoBtn.addEventListener("click", async () => {
+                        borrarEscano(escano.idLocalidad);
+                        setTimeout(() => {
+                            modal.classList.add("noVisible");
+                            crearInterfazEscanos();
+                        }, 250);
+                    });
+
+                });
+
+                contentInsert.appendChild(elementoPadre);
+            });
+        } else {
+            contentInsert.innerHTML = `<p>No hay escaños :(</p>`;
         }
     }
 
@@ -858,6 +1147,9 @@ function adminMenuShow(mainTitle){
             <div id="gestionEscrutinios" class="adminPanels">
                 <h2>Escrutinios</h2>
             </div>
+            <div id="gestionEscaños" class="adminPanels">
+                <h2>Escaños</h2>
+            </div>
         </div>
     `
 
@@ -867,9 +1159,14 @@ function adminMenuShow(mainTitle){
     let gestionPartidos = document.getElementById('gestionPartidos');
     let gestionEscrutinios = document.getElementById('gestionEscrutinios');
     let gestionElecciones = document.getElementById('gestionElecciones');
+    let gestionEscaños = document.getElementById('gestionEscaños');
 
     gestionCandidaatos.addEventListener("click", function() {
         candidatos(mainTitle);
+    });
+
+    gestionEscaños.addEventListener("click", function() {
+        escaños(mainTitle);
     });
 
     gestionPartidos.addEventListener("click", function() {
